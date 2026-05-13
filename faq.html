@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRUMIQ — Întrebări Frecvente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400&family=Inter+Tight:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+</head>
+<body>
+
+<nav class="main">
+  <a class="logo" href="index.html">DRUM<span class="accent">IQ</span></a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Acasă</a>
+    <a class="nav-link" href="calculator.html">Calculator</a>
+    <a class="nav-link" href="instalare.html">Instalare</a>
+    <a class="nav-link" href="flote.html">Flote</a>
+    <a class="nav-link" href="demo.html">Demo</a>
+    <a class="nav-link active" href="faq.html">FAQ</a>
+    <a class="nav-link" href="contact.html">Contact</a>
+  </div>
+  <a class="cta" href="instalare.html">Descarcă</a>
+  <div class="menu-btn" id="menuBtn"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Acasă</a>
+  <a href="calculator.html">Calculator</a>
+  <a href="instalare.html">Instalare</a>
+  <a href="flote.html">Flote</a>
+  <a href="demo.html">Demo Fleet</a>
+  <a href="faq.html">FAQ</a>
+  <a href="contact.html">Contact</a>
+  <a href="instalare.html">DESCARCĂ APK</a>
+</div>
+
+<div class="page-header">
+  <div class="page-header-tag">ÎNTREBĂRI FRECVENTE</div>
+  <h1>Răspunsuri<br><span class="ital">directe.</span></h1>
+  <p class="lead">Cele mai comune întrebări de la șoferi reali, fără ocolișuri. Nu găsești ce cauți? Scrie-ne pe WhatsApp.</p>
+</div>
+
+<section class="content">
+  <div class="faq-category">
+    <div class="faq-cat-title">// GENERAL</div>
+    <div class="faq-item">
+      <div class="faq-q">Ce face exact DRUMIQ?</div>
+      <div class="faq-a">Citește oferta Bolt din momentul în care apare pe ecran (preț, distanță, pickup), calculează costul real al cursei pe baza mașinii tale (combustibil, uzură), și îți afișează un verdict GO / THINK / STOP direct peste interfața Bolt — în mai puțin de 2 secunde.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">E legal să folosesc DRUMIQ?</div>
+      <div class="faq-a">Da, complet legal. DRUMIQ doar citește ce vezi tu pe ecran și face calcule matematice. Nu se conectează la API-ul Bolt, nu manipulează oferte, nu face nimic ascuns. Tu decizi în continuare ce accepți.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Funcționează doar cu Bolt?</div>
+      <div class="faq-a">În prezent da, optimizat pentru Bolt. Uber este planificat pentru Q3 2026. Yango și FreeNow vor veni după.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Funcționează offline?</div>
+      <div class="faq-a">Da, 100%. Calculele se fac local pe telefonul tău. Conexiunea la internet e necesară doar pentru Google Routes (opțional, în PRO) pentru date de trafic real.</div>
+    </div>
+  </div>
+
+  <div class="faq-category">
+    <div class="faq-cat-title">// TEHNICE</div>
+    <div class="faq-item">
+      <div class="faq-q">De ce am nevoie de Serviciul de Accesibilitate?</div>
+      <div class="faq-a">Accesibilitatea este singura metodă oficială Android prin care o aplicație poate citi conținutul afișat de altă aplicație. DRUMIQ citește prețul și distanța de pe ecranul Bolt prin acest serviciu. Datele rămân pe telefonul tău.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Mă încetinește telefonul?</div>
+      <div class="faq-a">Nu. DRUMIQ consumă sub 50 MB RAM și doar când Bolt e activ. Procesarea se face în background eficient. Pe telefoane Android 8+ nu vei simți nicio diferență.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">De ce nu apare bulina verdict?</div>
+      <div class="faq-a">3 cauze comune: (1) Serviciul de Accesibilitate nu e activat — re-verifică la Setări. (2) Overlay peste alte aplicații e dezactivat. (3) Mașina nu e configurată — completează tipul combustibil în setări DRUMIQ.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Cât consumă bateria?</div>
+      <div class="faq-a">Sub 3% per oră de utilizare activă cu Bolt deschis. Practic, dacă faci 8 ore de curse, DRUMIQ consumă ~20-25% baterie peste consumul normal Bolt+Google Maps.</div>
+    </div>
+  </div>
+
+  <div class="faq-category">
+    <div class="faq-cat-title">// PLATĂ & ABONAMENT</div>
+    <div class="faq-item">
+      <div class="faq-q">Cum pot plăti abonamentul?</div>
+      <div class="faq-a">Card bancar (Visa/Mastercard) prin Stripe, transfer bancar, sau plată prin Google Play Billing. Pentru flote, factură pe firmă cu plată la 30 de zile.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Pot anula oricând?</div>
+      <div class="faq-a">Da, fără întrebări. Anulezi din setări sau scriindu-ne pe WhatsApp. Accesul rămâne activ până la sfârșitul perioadei plătite. Fără penalizări.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Primesc factură fiscală?</div>
+      <div class="faq-a">Da, automat după plată. Factura include CUI dacă plătești pe firmă. Pentru flote oferim facturare lunară consolidată.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Garanție de rambursare?</div>
+      <div class="faq-a">14 zile money-back, fără întrebări. Dacă în primele 2 săptămâni nu ești mulțumit, primești banii înapoi integral. Doar scrie-ne pe WhatsApp.</div>
+    </div>
+  </div>
+
+  <div class="faq-category">
+    <div class="faq-cat-title">// PRIVACY & SECURITATE</div>
+    <div class="faq-item">
+      <div class="faq-q">Ce date colectați despre mine?</div>
+      <div class="faq-a">Zero. Nu colectăm absolut nimic. Toate calculele se fac local pe telefon. Nu avem servere care să stocheze date despre curse, profit, locație sau identitate.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Trimiteți date la Bolt sau Uber?</div>
+      <div class="faq-a">Niciodată. DRUMIQ funcționează independent. Nu avem nicio relație contractuală sau tehnică cu Bolt sau alte platforme de ridesharing.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Pot să-mi șterg toate datele?</div>
+      <div class="faq-a">Da, în orice moment. Dezinstalează aplicația — toate datele dispar instant cu ea. Nu rămâne nimic nicăieri.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Folosiți cookies sau tracking?</div>
+      <div class="faq-a">Pe site, doar cookie-uri tehnice necesare (nu de tracking). În aplicație, niciun fel de analytics sau tracking.</div>
+    </div>
+  </div>
+
+  <div style="text-align: center; padding: 40px 0; border-top: 1px solid #d8c9b0;">
+    <p style="color: #6a5d50; margin-bottom: 18px;">Nu găsești răspunsul?</p>
+    <a class="btn-primary" href="contact.html" style="background: #1a1410; color: #fff;">Contactează-ne →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col footer-brand">
+      <div class="logo-big">DRUM<span class="accent">IQ</span></div>
+      <p>Performance Intelligence pentru șoferi.<br>Construit în Baia Mare, România.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Produs</h4>
+      <a href="index.html">Acasă</a>
+      <a href="calculator.html">Calculator</a>
+      <a href="instalare.html">Instalare</a>
+      <a href="flote.html">Flote</a>
+      <a href="demo.html">Demo Fleet</a>
+    </div>
+    <div class="footer-col">
+      <h4>Suport</h4>
+      <a href="faq.html">FAQ</a>
+      <a href="contact.html">Contact</a>
+      <a href="https://wa.me/40743086816">WhatsApp</a>
+      <a href="mailto:contact@drumiq.ro">Email</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="termeni.html">Termeni</a>
+      <a href="gdpr.html">GDPR</a>
+      <a href="https://anpc.ro">ANPC</a>
+      <a href="https://anpc.ro/ce-este-sal/">SAL</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2026 DRUMIQ by GO PAMPA S.R.L. · CUI 47422710 · Baia Mare, Maramureș
+    <div class="disclaimer">
+      DRUMIQ nu este afiliat cu Bolt Technology OÜ. Bolt este marcă înregistrată a Bolt Technology OÜ.
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script src="assets/js/faq.js"></script>
+</body>
+</html>

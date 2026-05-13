@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRUMIQ — Calculator Profit Cursă</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400&family=Inter+Tight:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+</head>
+<body>
+
+<nav class="main">
+  <a class="logo" href="index.html">DRUM<span class="accent">IQ</span></a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Acasă</a>
+    <a class="nav-link active" href="calculator.html">Calculator</a>
+    <a class="nav-link" href="instalare.html">Instalare</a>
+    <a class="nav-link" href="flote.html">Flote</a>
+    <a class="nav-link" href="demo.html">Demo</a>
+    <a class="nav-link" href="faq.html">FAQ</a>
+    <a class="nav-link" href="contact.html">Contact</a>
+  </div>
+  <a class="cta" href="instalare.html">Descarcă</a>
+  <div class="menu-btn" id="menuBtn"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Acasă</a>
+  <a href="calculator.html">Calculator</a>
+  <a href="instalare.html">Instalare</a>
+  <a href="flote.html">Flote</a>
+  <a href="demo.html">Demo Fleet</a>
+  <a href="faq.html">FAQ</a>
+  <a href="contact.html">Contact</a>
+  <a href="instalare.html">DESCARCĂ APK</a>
+</div>
+
+<div class="page-header">
+  <div class="page-header-tag">CALCULATOR ONLINE</div>
+  <h1>Merită cursa?<br><span class="ital">Calculează acum.</span></h1>
+  <p class="lead">Introdu datele cursei și primești verdictul în 2 secunde — exact ca în aplicație. Cu calcul real pe baza combustibilului tău și a uzurii mașinii.</p>
+</div>
+
+<section class="content">
+  <div class="calc-form">
+    <div class="calc-grid">
+      <div class="field">
+        <label>Preț cursă (net Bolt) RON</label>
+        <input type="number" id="price" value="25" step="0.5">
+      </div>
+      <div class="field">
+        <label>Distanță pickup (km)</label>
+        <input type="number" id="pickup" value="2" step="0.5">
+      </div>
+      <div class="field">
+        <label>Distanță cursă (km)</label>
+        <input type="number" id="distance" value="8" step="0.5">
+      </div>
+      <div class="field">
+        <label>Tip combustibil</label>
+        <select id="fuel">
+          <option value="7.5">Benzină</option>
+          <option value="7.2">Diesel</option>
+          <option value="4.5" selected>Benzină + GPL</option>
+          <option value="6.0">Hybrid (HEV)</option>
+          <option value="3.5">Electric</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Consum (l/100km)</label>
+        <input type="number" id="consum" value="7" step="0.1">
+      </div>
+      <div class="field">
+        <label>Uzură vehicul (RON/km)</label>
+        <input type="number" id="wear" value="0.3" step="0.05">
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calculate()">CALCULEAZĂ VERDICT</button>
+
+    <div id="verdict" class="verdict">
+      <div class="verdict-orb" id="orb">GO</div>
+      <div>
+        <div class="verdict-number" id="profit">+0.00 RON</div>
+        <div class="verdict-label" id="label">Profit pe kilometru</div>
+      </div>
+    </div>
+  </div>
+
+  <p style="margin-top: 24px; color: #6a5d50; font-size: 14px; line-height: 1.6;">
+    <strong>Vrei calcul automat la fiecare cursă?</strong> Aplicația mobilă face asta automat când Bolt îți trimite oferta. <a href="instalare.html" style="color: #C8915B; font-weight: 700;">Descarcă DRUMIQ →</a>
+  </p>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col footer-brand">
+      <div class="logo-big">DRUM<span class="accent">IQ</span></div>
+      <p>Performance Intelligence pentru șoferi.<br>Construit în Baia Mare, România.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Produs</h4>
+      <a href="index.html">Acasă</a>
+      <a href="calculator.html">Calculator</a>
+      <a href="instalare.html">Instalare</a>
+      <a href="flote.html">Flote</a>
+      <a href="demo.html">Demo Fleet</a>
+    </div>
+    <div class="footer-col">
+      <h4>Suport</h4>
+      <a href="faq.html">FAQ</a>
+      <a href="contact.html">Contact</a>
+      <a href="https://wa.me/40743086816">WhatsApp</a>
+      <a href="mailto:contact@drumiq.ro">Email</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="termeni.html">Termeni</a>
+      <a href="gdpr.html">GDPR</a>
+      <a href="https://anpc.ro">ANPC</a>
+      <a href="https://anpc.ro/ce-este-sal/">SAL</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2026 DRUMIQ by GO PAMPA S.R.L. · CUI 47422710 · Baia Mare, Maramureș
+    <div class="disclaimer">
+      DRUMIQ nu este afiliat cu Bolt Technology OÜ. Bolt este marcă înregistrată a Bolt Technology OÜ.
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script src="assets/js/calculator.js"></script>
+</body>
+</html>

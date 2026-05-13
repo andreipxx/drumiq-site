@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(\\(Get-Content \"drumiq-site-full.html\" | Measure-Object -Line\\).Lines)",
+      "PowerShell(Get-Item *)",
+      "PowerShell(Get-Content *)"
+    ]
+  }
+}

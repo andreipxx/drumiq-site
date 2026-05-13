@@ -1,0 +1,23 @@
+{
+  "standard": {
+    "trial": { "price": 0, "duration": "7 zile sau 100 curse" },
+    "first_month": { "price": 9, "currency": "RON" },
+    "pro_lunar": { "price": 29, "currency": "RON", "period": "lună" },
+    "pro_anual": { "price": 290, "currency": "RON", "period": "an", "saves": 58 },
+    "pro_lifetime": { "price": 599, "currency": "RON", "one_time": true },
+    "flote": { "price": 199, "currency": "RON", "period": "lună", "cars": "5-10" },
+    "enterprise": { "price": "custom", "cars": "10+" }
+  },
+  "founding_member": {
+    "limit": 100,
+    "pro_anual": 199,
+    "pro_lifetime": 399,
+    "fleet_promo": "3 luni gratis primii 5 flotari",
+    "lock_price_forever": true
+  },
+  "referral": {
+    "reward": "1 lună gratis",
+    "trigger": "prieten activează PRO",
+    "limit": null
+  }
+}
