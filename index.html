@@ -3,273 +3,156 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DRUMIQ — Performance Intelligence pentru Șoferi</title>
-<meta name="description" content="Singura aplicație care îți spune instant dacă o cursă Bolt merită. Verdict GO/THINK/STOP în sub 2 secunde, calcul real de profit pe kilometru.">
-<meta property="og:title" content="DRUMIQ — Performance Intelligence pentru Șoferi">
-<meta property="og:description" content="Verdict instant GO/THINK/STOP pentru fiecare cursă Bolt. Calcul real de profit pe kilometru — fără ghicit.">
+<title>DRUMIQ — Coming Soon</title>
+<meta name="description" content="DRUMIQ — Performance Intelligence pentru soferi. Coming soon.">
+<meta property="og:title" content="DRUMIQ — Coming Soon">
+<meta property="og:description" content="Singura aplicatie care iti spune instant daca o cursa merita. In curand.">
 <meta property="og:image" content="https://drumiq.ro/assets/img/og-image.png">
 <meta property="og:url" content="https://drumiq.ro/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://drumiq.ro/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400&family=Inter+Tight:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/main.css">
 <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400&family=Inter+Tight:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:#0a0e0b;
+  color:#f5efe6;
+  font-family:'Manrope',sans-serif;
+  text-align:center;
+  padding:24px;
+  overflow:hidden;
+}
+.logo{
+  font-family:'Anton',sans-serif;
+  font-size:clamp(48px,10vw,72px);
+  letter-spacing:2px;
+  margin-bottom:8px;
+}
+.logo .accent{
+  color:#c97d3a;
+}
+.tagline{
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-size:clamp(16px,3vw,22px);
+  color:#c97d3a;
+  margin-bottom:40px;
+}
+.status{
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:#6a5d50;
+  margin-bottom:12px;
+}
+.bar-wrap{
+  width:min(320px,80vw);
+  height:4px;
+  background:#1a1410;
+  border-radius:2px;
+  overflow:hidden;
+  margin-bottom:48px;
+}
+.bar{
+  width:65%;
+  height:100%;
+  background:linear-gradient(90deg,#c97d3a,#e0a96a);
+  border-radius:2px;
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{
+  0%,100%{opacity:1}
+  50%{opacity:.5}
+}
+.notify{
+  margin-bottom:16px;
+  font-size:14px;
+  color:#8a7d70;
+}
+.email-row{
+  display:flex;
+  gap:0;
+  width:min(400px,85vw);
+}
+.email-row input{
+  flex:1;
+  padding:14px 16px;
+  border:1px solid #2a2420;
+  border-right:none;
+  border-radius:8px 0 0 8px;
+  background:#111;
+  color:#f5efe6;
+  font-family:'Manrope',sans-serif;
+  font-size:14px;
+  outline:none;
+}
+.email-row input::placeholder{color:#4a4440}
+.email-row input:focus{border-color:#c97d3a}
+.email-row button{
+  padding:14px 24px;
+  border:none;
+  border-radius:0 8px 8px 0;
+  background:#c97d3a;
+  color:#0a0e0b;
+  font-family:'Manrope',sans-serif;
+  font-weight:700;
+  font-size:14px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.email-row button:hover{background:#e0a96a}
+.footer-line{
+  position:fixed;
+  bottom:24px;
+  font-size:11px;
+  color:#3a3430;
+  font-family:'JetBrains Mono',monospace;
+}
+.msg{
+  margin-top:12px;
+  font-size:13px;
+  color:#c97d3a;
+  min-height:20px;
+}
+</style>
 </head>
 <body>
 
-<nav class="main">
-  <a class="logo" href="index.html">DRUM<span class="accent">IQ</span></a>
-  <div class="nav-links">
-    <a class="nav-link active" href="index.html">Acasă</a>
-    <a class="nav-link" href="calculator.html">Calculator</a>
-    <a class="nav-link" href="instalare.html">Instalare</a>
-    <a class="nav-link" href="flote.html">Flote</a>
-    <a class="nav-link" href="demo.html">Demo</a>
-    <a class="nav-link" href="faq.html">FAQ</a>
-    <a class="nav-link" href="contact.html">Contact</a>
-  </div>
-  <a class="cta" href="instalare.html">Descarcă</a>
-  <div class="menu-btn" id="menuBtn"><span></span><span></span><span></span></div>
-</nav>
+<div class="logo">DRUM<span class="accent">IQ</span></div>
+<div class="tagline">Performance Intelligence pentru soferi.</div>
 
-<div class="mobile-menu" id="mobileMenu">
-  <a href="index.html">Acasă</a>
-  <a href="calculator.html">Calculator</a>
-  <a href="instalare.html">Instalare</a>
-  <a href="flote.html">Flote</a>
-  <a href="demo.html">Demo Fleet</a>
-  <a href="faq.html">FAQ</a>
-  <a href="contact.html">Contact</a>
-  <a href="instalare.html">DESCARCĂ APK</a>
-</div>
+<div class="status">Under Construction</div>
+<div class="bar-wrap"><div class="bar"></div></div>
 
-<div class="hero">
-  <img class="hero-img" src="assets/img/drumiq-hero.png" alt="DRUMIQ Hero">
-  <div class="hero-overlay">
-    <div class="hero-tag">LIVE · ROAD INTELLIGENCE</div>
-    <div class="hero-location">
-      <div class="l1">BAIA MARE · 47.6587°N</div>
-      <div class="l2">CONSTRUIT ÎN ROMÂNIA · 2026</div>
-    </div>
-  </div>
-</div>
+<div class="notify">Fii primul care afla cand lansam.</div>
+<form class="email-row" onsubmit="return subscribe(event)">
+  <input type="email" id="emailInput" placeholder="adresa ta de email" required>
+  <button type="submit">Anunta-ma</button>
+</form>
+<div class="msg" id="msg"></div>
 
-<section class="title-section">
-  <h1>Drumul tău,<br><span class="ital">verdictul nostru.</span></h1>
-  <p class="subtitle">Singura aplicație care îți spune instant dacă o cursă Bolt merită. Calcul real de profit pe kilometru — fără ghicit, fără estimări.</p>
-  <div class="cta-row">
-    <a class="btn-primary" href="instalare.html">DESCARCĂ APK</a>
-    <a class="btn-ghost" href="calculator.html">Calculator →</a>
-    <span class="btn-meta">v1.0.0 · Android 8+</span>
-  </div>
-</section>
+<div class="footer-line">&copy; 2026 DRUMIQ by GO PAMPA S.R.L.</div>
 
-<div class="meta-strip">
-  <div class="meta-item"><span class="k">RESPONSE</span><span class="v">&lt;2s</span></div>
-  <div class="meta-item"><span class="k">FILTRE</span><span class="v">6</span></div>
-  <div class="meta-item"><span class="k">PRIVACY</span><span class="v">100%</span></div>
-  <div class="meta-item"><span class="k">COMBUSTIBILI</span><span class="v">6</span></div>
-</div>
-
-<section class="content">
-  <div class="section-tag">Funcții</div>
-  <h2>Construit ca un<br><span class="ital">computer de bord.</span></h2>
-  <p class="section-sub">Citește oferta Bolt din momentul în care apare pe ecran, calculează costul real pe baza mașinii tale și îți dă verdictul în sub 2 secunde.</p>
-
-  <div class="feature-list">
-    <div class="feature-row">
-      <div class="feature-num">01</div>
-      <div>
-        <div class="feature-title-text">Verdict instant GO / THINK / STOP</div>
-        <div class="feature-desc">Bulina colorată apare direct peste Bolt când vine oferta</div>
-      </div>
-      <div class="feature-arrow">→</div>
-    </div>
-    <div class="feature-row">
-      <div class="feature-num">02</div>
-      <div>
-        <div class="feature-title-text">Cost real per kilometru</div>
-        <div class="feature-desc">Benzină, diesel, GPL, hybrid HEV/PHEV sau electric</div>
-      </div>
-      <div class="feature-arrow">→</div>
-    </div>
-    <div class="feature-row">
-      <div class="feature-num">03</div>
-      <div>
-        <div class="feature-title-text">6 filtre inteligente</div>
-        <div class="feature-desc">Min RON/km, max pickup, rating pasager — regulile tale</div>
-      </div>
-      <div class="feature-arrow">→</div>
-    </div>
-    <div class="feature-row">
-      <div class="feature-num">04</div>
-      <div>
-        <div class="feature-title-text">Google Routes cu trafic real</div>
-        <div class="feature-desc">Distanță și durată reale, nu estimare statică</div>
-      </div>
-      <div class="feature-arrow">→</div>
-    </div>
-    <div class="feature-row">
-      <div class="feature-num">05</div>
-      <div>
-        <div class="feature-title-text">100% offline · zero tracking</div>
-        <div class="feature-desc">Datele rămân pe telefon. Fără cont, fără server</div>
-      </div>
-      <div class="feature-arrow">→</div>
-    </div>
-  </div>
-</section>
-
-<section class="content">
-  <div class="section-tag">Specificații</div>
-  <h2>Calibrat pentru<br><span class="ital">profit real.</span></h2>
-  <div class="spec-grid">
-    <div class="spec-item"><div class="spec-num">01 / VITEZĂ</div><div class="spec-big">&lt;2s</div><div class="spec-lbl">Verdict instant</div></div>
-    <div class="spec-item"><div class="spec-num">02 / CONTROL</div><div class="spec-big">6</div><div class="spec-lbl">Filtre inteligente</div></div>
-    <div class="spec-item"><div class="spec-num">03 / PRIVACY</div><div class="spec-big">0</div><div class="spec-lbl">Date colectate</div></div>
-    <div class="spec-item"><div class="spec-num">04 / SUPORT</div><div class="spec-big">6</div><div class="spec-lbl">Tipuri combustibil</div></div>
-  </div>
-</section>
-
-<section class="content">
-  <div class="section-tag">Pricing</div>
-  <h2>Alege planul.<br><span class="ital">Începe gratis.</span></h2>
-  <p class="section-sub">Trial gratuit 7 zile sau 100 curse — ce vine primul. După, alegi planul potrivit.</p>
-
-  <div class="founding-banner">
-    <div class="founding-icon">★</div>
-    <div class="founding-content">
-      <div class="founding-tag">PROMOȚIE LANSARE · DOAR PRIMII 100 UTILIZATORI</div>
-      <div class="founding-title">Founding Member · prețuri speciale.</div>
-      <p class="founding-desc">Primii 100 utilizatori primesc Anual la <strong>199 RON</strong> (în loc de 290) și Lifetime la <strong>399 RON</strong> (în loc de 599). Pentru totdeauna păstrezi prețul tău.</p>
-    </div>
-    <div class="founding-counter">
-      <div class="counter-num">37</div>
-      <div class="counter-lbl">/ 100 locuri</div>
-    </div>
-  </div>
-
-  <div class="price-grid">
-    <div class="price-card">
-      <div class="price-badge-corner">PRIMUL LUNĂ 9 RON</div>
-      <div class="price-plan">PRO LUNAR</div>
-      <div class="price-amount">29<span class="ron"> RON</span></div>
-      <div class="price-period">/ lună · primul lună 9 RON</div>
-      <ul class="price-list">
-        <li>Overlay verdict GO/THINK/STOP</li>
-        <li>Google Routes cu trafic real</li>
-        <li>Toate 6 filtre inteligente</li>
-        <li>Export PDF raport</li>
-        <li>Anulezi oricând</li>
-      </ul>
-      <a class="price-btn" href="instalare.html">Începe cu 9 RON</a>
-    </div>
-
-    <div class="price-card featured">
-      <div class="price-tag">★ FOUNDING MEMBER</div>
-      <div class="price-plan">PRO ANUAL</div>
-      <div class="price-amount-strike">290 RON</div>
-      <div class="price-amount">199<span class="ron"> RON</span></div>
-      <div class="price-period">/ an · 16.6 RON / lună</div>
-      <ul class="price-list">
-        <li>Tot din PRO Lunar</li>
-        <li>Preț blocat 12 luni</li>
-        <li>Acces beta features</li>
-        <li>Suport prioritar WhatsApp</li>
-        <li>Plată o singură dată</li>
-      </ul>
-      <a class="price-btn" href="instalare.html">Cumpără Anual</a>
-    </div>
-
-    <div class="price-card lifetime">
-      <div class="price-badge-corner gold">DOAR 100 LOCURI</div>
-      <div class="price-plan">PRO LIFETIME</div>
-      <div class="price-amount-strike">599 RON</div>
-      <div class="price-amount">399<span class="ron"> RON</span></div>
-      <div class="price-period">o singură dată · pe viață</div>
-      <ul class="price-list">
-        <li>Tot din PRO, pentru totdeauna</li>
-        <li>Zero abonamente lunare</li>
-        <li>Toate update-urile viitoare</li>
-        <li>Founding Member badge în app</li>
-        <li>Acces prioritar la features noi</li>
-      </ul>
-      <a class="price-btn" href="instalare.html">Cumpără Lifetime</a>
-    </div>
-  </div>
-
-  <div class="flote-callout">
-    <div class="flote-left">
-      <div class="flote-tag">PENTRU FLOTARI · 5–10 MAȘINI</div>
-      <div class="flote-title">Ai flotă? Plătești <span class="ital">o dată pentru toți.</span></div>
-      <p class="flote-desc">199 RON/lună pentru toate mașinile din flotă, dashboard centralizat, statistici per șofer. Primii 5 flotari primesc 3 luni gratis.</p>
-    </div>
-    <div class="flote-right">
-      <a class="flote-btn" href="flote.html">Vezi pricing FLOTE →</a>
-    </div>
-  </div>
-
-  <div class="referral-callout">
-    <div class="referral-icon">🎁</div>
-    <div>
-      <div class="referral-tag">REFERRAL PROGRAM</div>
-      <div class="referral-title">Invită un prieten, <span class="accent">primești 1 lună gratis.</span></div>
-      <p class="referral-desc">Fiecare șofer pe care îl recomanzi și activează PRO îți adaugă 30 de zile. Fără limită superioară.</p>
-    </div>
-    <a href="https://wa.me/40743086816?text=Vreau%20link%20de%20referral%20DRUMIQ" class="referral-btn">PRIMEȘTE LINK →</a>
-  </div>
-
-  <div class="enterprise-callout">
-    <div>
-      <div class="enterprise-tag">ENTERPRISE · 10+ MAȘINI</div>
-      <div class="enterprise-title">Peste 10 mașini?</div>
-      <p class="enterprise-desc">Pachet custom — preț per mașină negociabil, API integration, branding personalizat.</p>
-    </div>
-    <a href="mailto:flote@drumiq.ro" class="enterprise-btn">Solicită Ofertă →</a>
-  </div>
-</section>
-
-<footer>
-  <div class="footer-grid">
-    <div class="footer-col footer-brand">
-      <div class="logo-big">DRUM<span class="accent">IQ</span></div>
-      <p>Performance Intelligence pentru șoferi.<br>Construit în Baia Mare, România.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Produs</h4>
-      <a href="index.html">Acasă</a>
-      <a href="calculator.html">Calculator</a>
-      <a href="instalare.html">Instalare</a>
-      <a href="flote.html">Flote</a>
-      <a href="demo.html">Demo Fleet</a>
-    </div>
-    <div class="footer-col">
-      <h4>Suport</h4>
-      <a href="faq.html">FAQ</a>
-      <a href="contact.html">Contact</a>
-      <a href="https://wa.me/40743086816">WhatsApp</a>
-      <a href="mailto:contact@drumiq.ro">Email</a>
-    </div>
-    <div class="footer-col">
-      <h4>Legal</h4>
-      <a href="termeni.html">Termeni</a>
-      <a href="gdpr.html">GDPR</a>
-      <a href="https://anpc.ro">ANPC</a>
-      <a href="https://anpc.ro/ce-este-sal/">SAL</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    © 2026 DRUMIQ by GO PAMPA S.R.L. · CUI 47422710 · Baia Mare, Maramureș
-    <div class="disclaimer">
-      DRUMIQ nu este afiliat cu Bolt Technology OÜ. Bolt este marcă înregistrată a Bolt Technology OÜ.
-    </div>
-  </div>
-</footer>
-
-<script src="assets/js/main.js"></script>
-<script src="assets/js/counter.js"></script>
+<script>
+function subscribe(e){
+  e.preventDefault();
+  var email=document.getElementById('emailInput').value;
+  var msg=document.getElementById('msg');
+  msg.textContent='Te-am notat! Te anuntam cand lansam.';
+  document.getElementById('emailInput').value='';
+  setTimeout(function(){msg.textContent='';},4000);
+  return false;
+}
+</script>
 </body>
 </html>
