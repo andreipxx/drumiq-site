@@ -1,0 +1,14 @@
+# Backup folder (local only)
+Backup/
+
+# Analysis screenshots (local only)
+analiza/
+
+# Claude settings
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# App-specific ignores are in app/.gitignore

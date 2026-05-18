@@ -1,0 +1,130 @@
+// Build 14 parser — screen classifier + per-screen extraction.
+// Replaces broken pickup/trip naming from B12 (those used trip fields for pickup data).
+
+import type { PaymentMethod } from '../types';
+import { classifyBoltScreen, type BoltScreen } from './rideStateMachine';
+
+export interface ParsedBoltRide {
+  screen: BoltScreen;
+  /** Net price displayed by Bolt (after Bolt commission, before income tax) */
+  grossNet?: number;
+  /** Pickup distance in km — distance from driver to pickup point */
+  pickupKm?: number;
+  /** Pickup duration in minutes */
+  pickupMin?: number;
+  /** Trip distance — Bolt does NOT show this pre-accept (only post-start in Maps/Waze) */
+  tripKm?: number;
+  /** Trip duration */
+  tripMin?: number;
+  /** Passenger rating */
+  passengerRating?: number;
+  /** Passenger first name */
+  passengerName?: string;
+  /** Card or cash */
+  paymentMethod?: PaymentMethod;
+  /** "În afara razei" flag */
+  outsideRange?: boolean;
+  /** Surge multiplier (e.g. 1.2, 2.0). Already baked into grossNet. */
+  surgeMultiplier?: number;
+  /** Pickup address */
+  pickupAddress?: string;
+  /** Destination address */
+  destinationAddress?: string;
+  /** Has multi-stop ride */
+  hasStops?: boolean;
+  /** Raw text for debugging */
+  raw?: string;
+}
+
+export function parseBoltRide(text: string): ParsedBoltRide {
+  const screen = classifyBoltScreen(text);
+  const result: ParsedBoltRide = { screen, raw: text };
+  if (!text || text.trim().length === 0) return result;
+
+  switch (screen) {
+    case 'ride_offer':
+      return parseRideOffer(text, result);
+    case 'in_trip_to_pickup':
+    case 'at_pickup_waiting':
+    case 'in_trip_active':
+      return parseInTrip(text, result);
+    case 'post_trip_confirm':
+      return parsePostTripConfirm(text, result);
+    default:
+      // home_idle, map_idle, post_trip_rate, unknown — no data extraction
+      return result;
+  }
+}
+
+function parseRideOffer(text: string, r: ParsedBoltRide): ParsedBoltRide {
+  // Format observed in real captures:
+  //   "Refuză\nBolt\n(Cerere mare 1.2x\n)?În afara razei?\nNumerar?\n9,75 lei (NET, taxe incluse)\n
+  //    Refuzul cursei nu-ți va afecta rata de acceptare\nNume • 5.0 ★\n2 min • 1.5 km\n
+  //    StradaA, Baia Mare\nStradaB, Baia Mare\nAcceptă"
+
+  const priceMatch = text.match(/(\d+[.,]\d+)\s*lei\s*\(NET/i);
+  if (priceMatch) r.grossNet = parseFloat(priceMatch[1].replace(',', '.'));
+
+  // Pickup: "X min • Y km" — these are distance & time TO PICKUP POINT, not trip
+  const pickupMatch = text.match(/(\d+)\s*min\s*[•·*]\s*(\d+(?:[.,]\d+)?)\s*km/);
+  if (pickupMatch) {
+    r.pickupMin = parseInt(pickupMatch[1], 10);
+    r.pickupKm  = parseFloat(pickupMatch[2].replace(',', '.'));
+  }
+
+  const ratingMatch = text.match(/([A-ZĂÂÎȘȚ][a-zăâîșț]+)\s*[•·]\s*(\d(?:[.,]\d)?)\s*★/);
+  if (ratingMatch) {
+    r.passengerName     = ratingMatch[1];
+    r.passengerRating   = parseFloat(ratingMatch[2].replace(',', '.'));
+  }
+
+  if (/[Îî]n afara razei/.test(text)) r.outsideRange = true;
+  if (/Numerar/i.test(text))         r.paymentMethod = 'cash';
+  else                               r.paymentMethod = 'card';
+
+  const surgeMatch = text.match(/Cerere mare\s+(\d+(?:[.,]\d+)?)x/i);
+  if (surgeMatch) r.surgeMultiplier = parseFloat(surgeMatch[1].replace(',', '.'));
+
+  if (/\d+\s*oprire/i.test(text)) r.hasStops = true;
+
+  // Addresses — lines between "X min • Y km" pickup line and "Acceptă"
+  // Positional extraction is more robust than keyword whitelist (catches streets
+  // without "Strada" prefix, named boulevards, locations like "Metro", etc.)
+  const lines = text.split('\n').map((l) => l.trim());
+  const acceptIdx = lines.findIndex((l) => /^(Acceptă|Acceptă următoarea cursă|Acceptare automată)$/i.test(l));
+  const pickupLineIdx = lines.findIndex((l) => /\d+\s*min\s*[•·*]\s*\d+(?:[.,]\d+)?\s*km/.test(l));
+  const addrStart = pickupLineIdx >= 0 ? pickupLineIdx + 1 : 0;
+  const addrEnd   = acceptIdx >= 0 ? acceptIdx : lines.length;
+  const NON_ADDR  = /^(Refuz|Cerere\s|Numerar|Card\b|lei\s*\(|Refuzul|rata\s*de|\d+\s*oprire|Accepta|★|\d+[.,]\d+\s*lei)/i;
+  const addrCandidates = lines
+    .slice(addrStart, addrEnd)
+    .filter((l) => l.length >= 5 && l.length < 100 && !NON_ADDR.test(l));
+  if (addrCandidates.length >= 1) r.pickupAddress      = addrCandidates[0];
+  if (addrCandidates.length >= 2) r.destinationAddress = addrCandidates[addrCandidates.length - 1];
+
+  return r;
+}
+
+function parseInTrip(text: string, r: ParsedBoltRide): ParsedBoltRide {
+  // Format: "X min\nAdresă pickup\nNume\n5.0\n28,12 lei · Net, cu TVA.\nAm ajuns/Începe cursa/Finalizează cursa"
+  const priceMatch = text.match(/(\d+[.,]\d+)\s*lei\s*[·•]\s*Net,?\s*cu\s*TVA/i);
+  if (priceMatch) r.grossNet = parseFloat(priceMatch[1].replace(',', '.'));
+
+  const ratingLine = text.match(/^(\d(?:[.,]\d)?)\s*$/m);
+  if (ratingLine) r.passengerRating = parseFloat(ratingLine[1].replace(',', '.'));
+
+  // Time to pickup remaining: "<1 min" or "X min" (only on in_trip_to_pickup)
+  if (r.screen === 'in_trip_to_pickup') {
+    const minMatch = text.match(/^(<1|\d+)\s*min$/m);
+    if (minMatch) r.pickupMin = minMatch[1] === '<1' ? 0 : parseInt(minMatch[1], 10);
+  }
+
+  return r;
+}
+
+function parsePostTripConfirm(text: string, r: ParsedBoltRide): ParsedBoltRide {
+  // "Confirmă tariful\n28,12 lei\nPlata prin aplicație..."
+  const priceMatch = text.match(/Confirmă tariful\s*\n\s*(\d+[.,]\d+)\s*lei/);
+  if (priceMatch) r.grossNet = parseFloat(priceMatch[1].replace(',', '.'));
+  return r;
+}

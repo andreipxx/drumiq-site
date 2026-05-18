@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DRUMIQ v1.0 — Full overlay (PRO detailed card)
+     Dark card with colored header bar + verdict symbol + stats grid + source badge.
+     All colors set dynamically by DPOverlayService. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/dp_card_bg"
+    android:elevation="14dp">
+
+    <!-- Top color bar (verdict color) -->
+    <View
+        android:id="@+id/dp_border"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="#00FF88" />
+
+    <LinearLayout
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <!-- Verdict row: symbol circle + profit/km -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="10dp">
+
+            <!-- Symbol circle -->
+            <FrameLayout
+                android:id="@+id/dp_symbol_wrap"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:background="@drawable/dp_circle_bg">
+
+                <TextView
+                    android:id="@+id/dp_symbol"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="$"
+                    android:textColor="#00FF88"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-black" />
+            </FrameLayout>
+
+            <!-- Profit/km label + value -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/dp_profit_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PROFIT/KM"
+                    android:textColor="#7A8A7C"
+                    android:textSize="9sp"
+                    android:letterSpacing="0.15"
+                    android:fontFamily="sans-serif-medium" />
+
+                <TextView
+                    android:id="@+id/dp_profitkm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—"
+                    android:textColor="#00FF88"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:fontFamily="monospace" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Breakdown formula -->
+        <TextView
+            android:id="@+id/dp_breakdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#7A8A7C"
+            android:textSize="8sp"
+            android:fontFamily="monospace"
+            android:maxLines="1"
+            android:layout_marginBottom="6dp"
+            android:visibility="gone" />
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#1E2A1F"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Stats grid 2x2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="6dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PICKUP"
+                    android:textColor="#5A6B5C"
+                    android:textSize="8sp"
+                    android:letterSpacing="0.15" />
+                <TextView
+                    android:id="@+id/dp_pickup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—"
+                    android:textColor="#E8FFE8"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CURSĂ"
+                    android:textColor="#5A6B5C"
+                    android:textSize="8sp"
+                    android:letterSpacing="0.15" />
+                <TextView
+                    android:id="@+id/dp_trip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—"
+                    android:textColor="#E8FFE8"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ÎNCASARE"
+                    android:textColor="#5A6B5C"
+                    android:textSize="8sp"
+                    android:letterSpacing="0.15" />
+                <TextView
+                    android:id="@+id/dp_gross"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—"
+                    android:textColor="#E8FFE8"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DURATĂ"
+                    android:textColor="#5A6B5C"
+                    android:textSize="8sp"
+                    android:letterSpacing="0.15" />
+                <TextView
+                    android:id="@+id/dp_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—"
+                    android:textColor="#E8FFE8"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Net earnings + short-ride warning row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ÎN BUZUNAR"
+                    android:textColor="#5A6B5C"
+                    android:textSize="8sp"
+                    android:letterSpacing="0.15" />
+                <TextView
+                    android:id="@+id/dp_net"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—"
+                    android:textColor="#00FF88"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/dp_short_ride_warn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="⚠ pickup lung"
+                android:textColor="#FFB800"
+                android:textSize="9sp"
+                android:fontFamily="monospace"
+                android:gravity="end|center_vertical"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- Dashed divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#1E2A1F"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="6dp" />
+
+        <!-- Source badge -->
+        <TextView
+            android:id="@+id/dp_source"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="~ estimat"
+            android:textColor="#7A8A7C"
+            android:textSize="9sp"
+            android:fontFamily="monospace" />
+
+        <!-- Daily goal progress -->
+        <TextView
+            android:id="@+id/dp_daily"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#FFB800"
+            android:textSize="10sp"
+            android:fontFamily="monospace"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</LinearLayout>
