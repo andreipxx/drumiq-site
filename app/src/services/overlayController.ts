@@ -22,6 +22,7 @@ import type { PlanTier, Ride, RouteSource } from '../types';
 
 const OVERLAY_MODE_KEY = '@dp_overlay_mode_pro';
 const STICKY_MS = 15000;
+const STICKY_REFUSE_MS = 3000;
 
 export async function getOverlayModePro(): Promise<OverlayMode> {
   const v = await AsyncStorage.getItem(OVERLAY_MODE_KEY);
@@ -164,6 +165,13 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
 
         if (parsed.grossNet == null) { logDpEvent('SKIP', 'no_grossNet'); return; }
 
+        // Start API fetch IMMEDIATELY — runs in parallel with settings load below
+        const canFetchRoute = plan === 'pro' && !!parsed.pickupAddress && !!parsed.destinationAddress;
+        const routePromise = canFetchRoute
+          ? getRoute(parsed.pickupAddress!, parsed.destinationAddress!).catch(() => null)
+          : null;
+        if (canFetchRoute) logDpEvent('API_START', { addr: parsed.pickupAddress?.slice(0, 25) });
+
         let fuel: any, overrides: any, filters: any, dailyGoal: number, todayEarnings: number;
         try {
           [fuel, filters] = await Promise.all([getFuelSettings(), loadFilters()]);
@@ -237,56 +245,57 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
           logDpEvent('TRACKER_ERR', String(e?.message || e).slice(0, 60));
         }
 
-        // Background route API update — fire-and-forget, no await here
-        const canFetchRoute = plan === 'pro' && !!parsed.pickupAddress && !!parsed.destinationAddress;
-        if (canFetchRoute) {
+        // Await API result in handler chain (keeps JS thread active, prevents background throttling)
+        if (routePromise) {
           const capturedRideId = lastOfferRideId;
-          (async () => {
-            try {
-              const route = await getRoute(parsed.pickupAddress!, parsed.destinationAddress!);
-              if (!route) { logDpEvent('API_NULL'); return; }
+          try {
+            const route = await routePromise;
+            if (!route) { logDpEvent('API_NULL'); }
+            else if (controllerGen !== myGen) { logDpEvent('API_STALE', 'gen_mismatch'); }
+            else if (lastShownAt === 0) { logDpEvent('API_LATE', 'overlay_dismissed'); }
+            else {
               const a2 = analyzeRide(parsed, {
                 fuel, plan, proOverrides: overrides, filters,
                 tripKmFromApi: route.distanceKm, tripMinFromApi: route.durationMin,
               });
-              if (!a2) return;
-              const label2 = buildLabel(parsed, a2, overrides);
-              const payload2 = {
-                ...buildOverlayPayload(parsed, a2, mode, label2,
-                  route.distanceKm, route.durationMin, route.source),
-                dailyProgress: dailyProgressStr,
-              };
-              if (controllerGen !== myGen) return; // controller restarted since this offer
-              await Overlay.show(payload2);
-              lastShownKey = buildKey(parsed, a2);
-              logDpEvent('SHOW_OK', { verdict: a2.verdict, ppkm: a2.profitPerKm, src: route.source });
-              logDpEvent('UPDATE_API', { verdict: a2.verdict, km: route.distanceKm });
-              if (capturedRideId) {
-                await updateRide(capturedRideId, {
-                  tripKm: route.distanceKm,
-                  durationMin: route.durationMin,
-                  source: route.source,
-                  profitPerKm: a2.profitPerKm,
-                  profitNet: a2.profit,
-                  verdict: a2.verdict,
-                  netEarnings: a2.netAfterTax,
-                });
-                logDpEvent('TRACKER_UPD', { km: route.distanceKm, ppkm: a2.profitPerKm, src: route.source });
+              if (a2) {
+                const label2 = buildLabel(parsed, a2, overrides);
+                const payload2 = {
+                  ...buildOverlayPayload(parsed, a2, mode, label2,
+                    route.distanceKm, route.durationMin, route.source),
+                  dailyProgress: dailyProgressStr,
+                };
+                await Overlay.show(payload2);
+                lastShownKey = buildKey(parsed, a2);
+                logDpEvent('SHOW_OK', { verdict: a2.verdict, ppkm: a2.profitPerKm, src: route.source });
+                if (capturedRideId) {
+                  await updateRide(capturedRideId, {
+                    tripKm: route.distanceKm,
+                    durationMin: route.durationMin,
+                    source: route.source,
+                    profitPerKm: a2.profitPerKm,
+                    profitNet: a2.profit,
+                    verdict: a2.verdict,
+                    netEarnings: a2.netAfterTax,
+                  });
+                  logDpEvent('TRACKER_UPD', { km: route.distanceKm, ppkm: a2.profitPerKm, src: route.source });
+                }
               }
-            } catch (e: any) {
-              logDpEvent('API_ERR', String(e?.message || e));
             }
-          })();
+          } catch (e: any) {
+            logDpEvent('API_ERR', String(e?.message || e));
+          }
         }
       } catch (e: any) {
         logDpEvent('HANDLER_ERR', String(e?.message || e));
       }
     } else {
-      // ANY non-offer screen → sticky always (no instant hide)
-      // Overlay stays for STICKY_MS after lastShownAt, regardless of what Bolt is showing now
+      // Non-offer screen: hide faster after refuse (home/map), keep longer during active trip
       if (lastShownAt > 0 && !stickyTimer) {
+        const isRefusal = parsed.screen === 'home_idle' || parsed.screen === 'map_idle';
+        const stickyMs = isRefusal ? STICKY_REFUSE_MS : STICKY_MS;
         const showAge = Date.now() - lastShownAt;
-        const remaining = Math.max(0, STICKY_MS - showAge);
+        const remaining = Math.max(0, stickyMs - showAge);
         stickyTimer = setTimeout(() => {
           lastShownKey = '';
           lastShownAt = 0;
