@@ -15,6 +15,7 @@ import com.facebook.react.defaults.DefaultReactNativeHost
 
 import ro.gopampa.drumiq.overlay.OverlayPackage
 import ro.gopampa.drumiq.accessibility.AccessibilityPackage
+import ro.gopampa.drumiq.routes.RoutesPackage
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
 
@@ -29,6 +30,7 @@ class MainApplication : Application(), ReactApplication {
               // add(MyReactNativePackage())
               add(AccessibilityPackage())
               add(OverlayPackage())
+              add(RoutesPackage())
             }
 
           override fun getJSMainModuleName(): String = ".expo/.virtual-metro-entry"

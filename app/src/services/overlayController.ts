@@ -22,7 +22,7 @@ import type { PlanTier, Ride, RouteSource } from '../types';
 
 const OVERLAY_MODE_KEY = '@dp_overlay_mode_pro';
 const STICKY_MS = 15000;
-const STICKY_REFUSE_MS = 3000;
+const STICKY_REFUSE_MS = 1000;
 
 export async function getOverlayModePro(): Promise<OverlayMode> {
   const v = await AsyncStorage.getItem(OVERLAY_MODE_KEY);

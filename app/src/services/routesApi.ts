@@ -1,7 +1,9 @@
 // Google Routes API integration — real-time traffic-aware distance/duration
 // Pro-only feature. Cached 24h per origin/dest pair to save quota.
+// Uses native OkHttp module (DPRoutes) to bypass Android background JS throttling.
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NativeModules } from 'react-native';
 import { logDpEvent } from './dpDebug';
 
 const API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY || '';
@@ -62,9 +64,34 @@ async function _getRouteOnce(origin: string, destination: string): Promise<Route
 
   if (!API_KEY || API_KEY.length < 30) {
     logDpEvent('ROUTE_NULL', `no_key_len_${API_KEY.length}`);
-    return null; // no key configured
+    return null;
   }
 
+  // Use native OkHttp module (not throttled in Android background like JS fetch)
+  try {
+    const native = NativeModules.DPRoutes;
+    if (native?.getRoute) {
+      logDpEvent('ROUTE_NATIVE', 'start');
+      const r = await native.getRoute(origin, destination, API_KEY);
+      if (r && r.distanceKm > 0) {
+        const result: RouteResult = {
+          distanceKm: r.distanceKm,
+          durationMin: r.durationMin,
+          source: 'api',
+        };
+        cache[k] = { distanceKm: result.distanceKm, durationMin: result.durationMin, fetchedAt: Date.now() };
+        saveCache(cache).catch(() => {});
+        logDpEvent('ROUTE_OK', { km: result.distanceKm, min: result.durationMin, via: 'native' });
+        return result;
+      }
+      logDpEvent('ROUTE_NULL', 'native_empty');
+      return null;
+    }
+  } catch (e: any) {
+    logDpEvent('ROUTE_NATIVE_ERR', String(e?.message || e).slice(0, 80));
+  }
+
+  // Fallback: JS fetch (works when app is in foreground)
   try {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 10000);
@@ -113,7 +140,7 @@ async function _getRouteOnce(origin: string, destination: string): Promise<Route
     cache[k] = { distanceKm: result.distanceKm, durationMin: result.durationMin, fetchedAt: Date.now() };
     saveCache(cache).catch(() => {});
 
-    logDpEvent("ROUTE_OK", { km: result.distanceKm, min: result.durationMin });
+    logDpEvent("ROUTE_OK", { km: result.distanceKm, min: result.durationMin, via: 'jsfetch' });
     return result;
   } catch (e: any) {
     logDpEvent("ROUTE_CATCH", String(e?.message || e).slice(0, 80));

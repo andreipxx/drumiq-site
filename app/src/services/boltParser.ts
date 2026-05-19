@@ -94,8 +94,10 @@ function parseRideOffer(text: string, r: ParsedBoltRide): ParsedBoltRide {
   const acceptIdx = lines.findIndex((l) => /^(Acceptă|Acceptă următoarea cursă|Acceptare automată)$/i.test(l));
   const pickupLineIdx = lines.findIndex((l) => /\d+\s*min\s*[•·*]\s*\d+(?:[.,]\d+)?\s*km/.test(l));
   const addrStart = pickupLineIdx >= 0 ? pickupLineIdx + 1 : 0;
-  const addrEnd   = acceptIdx >= 0 ? acceptIdx : lines.length;
-  const NON_ADDR  = /^(Refuz|Cerere\s|Numerar|Card\b|lei\s*\(|Refuzul|rata\s*de|\d+\s*oprire|Accepta|★|\d+[.,]\d+\s*lei)/i;
+  // When "Acceptă" missing from accessibility tree (newer Bolt), cap window to 4 lines after pickup
+  const addrEnd   = acceptIdx >= 0 ? acceptIdx
+    : (pickupLineIdx >= 0 ? Math.min(pickupLineIdx + 5, lines.length) : lines.length);
+  const NON_ADDR  = /^(Refuz|Respingerea|Cerere\s|Numerar|Card\b|lei\s*\(|Refuzul|rata\s*de|\d+\s*oprire|Accepta|★|\d+[.,]\d+\s*lei|Hart[aă]|[Îî]n afara|Loca[tț]ie|Bolt\b)/i;
   const addrCandidates = lines
     .slice(addrStart, addrEnd)
     .filter((l) => l.length >= 5 && l.length < 100 && !NON_ADDR.test(l));
