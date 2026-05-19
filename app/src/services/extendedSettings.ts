@@ -5,6 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export interface ThresholdSettings {
   kmEnabled: boolean;
   kmValue: number;       // RON/km (default 2)
+  minEnabled: boolean;
+  minValue: number;      // RON/min (default 0.8)
   hourEnabled: boolean;
   hourValue: number;     // RON/oră (default 50)
 }
@@ -12,6 +14,8 @@ export interface ThresholdSettings {
 export const DEFAULT_THRESHOLDS: ThresholdSettings = {
   kmEnabled: true,
   kmValue: 2,
+  minEnabled: false,
+  minValue: 0.8,
   hourEnabled: false,
   hourValue: 50,
 };

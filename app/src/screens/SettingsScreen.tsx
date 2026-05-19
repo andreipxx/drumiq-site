@@ -218,6 +218,29 @@ export default function SettingsScreen({ onOpenFuel, onOpenPro, onOpenFilters, o
           </View>
           <View style={[s.row, { borderTopColor: colors.divider, borderTopWidth: StyleSheet.hairlineWidth }]}>
             <View style={{ flex: 1 }}>
+              <Text style={[s.label, { color: colors.text }]}>Prag profit/min</Text>
+            </View>
+            <SettingsNumberInput
+              value={thresholds.minValue}
+              onChange={(v) => {
+                const next = { ...thresholds, minValue: v };
+                setThresholdsState(next);
+                setThresholds(next);
+              }}
+              suffix="RON/min"
+              colors={colors}
+            />
+            <Switch value={thresholds.minEnabled}
+              onValueChange={(v) => {
+                const next = { ...thresholds, minEnabled: v };
+                setThresholdsState(next);
+                setThresholds(next);
+              }}
+              thumbColor={colors.surface} trackColor={{ true: colors.accent, false: colors.border }}
+            />
+          </View>
+          <View style={[s.row, { borderTopColor: colors.divider, borderTopWidth: StyleSheet.hairlineWidth }]}>
+            <View style={{ flex: 1 }}>
               <Text style={[s.label, { color: colors.text }]}>Prag profit/oră</Text>
             </View>
             <SettingsNumberInput

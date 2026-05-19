@@ -76,6 +76,7 @@ function buildOverlayPayload(parsed: any, a: any, mode: OverlayMode, label: stri
     duration: tripMinFromApi != null ? `${tripMinFromApi} min` : '—',
     gross: parsed.grossNet != null ? parsed.grossNet.toFixed(2) + ' lei' : '—',
     profitKm: a.profitPerKm.toFixed(2) + ' RON/km',
+    profitMin: a.profitPerMin.toFixed(2) + ' RON/min',
     net: a.profit > 0 ? '+' + a.profit.toFixed(2) + ' lei' : a.profit.toFixed(2) + ' lei',
     shortRide: a.shortRideFlag,
     source,

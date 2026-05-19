@@ -53,6 +53,7 @@ class OverlayModule(reactContext: ReactApplicationContext) :
             putString(intent, DPOverlayService.EXTRA_DURATION, data, "duration", "")
             putString(intent, DPOverlayService.EXTRA_GROSS,    data, "gross",    "")
             putString(intent, DPOverlayService.EXTRA_PROFITKM, data, "profitKm", "")
+            putString(intent, DPOverlayService.EXTRA_PROFITMIN,data, "profitMin","")
             putString(intent, DPOverlayService.EXTRA_SOURCE,   data, "source",   "fallback")
             putString(intent, DPOverlayService.EXTRA_NET,      data, "net",      "")
             val shortRide = data.hasKey("shortRide") && !data.isNull("shortRide") && data.getBoolean("shortRide")

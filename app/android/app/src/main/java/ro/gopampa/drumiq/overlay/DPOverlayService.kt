@@ -33,6 +33,7 @@ class DPOverlayService : Service() {
         const val EXTRA_DURATION= "duration"
         const val EXTRA_GROSS   = "gross"
         const val EXTRA_PROFITKM= "profitKm"
+        const val EXTRA_PROFITMIN= "profitMin"
         const val EXTRA_SOURCE   = "source"      // fallback|api|cache
         const val EXTRA_NET      = "net"         // profit net estimat în buzunar
         const val EXTRA_SHORT_RIDE = "shortRide" // pickup >= tripKm warning
@@ -232,6 +233,12 @@ class DPOverlayService : Service() {
         // === Profit/km for simple mode ===
         v.findViewById<TextView>(R.id.dp_profitkm)?.apply {
             text = intent.getStringExtra(EXTRA_PROFITKM) ?: "—"
+            setTextColor(color)
+        }
+
+        // === Profit/min (full mode) ===
+        v.findViewById<TextView>(R.id.dp_profitmin)?.apply {
+            text = intent.getStringExtra(EXTRA_PROFITMIN) ?: "—"
             setTextColor(color)
         }
 

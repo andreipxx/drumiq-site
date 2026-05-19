@@ -122,14 +122,22 @@ export function analyzeRide(parsed: ParsedBoltRide, opts: AnalyzeOptions): Profi
   if (opts.thresholds) {
     const th = opts.thresholds;
     const kmPass = !th.kmEnabled || profitPerKm >= th.kmValue;
+    const minPass = !th.minEnabled || profitPerMin >= th.minValue;
     const hourPass = !th.hourEnabled || profitPerHour >= th.hourValue;
 
-    if (!th.kmEnabled && !th.hourEnabled) {
+    const enabledChecks = [
+      th.kmEnabled ? kmPass : null,
+      th.minEnabled ? minPass : null,
+      th.hourEnabled ? hourPass : null,
+    ].filter((v): v is boolean => v !== null);
+
+    if (enabledChecks.length === 0) {
       baseVerdict = verdictFromProfitPerKm(profitPerKm);
-    } else if (th.kmEnabled && th.hourEnabled) {
-      baseVerdict = (kmPass && hourPass) ? 'go' : (!kmPass && !hourPass) ? 'stop' : 'think';
     } else {
-      baseVerdict = (kmPass && hourPass) ? 'go' : 'stop';
+      const passCount = enabledChecks.filter(Boolean).length;
+      baseVerdict = passCount === enabledChecks.length ? 'go'
+        : passCount === 0 ? 'stop'
+        : 'think';
     }
   } else {
     baseVerdict = verdictFromProfitPerKm(profitPerKm);

@@ -14,6 +14,7 @@ export interface OverlayData {
   duration?: string;
   gross?: string;
   profitKm?: string;
+  profitMin?: string;
   net?: string;
   shortRide?: boolean;
   dailyProgress?: string;
