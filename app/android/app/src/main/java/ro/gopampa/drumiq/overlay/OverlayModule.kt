@@ -58,8 +58,10 @@ class OverlayModule(reactContext: ReactApplicationContext) :
             putString(intent, DPOverlayService.EXTRA_NET,      data, "net",      "")
             val shortRide = data.hasKey("shortRide") && !data.isNull("shortRide") && data.getBoolean("shortRide")
             intent.putExtra(DPOverlayService.EXTRA_SHORT_RIDE, shortRide)
+            val sanityError = data.hasKey("sanityError") && !data.isNull("sanityError") && data.getBoolean("sanityError")
+            intent.putExtra(DPOverlayService.EXTRA_SANITY, sanityError)
+            putString(intent, DPOverlayService.EXTRA_DEAD_KM,  data, "deadKm",        "")
             putString(intent, DPOverlayService.EXTRA_DAILY,    data, "dailyProgress", "")
-            putString(intent, DPOverlayService.EXTRA_BREAKDOWN, data, "breakdown",     "")
             ctx.startService(intent)
             promise.resolve(true)
         } catch (e: Exception) { promise.reject("ERR_SHOW", e) }

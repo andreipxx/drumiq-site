@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import { loadRides, computeStats, filterRidesByPeriod } from './tracker';
-import { getFuelSettings, getProOverrides, getVehicleInfo, getDailyGoal, fuelCostPerKm, totalCostPerKm } from './userSettings';
-import { getThresholds, getAdaptiveConsumption, getTaxSettings } from './extendedSettings';
+import { getFuelSettings, getVehicleInfo, getDailyGoal, fuelCostPerKm, totalCostPerKm } from './userSettings';
+import { getAdaptiveConsumption, getTaxSettings } from './extendedSettings';
+import { loadThresholds } from './filterEngine';
 import { getLicenseState } from './licenseManager';
 import { getDpEvents, getDebugStats } from './dpDebug';
 import { Accessibility } from '../native/accessibility';
@@ -11,16 +12,15 @@ export async function generateFullExport(): Promise<string> {
   const now = new Date();
 
   const [
-    rides, fuel, proOverrides, vehicle, dailyGoal,
+    rides, fuel, vehicle, dailyGoal,
     license, thresholds, adaptive, tax,
   ] = await Promise.all([
     loadRides(),
     getFuelSettings(),
-    getProOverrides(),
     getVehicleInfo(),
     getDailyGoal(),
     getLicenseState(),
-    getThresholds(),
+    loadThresholds(),
     getAdaptiveConsumption(),
     getTaxSettings(),
   ]);
@@ -63,7 +63,6 @@ export async function generateFullExport(): Promise<string> {
       fuel,
       fuelCostPerKm: fuelCostPerKm(fuel),
       totalCostPerKm: totalCostPerKm(fuel),
-      proOverrides,
       vehicle,
       dailyGoal,
       thresholds,
@@ -84,7 +83,7 @@ export async function generateFullExport(): Promise<string> {
     },
 
     ridesCount: rides.length,
-    rides: rides.sort((a, b) => b.timestamp - a.timestamp),
+    rides: dedupeRides(rides).sort((a, b) => b.timestamp - a.timestamp),
 
     debug: {
       stats: debugStats,
@@ -97,5 +96,18 @@ export async function generateFullExport(): Promise<string> {
     nativeLogStats,
   };
 
-  return JSON.stringify(report, null, 2);
+  try {
+    return JSON.stringify(report, null, 2);
+  } catch (e: any) {
+    return JSON.stringify({ error: 'stringify_failed', message: String(e?.message || e) });
+  }
+}
+
+function dedupeRides(rides: any[]): any[] {
+  const seen = new Set<string>();
+  return rides.filter(r => {
+    if (seen.has(r.id)) return false;
+    seen.add(r.id);
+    return true;
+  });
 }

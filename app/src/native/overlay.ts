@@ -17,8 +17,10 @@ export interface OverlayData {
   profitMin?: string;
   net?: string;
   shortRide?: boolean;
+  sanityError?: boolean;
+  deadKm?: string;
   dailyProgress?: string;
-  breakdown?: string;
+  source?: string;
 }
 
 export const Overlay = {

@@ -10,15 +10,15 @@ import { Overlay, type OverlayMode } from '../native/overlay';
 import { parseBoltRide } from './boltParser';
 import { analyzeRide } from './profitCalculator';
 import { feedScreen } from './rideStateMachine';
-import { getFuelSettings, getProOverrides, getDailyGoal } from './userSettings';
+import { getFuelSettings, getDailyGoal } from './userSettings';
 import { getStatsForPeriod } from './tracker';
 import { getRoute } from './routesApi';
-import { loadFilters } from './filterEngine';
+import { loadThresholds } from './filterEngine';
 import { addRide, updateRide, generateRideId, detectLifecycleEvent } from './tracker';
 import { trackPackageSeen } from './platformDetector';
 import { VERDICT_DISPLAY } from '../types';
 import { logDpEvent } from './dpDebug';
-import type { PlanTier, Ride, RouteSource } from '../types';
+import type { PlanTier, Ride, RouteSource, UnifiedThresholds } from '../types';
 
 const OVERLAY_MODE_KEY = '@dp_overlay_mode_pro';
 const STICKY_MS = 15000;
@@ -53,16 +53,6 @@ function modeForPlan(plan: PlanTier, proPref: OverlayMode): OverlayMode {
   return 'simple';
 }
 
-function buildBreakdown(grossNet: number | null, a: any): string {
-  if (grossNet == null) return '';
-  const gross = grossNet;
-  const com = a.boltCommissionAmount;
-  const taxAmt = (gross - com) - a.netAfterTax;
-  const ben = a.vehicleCost;
-  const net = gross - com - taxAmt - ben;
-  return `${gross.toFixed(1)}−${com.toFixed(1)} com−${taxAmt.toFixed(1)} tax−${ben.toFixed(1)} ben = ${net.toFixed(1)}`;
-}
-
 function buildOverlayPayload(parsed: any, a: any, mode: OverlayMode, label: string,
                               tripKmFromApi?: number, tripMinFromApi?: number,
                               source: 'fallback' | 'api' | 'cache' = 'fallback') {
@@ -74,23 +64,28 @@ function buildOverlayPayload(parsed: any, a: any, mode: OverlayMode, label: stri
     trip: tripKmFromApi != null
       ? `${tripKmFromApi} km / ${tripMinFromApi ?? '?'} min`
       : '~' + a.tripKmEstimate + ' km',
-    duration: tripMinFromApi != null ? `${tripMinFromApi} min` : '—',
+    duration: `${a.totalMinutes} min`,
     gross: parsed.grossNet != null ? parsed.grossNet.toFixed(2) + ' lei' : '—',
     profitKm: a.profitPerKm.toFixed(2) + ' RON/km',
     profitMin: a.profitPerMin.toFixed(2) + ' RON/min',
     net: a.profit > 0 ? '+' + a.profit.toFixed(2) + ' lei' : a.profit.toFixed(2) + ' lei',
     shortRide: a.shortRideFlag,
+    sanityError: a.sanityError,
+    deadKm: String(a.pickupKm),
     source,
-    breakdown: buildBreakdown(parsed.grossNet, a),
   };
 }
 
-function buildLabel(parsed: any, a: any, overrides: any): string {
+function buildLabel(parsed: any, a: any): string {
   let label = VERDICT_DISPLAY[a.verdict as keyof typeof VERDICT_DISPLAY]?.label || String(a.verdict).toUpperCase();
-  if (a.proOverride === 'pickup_too_far' && overrides) {
-    label = `Pickup ${a.pickupKm}km > ${overrides.maxPickupKm}km — REFUZĂ`;
-  } else if (a.proOverride === 'rating_too_low' && overrides) {
-    label = `Rating ${parsed.passengerRating} < ${overrides.minPassengerRating} — REFUZĂ`;
+  if (a.proOverride === 'pickup_too_far' && a.overrideThreshold != null) {
+    label = `Pickup ${a.pickupKm}km > ${a.overrideThreshold}km — REFUZĂ`;
+  } else if (a.proOverride === 'rating_too_low' && a.overrideThreshold != null) {
+    label = `Rating ${parsed.passengerRating} < ${a.overrideThreshold} — REFUZĂ`;
+  } else if (a.proOverride === 'has_stops') {
+    label = 'Oprire — verifică distanța';
+  } else if (a.sanityError) {
+    label = 'Distanță suspectă — verifică';
   }
   return label;
 }
@@ -172,24 +167,22 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
           : null;
         if (canFetchRoute) logDpEvent('API_START', { addr: parsed.pickupAddress?.slice(0, 25) });
 
-        let fuel: any, overrides: any, filters: any, dailyGoal: number, todayEarnings: number;
+        let fuel: any, thresholds: UnifiedThresholds, dailyGoal: number, todayEarnings: number;
         try {
-          [fuel, filters] = await Promise.all([getFuelSettings(), loadFilters()]);
-          // Build 17: proOverrides moved into filterEngine as maxPickupKm + minRating filters.
-          overrides = undefined;
+          [fuel, thresholds] = await Promise.all([getFuelSettings(), loadThresholds()]);
           const [goal, todayStats] = await Promise.all([getDailyGoal(), getStatsForPeriod('today')]);
           dailyGoal = goal;
           todayEarnings = todayStats.earningsLei;
         } catch (e: any) { logDpEvent('SETTINGS_ERR', String(e?.message || e)); return; }
 
         // FIRST PASS: analyze with fallback estimate (no Routes API)
-        const a1 = analyzeRide(parsed, { fuel, plan, proOverrides: overrides, filters });
+        const a1 = analyzeRide(parsed, { fuel, plan, thresholds });
         const dailyProgressStr = dailyGoal > 0
           ? `${Math.round(todayEarnings)}/${dailyGoal} lei`
           : undefined;
         if (!a1) { logDpEvent('SKIP', 'analyze_null'); return; }
 
-        const label1 = buildLabel(parsed, a1, overrides);
+        const label1 = buildLabel(parsed, a1);
         const key1 = buildKey(parsed, a1);
 
         if (key1 === lastShownKey) { logDpEvent('SKIP', 'dedupe'); return; }
@@ -255,11 +248,11 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
             else if (lastShownAt === 0) { logDpEvent('API_LATE', 'overlay_dismissed'); }
             else {
               const a2 = analyzeRide(parsed, {
-                fuel, plan, proOverrides: overrides, filters,
+                fuel, plan, thresholds,
                 tripKmFromApi: route.distanceKm, tripMinFromApi: route.durationMin,
               });
               if (a2) {
-                const label2 = buildLabel(parsed, a2, overrides);
+                const label2 = buildLabel(parsed, a2);
                 const payload2 = {
                   ...buildOverlayPayload(parsed, a2, mode, label2,
                     route.distanceKm, route.durationMin, route.source),

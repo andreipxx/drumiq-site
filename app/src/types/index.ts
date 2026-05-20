@@ -40,35 +40,33 @@ export interface License {
   deviceId?: string;
 }
 
-// === Filter Engine ===
-export type FilterKey = 'minPpkm' | 'minPpmin' | 'maxPickupKm' | 'minRating';
-
-export interface FilterRule {
-  key: FilterKey;
-  enabled: boolean;
-  value: number;
+// === Unified Thresholds (single source of truth for verdict logic) ===
+export interface UnifiedThresholds {
+  kmEnabled: boolean;
+  kmValue: number;          // RON/km minim — sub = rosu
+  minEnabled: boolean;
+  minValue: number;         // RON/min minim
+  hourEnabled: boolean;
+  hourValue: number;        // RON/ora minim
+  yellowZone: number;       // % deasupra minimului = galben (ex: 20 = 20%)
+  pickupEnabled: boolean;
+  maxPickupKm: number;      // Peste X km pickup = REFUZ (independent de profit)
+  ratingEnabled: boolean;
+  minRating: number;        // Sub X rating = REFUZ (siguranta)
 }
 
-export interface FilterSet {
-  minPpkm:     FilterRule;
-  minPpmin:    FilterRule;
-  maxPickupKm: FilterRule;
-  minRating:   FilterRule;
-}
-
-// per-plan filter availability
-export const FILTER_AVAILABILITY: Record<FilterKey, PlanTier[]> = {
-  minPpkm:     ['trial', 'simplu', 'pro'],
-  minPpmin:    ['pro'],
-  maxPickupKm: ['pro'],
-  minRating:   ['pro'],
-};
-
-export const DEFAULT_FILTERS: FilterSet = {
-  minPpkm:     { key: 'minPpkm',     enabled: true,  value: 2.50 },
-  minPpmin:    { key: 'minPpmin',    enabled: false, value: 0.50 },
-  maxPickupKm: { key: 'maxPickupKm', enabled: false, value: 3.5 },
-  minRating:   { key: 'minRating',   enabled: false, value: 4.5 },
+export const DEFAULT_THRESHOLDS: UnifiedThresholds = {
+  kmEnabled: true,
+  kmValue: 2.0,
+  minEnabled: false,
+  minValue: 0.50,
+  hourEnabled: false,
+  hourValue: 50,
+  yellowZone: 20,
+  pickupEnabled: false,
+  maxPickupKm: 3.5,
+  ratingEnabled: false,
+  minRating: 4.5,
 };
 
 // === Verdict display ($/?/X system in v2) ===

@@ -194,8 +194,8 @@ export default function HomeScreen({ onOpenOverlayDemo, onOpenTracker }: Props) 
                 <Text style={[s.ridePrice, { color: colors.text }]}>{r.grossEarnings.toFixed(2)} lei</Text>
               </View>
               <View style={s.rideBottom}>
-                <Text style={[s.rideMeta, { color: colors.textMuted }]}>{r.pickupKm.toFixed(1)} + {r.tripKm.toFixed(1)} km · {r.paymentMethod}</Text>
-                <Text style={[s.rideVerdict, { color: v.color }]}>{v.symbol} {r.profitPerKm.toFixed(2)}</Text>
+                <Text style={[s.rideMeta, { color: colors.textMuted }]}>{(r.pickupKm ?? 0).toFixed(1)} + {(r.tripKm ?? 0).toFixed(1)} km · {r.paymentMethod}</Text>
+                <Text style={[s.rideVerdict, { color: v.color }]}>{v.symbol} {(r.profitPerKm ?? 0).toFixed(2)}</Text>
               </View>
             </View>
           );

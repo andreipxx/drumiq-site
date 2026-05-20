@@ -1,40 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// ═══ 2.4.3 — Praguri Duale (RON/km + RON/oră) ═══
-
-export interface ThresholdSettings {
-  kmEnabled: boolean;
-  kmValue: number;       // RON/km (default 2)
-  minEnabled: boolean;
-  minValue: number;      // RON/min (default 0.8)
-  hourEnabled: boolean;
-  hourValue: number;     // RON/oră (default 50)
-}
-
-export const DEFAULT_THRESHOLDS: ThresholdSettings = {
-  kmEnabled: true,
-  kmValue: 2,
-  minEnabled: false,
-  minValue: 0.8,
-  hourEnabled: false,
-  hourValue: 50,
-};
-
-const THRESHOLD_KEY = '@drumiq_thresholds_v1';
-
-export async function getThresholds(): Promise<ThresholdSettings> {
-  try {
-    const raw = await AsyncStorage.getItem(THRESHOLD_KEY);
-    if (!raw) return DEFAULT_THRESHOLDS;
-    return { ...DEFAULT_THRESHOLDS, ...JSON.parse(raw) };
-  } catch { return DEFAULT_THRESHOLDS; }
-}
-
-export async function setThresholds(t: ThresholdSettings): Promise<void> {
-  await AsyncStorage.setItem(THRESHOLD_KEY, JSON.stringify(t));
-}
-
-// ═══ 2.4.4 — Consum Adaptiv Oraș/Exterior ═══
+// ═══ Consum Adaptiv Oraș/Exterior ═══
 
 export interface AdaptiveConsumption {
   enabled: boolean;

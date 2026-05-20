@@ -167,7 +167,7 @@ export default function TrackerScreen() {
               )}
               <View style={s.rideBottom}>
                 <Text style={[s.rideMeta, { color: colors.textMuted }]}>
-                  {r.tripKm.toFixed(1)}km · {Math.round(r.durationMin)}min · {r.source === 'api' ? '✓ Google' : '~ est'}
+                  {(r.tripKm ?? 0).toFixed(1)}km · {Math.round(r.durationMin ?? 0)}min · {r.source === 'api' ? '✓ Google' : '~ est'}
                 </Text>
                 <View style={s.rideRight}>
                   <Text style={[s.rideStatus, { color: statusColor }]}>{status}</Text>

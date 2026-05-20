@@ -53,8 +53,9 @@ export async function clearAllRides(): Promise<void> {
 }
 
 export function generateRideId(timestamp: number, grossEarnings: number): string {
-  // Stable ID based on timestamp + price (collision-resistant for rideshare scenarios)
-  return `r_${timestamp}_${Math.round(grossEarnings * 100)}`;
+  // 2-minute window: same offer captured multiple times gets the same ID
+  const window = Math.floor(timestamp / 120000);
+  return `r_${window}_${Math.round(grossEarnings * 100)}`;
 }
 
 // === Stats ===

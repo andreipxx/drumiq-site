@@ -1,160 +1,145 @@
-﻿// DRUMIQ v1.0.0 — Filter Engine
-// Applies user-configured filters to a ride. If ALL active filters pass,
-// the ride is considered a "clean GO". Filters are gated per plan.
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  type FilterSet,
-  type FilterKey,
-  type FilterRule,
-  type PlanTier,
-  type ProfitVerdict,
-  DEFAULT_FILTERS,
-  FILTER_AVAILABILITY,
-} from '../types';
+import type { UnifiedThresholds, ProfitVerdict } from '../types';
+import { DEFAULT_THRESHOLDS } from '../types';
 
-const STORAGE_KEY = '@dp_filters_v2';
+const STORAGE_KEY = '@drumiq_unified_thresholds_v1';
 
-// === Persistence ===
-export async function loadFilters(): Promise<FilterSet> {
+export async function loadThresholds(): Promise<UnifiedThresholds> {
   try {
     const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    if (!raw) return { ...DEFAULT_FILTERS };
-    const parsed = JSON.parse(raw);
-    // Defensive merge: if storage has only some keys, fill with defaults
-    return {
-      minPpkm:     { ...DEFAULT_FILTERS.minPpkm,     ...(parsed.minPpkm     || {}) },
-      minPpmin:    { ...DEFAULT_FILTERS.minPpmin,    ...(parsed.minPpmin    || {}) },
-      maxPickupKm: { ...DEFAULT_FILTERS.maxPickupKm, ...(parsed.maxPickupKm || {}) },
-      minRating:   { ...DEFAULT_FILTERS.minRating,   ...(parsed.minRating   || {}) },
-    };
+    if (!raw) return { ...DEFAULT_THRESHOLDS };
+    return { ...DEFAULT_THRESHOLDS, ...JSON.parse(raw) };
   } catch {
-    return { ...DEFAULT_FILTERS };
+    return { ...DEFAULT_THRESHOLDS };
   }
 }
 
-export async function saveFilters(filters: FilterSet): Promise<void> {
-  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(filters));
+export async function saveThresholds(t: UnifiedThresholds): Promise<void> {
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(t));
 }
 
-export async function resetFilters(): Promise<FilterSet> {
-  const fresh = { ...DEFAULT_FILTERS };
-  await saveFilters(fresh);
+export async function resetThresholds(): Promise<UnifiedThresholds> {
+  const fresh = { ...DEFAULT_THRESHOLDS };
+  await saveThresholds(fresh);
   return fresh;
 }
 
-// === Plan-based availability ===
-export function isFilterAvailable(key: FilterKey, plan: PlanTier): boolean {
-  return FILTER_AVAILABILITY[key].includes(plan);
+export interface ThresholdCheckResult {
+  verdict: ProfitVerdict;
+  override?: 'pickup_too_far' | 'rating_too_low' | 'has_stops' | null;
+  overrideActual?: number;
+  overrideLimit?: number;
+  reason?: string;
 }
 
-export function maxFiltersForPlan(plan: PlanTier): number {
-  return Object.values(FILTER_AVAILABILITY).filter((plans) => plans.includes(plan)).length;
-}
-
-export function activeFiltersForPlan(filters: FilterSet, plan: PlanTier): FilterRule[] {
-  return Object.values(filters).filter((f) => f.enabled && isFilterAvailable(f.key, plan));
-}
-
-// === Filter check ===
-export interface RideMetrics {
-  profitPerKm: number;     // RON/km after costs
-  totalKm: number;         // pickup + trip
-  totalMinutes: number;    // pickup + trip duration
-  profitPerMin: number;    // profit divided by total minutes
-  pickupKm: number;        // pickup distance only
-  passengerRating: number | null;  // null when Bolt didn't expose it
-}
-
-export interface FilterCheckResult {
-  allPassed: boolean;
-  failedKey?: FilterKey;
-  failedReason?: string;
-  activeCount: number;
-}
-
-/**
- * Returns whether the ride passes ALL active filters available for the plan.
- * If allPassed is true → overlay should be green regardless of base verdict.
- * If false → returns first failed filter (so we can show "fails: distance").
- */
-export function checkFilters(
-  metrics: RideMetrics,
-  filters: FilterSet,
-  plan: PlanTier
-): FilterCheckResult {
-  const active = activeFiltersForPlan(filters, plan);
-  if (active.length === 0) {
-    return { allPassed: true, activeCount: 0 };
+export function applyThresholds(
+  metrics: {
+    profitPerKm: number;
+    profitPerMin: number;
+    profitPerHour: number;
+    pickupKm: number;
+    passengerRating: number | null;
+  },
+  thresholds: UnifiedThresholds,
+  hasStops: boolean,
+): ThresholdCheckResult {
+  // Hard filters — independent of profit, checked first
+  if (thresholds.pickupEnabled && metrics.pickupKm > thresholds.maxPickupKm) {
+    return {
+      verdict: 'stop',
+      override: 'pickup_too_far',
+      overrideActual: metrics.pickupKm,
+      overrideLimit: thresholds.maxPickupKm,
+      reason: `pickup ${metrics.pickupKm.toFixed(1)} > ${thresholds.maxPickupKm} km`,
+    };
+  }
+  if (thresholds.ratingEnabled && metrics.passengerRating != null && metrics.passengerRating < thresholds.minRating) {
+    return {
+      verdict: 'stop',
+      override: 'rating_too_low',
+      overrideActual: metrics.passengerRating,
+      overrideLimit: thresholds.minRating,
+      reason: `rating ${metrics.passengerRating} < ${thresholds.minRating}`,
+    };
   }
 
-  for (const f of active) {
-    let passed = true;
-    let reason = '';
-    switch (f.key) {
-      case 'minPpkm':
-        passed = metrics.profitPerKm >= f.value;
-        reason = `${metrics.profitPerKm.toFixed(2)} < ${f.value} lei/km`;
-        break;
-      case 'minPpmin':
-        passed = metrics.profitPerMin >= f.value;
-        reason = `${metrics.profitPerMin.toFixed(2)} < ${f.value} lei/min`;
-        break;
-      case 'maxPickupKm':
-        passed = metrics.pickupKm <= f.value;
-        reason = `pickup ${metrics.pickupKm.toFixed(1)} > ${f.value} km`;
-        break;
-      case 'minRating':
-        // null rating = pass (don't penalize when Bolt doesn't expose rating yet)
-        passed = metrics.passengerRating == null || metrics.passengerRating >= f.value;
-        reason = `rating ${metrics.passengerRating ?? '?'} < ${f.value}`;
-        break;
-    }
-    if (!passed) {
-      return { allPassed: false, failedKey: f.key, failedReason: reason, activeCount: active.length };
-    }
+  // Oprire necunoscuta = galben (nu putem calcula km reali)
+  if (hasStops) {
+    return {
+      verdict: 'think',
+      override: 'has_stops',
+      reason: 'cursa cu oprire — km reali necunoscuti',
+    };
   }
 
-  return { allPassed: true, activeCount: active.length };
-}
+  // Profit thresholds with yellow zone
+  const yellowMul = 1 + thresholds.yellowZone / 100;
+  const checks: { pass: boolean; yellow: boolean }[] = [];
 
-// === Verdict modifier (filter overrides base verdict) ===
-/**
- * Combines base verdict (from profitPerKm thresholds) with filter result.
- * - If filters PASS all → upgrade to 'go' (filters represent user's "OK" criteria)
- * - If filters FAIL → degrade to 'stop' (user's hard rule violated)
- * - If no active filters → return base verdict unchanged
- */
-export function applyFiltersToVerdict(
-  baseVerdict: ProfitVerdict,
-  filterResult: FilterCheckResult
-): ProfitVerdict {
-  if (filterResult.activeCount === 0) return baseVerdict;
-  if (filterResult.allPassed) {
-    // Don't downgrade if base is already 'go'
-    return 'go';
+  if (thresholds.kmEnabled) {
+    checks.push({
+      pass: metrics.profitPerKm >= thresholds.kmValue * yellowMul,
+      yellow: metrics.profitPerKm >= thresholds.kmValue,
+    });
   }
-  return 'stop';
+  if (thresholds.minEnabled) {
+    checks.push({
+      pass: metrics.profitPerMin >= thresholds.minValue * yellowMul,
+      yellow: metrics.profitPerMin >= thresholds.minValue,
+    });
+  }
+  if (thresholds.hourEnabled) {
+    checks.push({
+      pass: metrics.profitPerHour >= thresholds.hourValue * yellowMul,
+      yellow: metrics.profitPerHour >= thresholds.hourValue,
+    });
+  }
+
+  if (checks.length === 0) {
+    return { verdict: 'think' };
+  }
+
+  const allPass = checks.every(c => c.pass);
+  const allYellow = checks.every(c => c.yellow);
+
+  if (allPass) return { verdict: 'go' };
+  if (!allYellow) return { verdict: 'stop' };
+  return { verdict: 'think' };
 }
 
-// === Human-readable filter labels (for UI) ===
-export const FILTER_LABEL: Record<FilterKey, string> = {
-  minPpkm:     'Lei/km minim',
-  minPpmin:    'Lei/min minim',
-  maxPickupKm: 'Rază pickup max',
-  minRating:   'Rating pasager min',
-};
+// UI labels for FilterSettingsScreen
+export const THRESHOLD_LABELS = {
+  kmValue:      'Lei/km minim',
+  minValue:     'Lei/min minim',
+  hourValue:    'Lei/oră minim',
+  yellowZone:   'Zonă galbenă',
+  maxPickupKm:  'Rază pickup max',
+  minRating:    'Rating pasager min',
+} as const;
 
-export const FILTER_UNIT: Record<FilterKey, string> = {
-  minPpkm:     'lei/km',
-  minPpmin:    'lei/min',
-  maxPickupKm: 'km',
-  minRating:   '★',
-};
+export const THRESHOLD_UNITS = {
+  kmValue:      'RON/km',
+  minValue:     'RON/min',
+  hourValue:    'RON/oră',
+  yellowZone:   '%',
+  maxPickupKm:  'km',
+  minRating:    '★',
+} as const;
 
-export const FILTER_ICON: Record<FilterKey, string> = {
-  minPpkm:     '💰',
-  minPpmin:    '⚡',
-  maxPickupKm: '📍',
-  minRating:   '⭐',
+export const THRESHOLD_ICONS = {
+  kmValue:      '💰',
+  minValue:     '⚡',
+  hourValue:    '⏱',
+  yellowZone:   '🟡',
+  maxPickupKm:  '📍',
+  minRating:    '⭐',
+} as const;
+
+export const THRESHOLD_HINTS: Record<string, string> = {
+  kmValue:      'Curse cu profit/km sub această valoare = REFUZ',
+  minValue:     'Curse cu profit/min sub această valoare = REFUZ',
+  hourValue:    'Curse cu profit/oră sub această valoare = REFUZ',
+  yellowZone:   'Procentul deasupra minimului = verdict galben (marginal)',
+  maxPickupKm:  'Pickup peste această distanță = REFUZ (independent de profit)',
+  minRating:    'Pasageri sub acest rating = REFUZ (siguranță)',
 };

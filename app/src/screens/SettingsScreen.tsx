@@ -11,16 +11,14 @@ import { getOverlayModePro, setOverlayModePro } from '../services/overlayControl
 import { Overlay } from '../native/overlay';
 import { DeviceEventEmitter } from 'react-native';
 import {
-  getThresholds, setThresholds, type ThresholdSettings,
   getAdaptiveConsumption, setAdaptiveConsumption, type AdaptiveConsumption,
   getTaxSettings, setTaxSettings, type TaxSettings,
-  DEFAULT_THRESHOLDS, DEFAULT_ADAPTIVE, DEFAULT_TAX,
+  DEFAULT_ADAPTIVE, DEFAULT_TAX,
 } from '../services/extendedSettings';
 import { getWorkMode } from '../services/workMode';
 
 interface Props {
   onOpenFuel: () => void;
-  onOpenPro: () => void;
   onOpenFilters: () => void;
   onOpenUpgrade: () => void;
   onOpenAccessibility: () => void;
@@ -33,12 +31,11 @@ const THEME_OPTIONS: { mode: ThemeMode; label: string; icon: string }[] = [
   { mode: 'dark',      label: 'Dark',      icon: '☾' },
 ];
 
-export default function SettingsScreen({ onOpenFuel, onOpenPro, onOpenFilters, onOpenUpgrade, onOpenAccessibility, onOpenWorkMode }: Props) {
+export default function SettingsScreen({ onOpenFuel, onOpenFilters, onOpenUpgrade, onOpenAccessibility, onOpenWorkMode }: Props) {
   const { mode, setMode, colors } = useTheme();
   const [plan, setPlan] = useState<string | null>(null);
   const [proCard, setProCard] = useState(false);
   const [overlayPerm, setOverlayPerm] = useState<boolean | null>(null);
-  const [thresholds, setThresholdsState] = useState<ThresholdSettings>(DEFAULT_THRESHOLDS);
   const [adaptive, setAdaptiveState] = useState<AdaptiveConsumption>(DEFAULT_ADAPTIVE);
   const [adaptiveSaved, setAdaptiveSaved] = useState(true);
   const [tax, setTaxState] = useState<TaxSettings>(DEFAULT_TAX);
@@ -50,7 +47,6 @@ export default function SettingsScreen({ onOpenFuel, onOpenPro, onOpenFilters, o
     if (st.license) setPlan(st.license.plan);
     setProCard((await getOverlayModePro()) === 'full');
     setOverlayPerm(await Overlay.canDrawOverlays());
-    setThresholdsState(await getThresholds());
     setAdaptiveState(await getAdaptiveConsumption());
     setTaxState(await getTaxSettings());
     const wm = await getWorkMode();
@@ -131,14 +127,14 @@ export default function SettingsScreen({ onOpenFuel, onOpenPro, onOpenFilters, o
           </TouchableOpacity>
         </View>
 
-        {/* === FILTRE CURSE (toate planurile, gradul de acces variaza) === */}
-        <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>🎯 FILTRE CURSE</Text>
+        {/* === PRAGURI PROFITABILITATE === */}
+        <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>PRAGURI PROFITABILITATE</Text>
         <View style={[s.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <TouchableOpacity onPress={onOpenFilters} activeOpacity={0.6} style={s.row}>
             <View style={{ flex: 1 }}>
-              <Text style={[s.label, { color: colors.text }]}>Filtre profitabilitate</Text>
+              <Text style={[s.label, { color: colors.text }]}>Praguri & filtre curse</Text>
               <Text style={[s.subLabel, { color: colors.textTertiary }]}>
-                Trial: 1 filtru · Pro: 4 filtre
+                RON/km, RON/min, pickup max, rating min
               </Text>
             </View>
             <Text style={[s.chevron, { color: colors.textTertiary }]}>›</Text>
@@ -187,85 +183,6 @@ export default function SettingsScreen({ onOpenFuel, onOpenPro, onOpenFilters, o
                 <Text style={s.smallBtnText}>Acordă</Text>
               </TouchableOpacity>
             )}
-          </View>
-        </View>
-
-        {/* === PRAGURI ACCEPTARE (2.4.3) === */}
-        <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>PRAGURI ACCEPTARE</Text>
-        <View style={[s.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <View style={s.row}>
-            <View style={{ flex: 1 }}>
-              <Text style={[s.label, { color: colors.text }]}>Prag profit/km</Text>
-            </View>
-            <SettingsNumberInput
-              value={thresholds.kmValue}
-              onChange={(v) => {
-                const next = { ...thresholds, kmValue: v };
-                setThresholdsState(next);
-                setThresholds(next);
-              }}
-              suffix="RON/km"
-              colors={colors}
-            />
-            <Switch value={thresholds.kmEnabled}
-              onValueChange={(v) => {
-                const next = { ...thresholds, kmEnabled: v };
-                setThresholdsState(next);
-                setThresholds(next);
-              }}
-              thumbColor={colors.surface} trackColor={{ true: colors.accent, false: colors.border }}
-            />
-          </View>
-          <View style={[s.row, { borderTopColor: colors.divider, borderTopWidth: StyleSheet.hairlineWidth }]}>
-            <View style={{ flex: 1 }}>
-              <Text style={[s.label, { color: colors.text }]}>Prag profit/min</Text>
-            </View>
-            <SettingsNumberInput
-              value={thresholds.minValue}
-              onChange={(v) => {
-                const next = { ...thresholds, minValue: v };
-                setThresholdsState(next);
-                setThresholds(next);
-              }}
-              suffix="RON/min"
-              colors={colors}
-            />
-            <Switch value={thresholds.minEnabled}
-              onValueChange={(v) => {
-                const next = { ...thresholds, minEnabled: v };
-                setThresholdsState(next);
-                setThresholds(next);
-              }}
-              thumbColor={colors.surface} trackColor={{ true: colors.accent, false: colors.border }}
-            />
-          </View>
-          <View style={[s.row, { borderTopColor: colors.divider, borderTopWidth: StyleSheet.hairlineWidth }]}>
-            <View style={{ flex: 1 }}>
-              <Text style={[s.label, { color: colors.text }]}>Prag profit/oră</Text>
-            </View>
-            <SettingsNumberInput
-              value={thresholds.hourValue}
-              onChange={(v) => {
-                const next = { ...thresholds, hourValue: v };
-                setThresholdsState(next);
-                setThresholds(next);
-              }}
-              suffix="RON/oră"
-              colors={colors}
-            />
-            <Switch value={thresholds.hourEnabled}
-              onValueChange={(v) => {
-                const next = { ...thresholds, hourEnabled: v };
-                setThresholdsState(next);
-                setThresholds(next);
-              }}
-              thumbColor={colors.surface} trackColor={{ true: colors.accent, false: colors.border }}
-            />
-          </View>
-          <View style={[s.row, { borderTopColor: colors.divider, borderTopWidth: StyleSheet.hairlineWidth }]}>
-            <Text style={[s.subLabel, { color: colors.textTertiary, flex: 1 }]}>
-              Dacă ambele sunt active, cursa trebuie să treacă de ambele ca să fie recomandată.
-            </Text>
           </View>
         </View>
 

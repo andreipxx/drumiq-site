@@ -8,7 +8,9 @@ import { Accessibility, type AccessibilityCapture } from '../native/accessibilit
 import { parseBoltRide } from '../services/boltParser';
 import { analyzeRide } from '../services/profitCalculator';
 import { getLicenseState } from '../services/licenseManager';
-import { getFuelSettings, getProOverrides, type FuelSettings, type ProOverrides } from '../services/userSettings';
+import { getFuelSettings, type FuelSettings } from '../services/userSettings';
+import { loadThresholds } from '../services/filterEngine';
+import type { UnifiedThresholds } from '../types';
 import { VERDICT_DISPLAY } from '../types';
 import { getDpEvents, getDebugStats } from '../services/dpDebug';
 import { generateFullExport } from '../services/fullExport';
@@ -57,19 +59,19 @@ export default function AccessibilityTestScreen({ onBack }: Props) {
   }, [refreshStatus, refreshCapture]);
 
   const [fuel, setFuel] = useState<FuelSettings | null>(null);
-  const [overrides, setOverrides] = useState<ProOverrides | null>(null);
+  const [thresholds, setThresholdsState] = useState<UnifiedThresholds | null>(null);
 
   useEffect(() => {
     getFuelSettings().then(setFuel);
-    getProOverrides().then(setOverrides);
+    loadThresholds().then(setThresholdsState);
   }, []);
 
   const parsed = useMemo(() => capture?.text ? parseBoltRide(capture.text) : null, [capture]);
   const analysis = useMemo(() => {
     if (!parsed || !fuel || !licInfo) return null;
     const plan = (licInfo.plan as any) || 'trial';
-    return analyzeRide(parsed, { fuel, plan, proOverrides: plan === 'pro' ? overrides ?? undefined : undefined });
-  }, [parsed, fuel, overrides, licInfo]);
+    return analyzeRide(parsed, { fuel, plan, thresholds: thresholds ?? undefined });
+  }, [parsed, fuel, thresholds, licInfo]);
 
   const handleOpenSettings = async () => { await Accessibility.openSettings(); };
 

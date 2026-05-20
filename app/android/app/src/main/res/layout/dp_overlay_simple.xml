@@ -63,18 +63,6 @@
                 android:fontFamily="monospace" />
         </LinearLayout>
 
-        <!-- Breakdown formula -->
-        <TextView
-            android:id="@+id/dp_breakdown"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textColor="#7A8A7C"
-            android:textSize="8sp"
-            android:fontFamily="monospace"
-            android:maxLines="1"
-            android:visibility="gone" />
-
         <!-- Daily goal progress -->
         <TextView
             android:id="@+id/dp_daily"

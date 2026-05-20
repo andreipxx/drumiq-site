@@ -18,14 +18,13 @@ interface DemoData {
   profit: string;
   net: string;
   source: 'api' | 'fallback';
-  breakdown: string;
   daily: string;
 }
 
 const DEMO_DATA: Record<ProfitVerdict, DemoData> = {
-  go:    { ppkm: '4.68 RON/km', pickup: '1.5 km / 2 min', cursa: '2.0 km / 2 min', enc: '31.12 lei', profit: '9.36 lei', net: '+9.36 lei', source: 'api', breakdown: '31.1−7.8 com−3.5 tax−1.0 ben = 18.8', daily: '145/200 lei' },
-  think: { ppkm: '2.10 RON/km', pickup: '2.3 km / 5 min', cursa: '~2.0 km',        enc: '15.15 lei', profit: '8.40 lei', net: '+8.40 lei', source: 'fallback', breakdown: '15.2−3.8 com−1.7 tax−1.0 ben = 8.7', daily: '145/200 lei' },
-  stop:  { ppkm: '0.07 RON/km', pickup: '1.5 km / 2 min', cursa: '11.0 km / 15 min', enc: '31.12 lei', profit: '0.85 lei', net: '+0.85 lei', source: 'api', breakdown: '31.1−7.8 com−3.5 tax−11.0 ben = 8.8', daily: '145/200 lei' },
+  go:    { ppkm: '4.68 RON/km', pickup: '1.5 km / 2 min', cursa: '2.0 km / 2 min', enc: '31.12 lei', profit: '9.36 lei', net: '+9.36 lei', source: 'api', daily: '145/200 lei' },
+  think: { ppkm: '2.10 RON/km', pickup: '2.3 km / 5 min', cursa: '~2.0 km',        enc: '15.15 lei', profit: '8.40 lei', net: '+8.40 lei', source: 'fallback', daily: '145/200 lei' },
+  stop:  { ppkm: '0.07 RON/km', pickup: '1.5 km / 2 min', cursa: '11.0 km / 15 min', enc: '31.12 lei', profit: '0.85 lei', net: '+0.85 lei', source: 'api', daily: '145/200 lei' },
 };
 
 export default function OverlayScreen({ onOpenSettings, onOpenAccessibility }: Props) {
@@ -161,7 +160,6 @@ function SimpleOverlay({ verdict, data }: { verdict: ProfitVerdict; data: DemoDa
           </View>
           <Text style={[sov.ppkmSimple, { color: v.color }]}>{data.ppkm}</Text>
         </View>
-        <Text style={sov.breakdown}>{data.breakdown}</Text>
         <Text style={[sov.daily, { color: '#FFB800' }]}>AZI: {data.daily}</Text>
       </View>
     </View>
@@ -183,8 +181,6 @@ function ProOverlay({ verdict, data }: { verdict: ProfitVerdict; data: DemoData 
             <Text style={[sov.proPpkm, { color: v.color }]}>{data.ppkm}</Text>
           </View>
         </View>
-
-        <Text style={sov.breakdown}>{data.breakdown}</Text>
 
         <View style={[sov.divider, { backgroundColor: '#1E2A1F' }]} />
 
@@ -324,7 +320,6 @@ const sov = StyleSheet.create({
   ppkmSimple: { fontSize: 14, fontWeight: '700', fontFamily: 'monospace', marginLeft: 8, flex: 1 },
   proLbl: { fontSize: 9, color: '#7A8A7C', fontWeight: '700', letterSpacing: 1.5 },
   proPpkm: { fontSize: 16, fontWeight: '700', fontFamily: 'monospace' },
-  breakdown: { fontSize: 8, color: '#7A8A7C', fontFamily: 'monospace', marginBottom: 4 },
   daily: { fontSize: 10, fontFamily: 'monospace', fontWeight: '700', marginTop: 3 },
   divider: { height: 1, marginVertical: 6 },
   statsRow: { flexDirection: 'row', marginVertical: 3 },

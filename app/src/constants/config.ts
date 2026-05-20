@@ -16,12 +16,6 @@ export const BOLT_VERDE = {
   PER_MIN: 0.38,
 } as const;
 
-export const THRESHOLDS = {
-  STOP_MAX:  1.60,  // < 1.60 RON/km → STOP (X)
-  THINK_MAX: 2.20,  // 1.60 - 2.20  → THINK (?)
-                    // ≥ 2.20         → GO ($)
-} as const;
-
 export const TAX_RATE = 0; // Bolt arata deja suma NET — nu se mai scade nimic
 
 export const EXTERNAL_RIDE = {

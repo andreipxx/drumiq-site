@@ -22,17 +22,6 @@ async function syncFuelToNative(s: FuelSettings): Promise<void> {
   } catch (e) { console.warn('syncFuelToNative failed', e); }
 }
 
-async function syncProToNative(o: ProOverrides): Promise<void> {
-  try {
-    if (DPNative?.syncProOverrides) {
-      await DPNative.syncProOverrides({
-        maxPickupKm: o.maxPickupKm,
-        minPassengerRating: o.minPassengerRating,
-      });
-    }
-  } catch (e) { console.warn('syncProToNative failed', e); }
-}
-
 export type FuelType = 'benzina' | 'diesel' | 'electric' | 'benzina_gpl' | 'hybrid_hev' | 'hybrid_phev';
 
 export interface FuelSettings {
@@ -56,13 +45,6 @@ export interface FuelSettings {
   wearPerKm: number;
 }
 
-export interface ProOverrides {
-  /** Max pickup distance in km. If pickup > this, override verdict to RED (refuza). */
-  maxPickupKm: number;
-  /** Min passenger rating (1.0-5.0). If rating < this, override verdict to RED. */
-  minPassengerRating: number;
-}
-
 export const DEFAULTS: Record<FuelType, FuelSettings> = {
   benzina:      { type: 'benzina',      consumption:  8.0, pricePerUnit:  7.50, wearPerKm: 0.35 },
   diesel:       { type: 'diesel',       consumption:  6.0, pricePerUnit:  7.80, wearPerKm: 0.35 },
@@ -74,13 +56,7 @@ export const DEFAULTS: Record<FuelType, FuelSettings> = {
                   consumptionKwh: 18.0, pricePerKwh: 1.20, electricRatio: 0.60, wearPerKm: 0.35 },
 };
 
-export const DEFAULT_PRO_OVERRIDES: ProOverrides = {
-  maxPickupKm: 2,
-  minPassengerRating: 4.5,
-};
-
 const FUEL_KEY = '@dp_fuel_settings_v1';
-const PRO_KEY  = '@dp_pro_overrides_v1';
 
 export async function getFuelSettings(): Promise<FuelSettings> {
   try {
@@ -96,19 +72,6 @@ export async function getFuelSettings(): Promise<FuelSettings> {
 export async function setFuelSettings(s: FuelSettings): Promise<void> {
   await AsyncStorage.setItem(FUEL_KEY, JSON.stringify(s));
   await syncFuelToNative(s);
-}
-
-export async function getProOverrides(): Promise<ProOverrides> {
-  try {
-    const raw = await AsyncStorage.getItem(PRO_KEY);
-    if (!raw) return DEFAULT_PRO_OVERRIDES;
-    return { ...DEFAULT_PRO_OVERRIDES, ...JSON.parse(raw) };
-  } catch { return DEFAULT_PRO_OVERRIDES; }
-}
-
-export async function setProOverrides(o: ProOverrides): Promise<void> {
-  await AsyncStorage.setItem(PRO_KEY, JSON.stringify(o));
-  await syncProToNative(o);
 }
 
 // === Vehicle Info (free-text, user-entered) ===
@@ -186,13 +149,11 @@ export async function saveDailyGoal(goal: number): Promise<void> {
   await AsyncStorage.setItem(DAILY_GOAL_KEY, String(Math.max(0, Math.round(goal))));
 }
 
-// Build 16: bootstrap sync on app start so native code has settings from day 1
+// Bootstrap sync on app start so native code has fuel settings
 (async () => {
   try {
     const fuel = await getFuelSettings();
     await syncFuelToNative(fuel);
-    const pro = await getProOverrides();
-    await syncProToNative(pro);
   } catch (e) { console.warn('bootstrap sync failed', e); }
 })();
 

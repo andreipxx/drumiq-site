@@ -38,7 +38,8 @@ class DPOverlayService : Service() {
         const val EXTRA_NET      = "net"         // profit net estimat în buzunar
         const val EXTRA_SHORT_RIDE = "shortRide" // pickup >= tripKm warning
         const val EXTRA_DAILY    = "dailyProgress" // "earned/goal lei" or ""
-        const val EXTRA_BREAKDOWN = "breakdown"    // formula: "12.5−3.1 com−0.9 tax−0.5 ben = 8.0"
+        const val EXTRA_DEAD_KM   = "deadKm"       // pickup km = unpaid distance
+        const val EXTRA_SANITY    = "sanityError"   // tripKm > 50 = suspect
 
         private const val PREFS = "dp_overlay_prefs"
         private const val KEY_X = "pos_x"
@@ -171,6 +172,7 @@ class DPOverlayService : Service() {
     private fun applyData(intent: Intent) {
         val v = view ?: return
         val verdict = intent.getStringExtra(EXTRA_VERDICT) ?: "think"
+        val dp = resources.displayMetrics.density
 
         // === v2 verdict colors (matches theme.ts) ===
         val color = when (verdict) {
@@ -185,6 +187,19 @@ class DPOverlayService : Service() {
             "go"    -> "$"
             else    -> "·"
         }
+
+        // === BORDER GLOW — card background stroke + fill per verdict ===
+        val cardBgColor = when (verdict) {
+            "stop"  -> 0xB01A0808.toInt()  // dark red tint
+            "think" -> 0xB01A1508.toInt()  // dark amber tint
+            "go"    -> 0xB00A0E0B.toInt()  // dark green tint
+            else    -> 0xB00A0A0A.toInt()  // neutral
+        }
+        (v.background as? android.graphics.drawable.GradientDrawable)?.apply {
+            setColor(cardBgColor)
+            setStroke((2f * dp).toInt(), color)
+        }
+
         // === Symbol (black on bright fill for max contrast) ===
         v.findViewById<TextView>(R.id.dp_symbol)?.apply {
             text = symbol
@@ -198,10 +213,7 @@ class DPOverlayService : Service() {
         v.findViewById<View>(R.id.dp_symbol_wrap)?.apply {
             val gd = background as? android.graphics.drawable.GradientDrawable
             gd?.setColor(color)
-            gd?.setStroke(
-                (2f * resources.displayMetrics.density).toInt(),
-                color
-            )
+            gd?.setStroke((2.5f * dp).toInt(), color)
         }
 
         // === Obiectiv zilnic (toate planurile: simple + full) ===
@@ -214,17 +226,6 @@ class DPOverlayService : Service() {
                 val earned = parts.getOrNull(0)?.trim()?.toIntOrNull() ?: 0
                 val goalNum = parts.getOrNull(1)?.trim()?.replace(Regex("[^0-9]"), "")?.toIntOrNull() ?: 0
                 setTextColor(if (goalNum > 0 && earned >= goalNum) 0xFF00FF88.toInt() else 0xFFFFB800.toInt())
-            } else {
-                visibility = View.GONE
-            }
-        }
-
-        // === Breakdown formula (both simple + full) ===
-        val breakdownStr = intent.getStringExtra(EXTRA_BREAKDOWN) ?: ""
-        v.findViewById<TextView>(R.id.dp_breakdown)?.apply {
-            if (breakdownStr.isNotEmpty()) {
-                visibility = View.VISIBLE
-                text = breakdownStr
             } else {
                 visibility = View.GONE
             }
@@ -253,8 +254,22 @@ class DPOverlayService : Service() {
                 setTextColor(color)
             }
             val shortRide = intent.getBooleanExtra(EXTRA_SHORT_RIDE, false)
+            val sanityError = intent.getBooleanExtra(EXTRA_SANITY, false)
             v.findViewById<TextView>(R.id.dp_short_ride_warn)?.apply {
-                visibility = if (shortRide) View.VISIBLE else View.GONE
+                if (sanityError) {
+                    visibility = View.VISIBLE
+                    text = "⚠ km suspect"
+                    setTextColor(0xFFFF3366.toInt())
+                } else {
+                    visibility = if (shortRide) View.VISIBLE else View.GONE
+                    text = "⚠ pickup lung"
+                    setTextColor(0xFFFFB800.toInt())
+                }
+            }
+            // Dead km (pickup = unpaid distance)
+            v.findViewById<TextView>(R.id.dp_dead_km)?.apply {
+                val deadStr = intent.getStringExtra(EXTRA_DEAD_KM) ?: ""
+                text = if (deadStr.isNotEmpty()) "$deadStr km" else "—"
             }
             v.findViewById<TextView>(R.id.dp_source)?.apply {
                 val src = intent.getStringExtra(EXTRA_SOURCE) ?: "fallback"

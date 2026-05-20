@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DRUMIQ — Coming Soon</title>
-<meta name="description" content="DRUMIQ — Performance Intelligence pentru soferi. Coming soon.">
-<meta property="og:title" content="DRUMIQ — Coming Soon">
-<meta property="og:description" content="Singura aplicatie care iti spune instant daca o cursa merita. In curand.">
+<title>DRUMIQ — Știi instant dacă merită cursa</title>
+<meta name="description" content="DRUMIQ — Singura aplicație care îți spune instant dacă o cursă Bolt merită. Overlay GO/THINK/STOP, tracker câștiguri, Google trafic real.">
+<meta property="og:title" content="DRUMIQ — Știi instant dacă merită cursa">
+<meta property="og:description" content="Overlay inteligent pentru șoferi Bolt. Verdict GO/THINK/STOP pe fiecare cursă, calcul profit real cu Google trafic.">
 <meta property="og:image" content="https://drumiq.ro/assets/img/og-image.png">
 <meta property="og:url" content="https://drumiq.ro/">
 <meta property="og:type" content="website">
@@ -14,146 +14,530 @@
 <link rel="canonical" href="https://drumiq.ro/">
 <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' fonts.googleapis.com 'unsafe-inline'; font-src fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self'">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400&family=Inter+Tight:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e0b;
+  --surface:#141a15;
+  --surfaceAlt:#1a2218;
+  --text:#f5efe6;
+  --textMuted:#8a7d70;
+  --textDim:#5a5040;
+  --accent:#c97d3a;
+  --accentLight:#e0a96a;
+  --go:#00FF88;
+  --think:#FFB800;
+  --stop:#FF3366;
+  --border:#2a2420;
+}
 body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Manrope',sans-serif;
+  line-height:1.6;
+}
+.container{max-width:1000px;margin:0 auto;padding:0 24px}
+
+/* === HERO === */
+.hero{
   min-height:100vh;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  background:#0a0e0b;
-  color:#f5efe6;
-  font-family:'Manrope',sans-serif;
   text-align:center;
-  padding:24px;
-  overflow:hidden;
+  padding:40px 24px;
+  position:relative;
+}
+.hero::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:200px;
+  background:linear-gradient(transparent,var(--bg));
+  pointer-events:none;
 }
 .logo{
   font-family:'Anton',sans-serif;
-  font-size:clamp(48px,10vw,72px);
+  font-size:clamp(56px,12vw,80px);
   letter-spacing:2px;
   margin-bottom:8px;
 }
-.logo .accent{
-  color:#c97d3a;
-}
+.logo .accent{color:var(--accent)}
 .tagline{
   font-family:'Fraunces',serif;
   font-style:italic;
-  font-size:clamp(16px,3vw,22px);
-  color:#c97d3a;
+  font-size:clamp(18px,3.5vw,26px);
+  color:var(--accent);
+  margin-bottom:16px;
+}
+.hero-sub{
+  font-size:15px;
+  color:var(--textMuted);
+  max-width:500px;
+  margin-bottom:40px;
+  line-height:1.8;
+}
+.hero-badges{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+  justify-content:center;
   margin-bottom:40px;
 }
-.status{
-  font-family:'JetBrains Mono',monospace;
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 16px;
+  border-radius:20px;
   font-size:13px;
-  letter-spacing:3px;
-  text-transform:uppercase;
-  color:#6a5d50;
+  font-weight:700;
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:1px;
+}
+.badge-go{background:rgba(0,255,136,0.12);color:var(--go);border:1px solid rgba(0,255,136,0.25)}
+.badge-think{background:rgba(255,184,0,0.12);color:var(--think);border:1px solid rgba(255,184,0,0.25)}
+.badge-stop{background:rgba(255,51,102,0.12);color:var(--stop);border:1px solid rgba(255,51,102,0.25)}
+
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.cta{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:16px 32px;
+  border-radius:12px;
+  font-size:15px;
+  font-weight:700;
+  text-decoration:none;
+  transition:all .2s;
+  cursor:pointer;
+  border:none;
+  font-family:'Manrope',sans-serif;
+}
+.cta-primary{background:var(--accent);color:#0a0e0b}
+.cta-primary:hover{background:var(--accentLight);transform:translateY(-2px)}
+.cta-secondary{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.cta-secondary:hover{background:rgba(201,125,58,0.1)}
+
+/* === VERDICT SECTION === */
+.section{padding:80px 24px}
+.section-title{
+  font-family:'Anton',sans-serif;
+  font-size:clamp(28px,5vw,40px);
+  text-align:center;
+  margin-bottom:8px;
+  letter-spacing:1px;
+}
+.section-title .accent{color:var(--accent)}
+.section-sub{
+  text-align:center;
+  color:var(--textMuted);
+  font-size:14px;
+  margin-bottom:48px;
+  max-width:600px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.verdict-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:16px;
+  max-width:1000px;
+  margin:0 auto;
+}
+.verdict-card{
+  background:var(--surface);
+  border-radius:16px;
+  padding:24px;
+  border:1px solid var(--border);
+  transition:transform .2s,box-shadow .2s;
+}
+.verdict-card:hover{transform:translateY(-4px)}
+.verdict-card.v-go{border-color:rgba(0,255,136,0.3)}
+.verdict-card.v-go:hover{box-shadow:0 8px 30px rgba(0,255,136,0.15)}
+.verdict-card.v-think{border-color:rgba(255,184,0,0.3)}
+.verdict-card.v-think:hover{box-shadow:0 8px 30px rgba(255,184,0,0.15)}
+.verdict-card.v-stop{border-color:rgba(255,51,102,0.3)}
+.verdict-card.v-stop:hover{box-shadow:0 8px 30px rgba(255,51,102,0.15)}
+.verdict-symbol{
+  width:48px;height:48px;border-radius:24px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;font-weight:900;color:#000;
   margin-bottom:12px;
 }
-.bar-wrap{
-  width:min(320px,80vw);
-  height:4px;
-  background:#1a1410;
-  border-radius:2px;
-  overflow:hidden;
-  margin-bottom:48px;
+.verdict-name{font-size:18px;font-weight:800;margin-bottom:6px}
+.verdict-desc{font-size:13px;color:var(--textMuted);line-height:1.7}
+
+/* === FEATURES === */
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:16px;
+  max-width:1000px;
+  margin:0 auto;
 }
-.bar{
-  width:65%;
-  height:100%;
-  background:linear-gradient(90deg,#c97d3a,#e0a96a);
-  border-radius:2px;
-  animation:pulse 2s ease-in-out infinite;
+.feature-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:24px;
 }
-@keyframes pulse{
-  0%,100%{opacity:1}
-  50%{opacity:.5}
+.feature-icon{font-size:28px;margin-bottom:12px}
+.feature-title{font-size:16px;font-weight:700;margin-bottom:6px}
+.feature-desc{font-size:13px;color:var(--textMuted);line-height:1.7}
+
+/* === PRICING === */
+.pricing-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:16px;
+  max-width:700px;
+  margin:0 auto;
 }
-.notify{
-  margin-bottom:16px;
-  font-size:14px;
-  color:#8a7d70;
+.price-card{
+  background:var(--surface);
+  border-radius:16px;
+  padding:28px;
+  border:1px solid var(--border);
+  text-align:center;
+  position:relative;
 }
-.email-row{
-  display:flex;
-  gap:0;
-  width:min(400px,85vw);
+.price-card.recommended{
+  border:2px solid var(--go);
+  box-shadow:0 0 30px rgba(0,255,136,0.1);
 }
-.email-row input{
-  flex:1;
-  padding:14px 16px;
-  border:1px solid #2a2420;
-  border-right:none;
-  border-radius:8px 0 0 8px;
-  background:#111;
-  color:#f5efe6;
-  font-family:'Manrope',sans-serif;
-  font-size:14px;
-  outline:none;
+.price-rec{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:var(--go);color:#000;
+  padding:4px 16px;border-radius:12px;
+  font-size:10px;font-weight:900;letter-spacing:2px;
 }
-.email-row input::placeholder{color:#4a4440}
-.email-row input:focus{border-color:#c97d3a}
-.email-row button{
-  padding:14px 24px;
-  border:none;
-  border-radius:0 8px 8px 0;
-  background:#c97d3a;
-  color:#0a0e0b;
-  font-family:'Manrope',sans-serif;
-  font-weight:700;
-  font-size:14px;
-  cursor:pointer;
-  white-space:nowrap;
-}
-.email-row button:hover{background:#e0a96a}
-.footer-line{
-  position:fixed;
-  bottom:24px;
-  font-size:11px;
-  color:#3a3430;
+.price-name{font-size:22px;font-weight:900;margin-bottom:4px}
+.price-amount{
   font-family:'JetBrains Mono',monospace;
+  font-size:32px;font-weight:700;
+  margin:12px 0 4px;
 }
-.msg{
-  margin-top:12px;
-  font-size:13px;
-  color:#c97d3a;
-  min-height:20px;
+.price-period{font-size:12px;color:var(--textMuted);margin-bottom:16px}
+.price-features{text-align:left;margin-bottom:20px}
+.price-feature{
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;padding:4px 0;
+}
+.price-feature .check{color:var(--go);font-weight:700;font-size:14px}
+.price-feature .cross{color:var(--textDim);font-size:14px}
+.price-feature.disabled{color:var(--textDim)}
+
+/* === OVERLAY PREVIEW === */
+.overlay-section{
+  background:var(--surfaceAlt);
+  border-radius:24px;
+  padding:40px;
+  max-width:800px;
+  margin:0 auto;
+  text-align:center;
+}
+.overlay-demo{
+  display:flex;
+  justify-content:center;
+  gap:24px;
+  flex-wrap:wrap;
+  margin-top:32px;
+}
+.ov-mini{
+  background:rgba(10,14,11,0.92);
+  border-radius:12px;
+  padding:14px;
+  min-width:160px;
+  border:2px solid;
+  text-align:left;
+}
+.ov-mini-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ov-mini-circle{
+  width:30px;height:30px;border-radius:15px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:900;color:#000;
+}
+.ov-mini-val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700}
+.ov-mini-daily{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--think)}
+
+/* === PRIVACY === */
+.privacy-box{
+  border:1px dashed var(--go);
+  border-radius:16px;
+  padding:24px;
+  max-width:500px;
+  margin:0 auto;
+  text-align:center;
+}
+.privacy-title{font-size:16px;font-weight:700;color:var(--go);margin-bottom:8px}
+.privacy-desc{font-size:13px;color:var(--textMuted);line-height:1.7}
+
+/* === DOWNLOAD === */
+.download-section{
+  text-align:center;
+  padding:80px 24px;
+}
+.download-box{
+  background:var(--surface);
+  border:1px solid var(--accent);
+  border-radius:20px;
+  padding:40px;
+  max-width:500px;
+  margin:0 auto;
+  box-shadow:0 0 40px rgba(201,125,58,0.1);
+}
+.download-version{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  color:var(--textDim);
+  letter-spacing:2px;
+  margin-top:16px;
+}
+
+/* === FOOTER === */
+.footer{
+  text-align:center;
+  padding:40px 24px;
+  border-top:1px solid var(--border);
+}
+.footer-brand{
+  font-family:'Anton',sans-serif;
+  font-size:20px;
+  letter-spacing:1px;
+  margin-bottom:8px;
+}
+.footer-brand .accent{color:var(--accent)}
+.footer-links{
+  display:flex;gap:24px;justify-content:center;flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.footer-links a{color:var(--textMuted);text-decoration:none;font-size:13px}
+.footer-links a:hover{color:var(--accent)}
+.footer-copy{font-size:11px;color:var(--textDim);font-family:'JetBrains Mono',monospace}
+.footer-anpc{margin-top:8px;font-size:10px;color:var(--textDim)}
+.footer-anpc a{color:var(--textMuted);text-decoration:underline}
+
+@media(max-width:600px){
+  .hero{padding:60px 20px}
+  .section{padding:60px 16px}
+  .overlay-section{padding:24px;border-radius:16px}
+  .download-box{padding:24px}
+  .pricing-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 
-<div class="logo">DRUM<span class="accent">IQ</span></div>
-<div class="tagline">Performance Intelligence pentru soferi.</div>
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="logo">DRUM<span class="accent">IQ</span></div>
+  <div class="tagline">Stii instant daca merita cursa.</div>
+  <p class="hero-sub">
+    Overlay inteligent pentru soferi Bolt. Analizeaza fiecare oferta in timp real
+    si iti arata verdictul inainte sa accepti.
+  </p>
+  <div class="hero-badges">
+    <span class="badge badge-go">$ GO — profitabila</span>
+    <span class="badge badge-think">? THINK — analizeaza</span>
+    <span class="badge badge-stop">X STOP — evita</span>
+  </div>
+  <div class="cta-row">
+    <a href="#download" class="cta cta-primary">Descarca APK</a>
+    <a href="#features" class="cta cta-secondary">Vezi ce face</a>
+  </div>
+</section>
 
-<div class="status">Under Construction</div>
-<div class="bar-wrap"><div class="bar"></div></div>
+<!-- ═══ VERDICT ═══ -->
+<section class="section" id="verdict">
+  <div class="container">
+    <div class="section-title">Trei <span class="accent">verdicte</span>. Zero ghicit.</div>
+    <p class="section-sub">DRUMIQ calculeaza profitul real al fiecarei curse, incluzand carburant, comision Bolt, taxe si uzura. Rezultatul: un semnal clar.</p>
+    <div class="verdict-grid">
+      <div class="verdict-card v-go">
+        <div class="verdict-symbol" style="background:var(--go)">$</div>
+        <div class="verdict-name" style="color:var(--go)">GO</div>
+        <div class="verdict-desc">Cursa profitabila. Accepta fara ezitare — profitul pe km depaseste pragul tau.</div>
+      </div>
+      <div class="verdict-card v-think">
+        <div class="verdict-symbol" style="background:var(--think)">?</div>
+        <div class="verdict-name" style="color:var(--think)">THINK</div>
+        <div class="verdict-desc">Zona galbena. Profitul e aproape de prag — decide in functie de context (trafic, zona, ora).</div>
+      </div>
+      <div class="verdict-card v-stop">
+        <div class="verdict-symbol" style="background:var(--stop)">X</div>
+        <div class="verdict-name" style="color:var(--stop)">STOP</div>
+        <div class="verdict-desc">Cursa neprofitabila. Pickup prea lung, pret prea mic, sau distanta suspecta. Refuza.</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<div class="notify">Fii primul care afla cand lansam.</div>
-<form class="email-row" onsubmit="return subscribe(event)">
-  <input type="email" id="emailInput" placeholder="adresa ta de email" required>
-  <button type="submit">Anunta-ma</button>
-</form>
-<div class="msg" id="msg"></div>
+<!-- ═══ OVERLAY PREVIEW ═══ -->
+<section class="section" style="padding-top:0">
+  <div class="overlay-section">
+    <div class="section-title" style="font-size:24px">Overlay <span class="accent">peste Bolt</span></div>
+    <p style="color:var(--textMuted);font-size:13px;margin-top:8px">Apare automat cand primesti o oferta. Doua moduri: simplu sau PRO.</p>
+    <div class="overlay-demo">
+      <div class="ov-mini" style="border-color:var(--go)">
+        <div class="ov-mini-row">
+          <div class="ov-mini-circle" style="background:var(--go)">$</div>
+          <span class="ov-mini-val" style="color:var(--go)">4.68 RON/km</span>
+        </div>
+        <div class="ov-mini-daily">AZI: 145/200 lei</div>
+      </div>
+      <div class="ov-mini" style="border-color:var(--think)">
+        <div class="ov-mini-row">
+          <div class="ov-mini-circle" style="background:var(--think)">?</div>
+          <span class="ov-mini-val" style="color:var(--think)">2.10 RON/km</span>
+        </div>
+        <div class="ov-mini-daily">AZI: 145/200 lei</div>
+      </div>
+      <div class="ov-mini" style="border-color:var(--stop)">
+        <div class="ov-mini-row">
+          <div class="ov-mini-circle" style="background:var(--stop)">X</div>
+          <span class="ov-mini-val" style="color:var(--stop)">0.07 RON/km</span>
+        </div>
+        <div class="ov-mini-daily">AZI: 145/200 lei</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<div class="footer-line">&copy; 2026 DRUMIQ by GO PAMPA S.R.L.</div>
+<!-- ═══ FEATURES ═══ -->
+<section class="section" id="features" style="padding-top:0">
+  <div class="container">
+    <div class="section-title">Tot ce ai <span class="accent">nevoie</span></div>
+    <p class="section-sub">Construit de un sofer, pentru soferi. Fiecare feature rezolva o problema reala.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">&#128202;</div>
+        <div class="feature-title">Tracker castiguri</div>
+        <div class="feature-desc">Inregistreaza automat fiecare cursa. Statistici pe zi, saptamana si total — castiguri, distanta, timp, medie lei/km.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#127919;</div>
+        <div class="feature-title">Obiectiv zilnic</div>
+        <div class="feature-desc">Seteaza un target (ex: 200 lei/zi). Overlay-ul arata progresul in timp real pe fiecare cursa.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#128205;</div>
+        <div class="feature-title">Google trafic real</div>
+        <div class="feature-desc">Calculeaza distanta si durata cursei cu trafic real prin Google Routes API. Nu mai ghicesti.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#9881;&#65039;</div>
+        <div class="feature-title">Praguri personalizabile</div>
+        <div class="feature-desc">RON/km, RON/min, RON/ora — seteaza-ti pragurile. Plus filtre dure: pickup maxim, rating minim pasager.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#9971;</div>
+        <div class="feature-title">6 tipuri carburant</div>
+        <div class="feature-desc">Benzina, Diesel, GPL, Electric, Hybrid HEV si Hybrid PHEV. Cost total/km calculat exact cu uzura masina.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#128274;</div>
+        <div class="feature-title">100% local pe telefon</div>
+        <div class="feature-desc">Datele tale raman DOAR pe dispozitiv. Nu trimitem nimic pe internet. Zero tracking, zero telemetrie.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRIVACY ═══ -->
+<section class="section" style="padding-top:0">
+  <div class="privacy-box">
+    <div class="privacy-title">&#128274; Datele tale raman pe telefon</div>
+    <div class="privacy-desc">
+      DRUMIQ functioneaza 100% local. Nu colectam date personale, nu monitorizam locatia,
+      nu trimitem informatii pe server. Singura conexiune online: Google Routes API (doar pe Pro).
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRICING ═══ -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="section-title">Planuri <span class="accent">simple</span></div>
+    <p class="section-sub">Incepi gratuit. Upgradeaza cand esti gata.</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-name" style="color:var(--think)">TRIAL</div>
+        <div class="price-amount">GRATUIT</div>
+        <div class="price-period">100 curse · 7 zile</div>
+        <div class="price-features">
+          <div class="price-feature"><span class="check">&#10003;</span> Overlay verdict ($/?/X)</div>
+          <div class="price-feature"><span class="check">&#10003;</span> 1 prag personalizat (lei/km)</div>
+          <div class="price-feature"><span class="check">&#10003;</span> Tracker castiguri</div>
+          <div class="price-feature disabled"><span class="cross">&#10007;</span> Google trafic real</div>
+          <div class="price-feature disabled"><span class="cross">&#10007;</span> Card detaliat overlay</div>
+          <div class="price-feature disabled"><span class="cross">&#10007;</span> Toate filtrele Pro</div>
+        </div>
+        <a href="#download" class="cta cta-secondary" style="width:100%;justify-content:center">Incepe gratuit</a>
+      </div>
+      <div class="price-card recommended">
+        <div class="price-rec">&#9733; RECOMANDAT</div>
+        <div class="price-name" style="color:var(--go)">PRO</div>
+        <div class="price-amount">49 <span style="font-size:16px;color:var(--textMuted)">RON/luna</span></div>
+        <div class="price-period">sau 399 RON/an · 799 RON lifetime</div>
+        <div class="price-features">
+          <div class="price-feature"><span class="check">&#10003;</span> Tot din Trial</div>
+          <div class="price-feature"><span class="check">&#10003;</span> Google trafic real</div>
+          <div class="price-feature"><span class="check">&#10003;</span> Card detaliat overlay</div>
+          <div class="price-feature"><span class="check">&#10003;</span> Toate 4 pragurile</div>
+          <div class="price-feature"><span class="check">&#10003;</span> Pickup maxim (2-40 km)</div>
+          <div class="price-feature"><span class="check">&#10003;</span> Rating minim pasager</div>
+        </div>
+        <a href="#download" class="cta cta-primary" style="width:100%;justify-content:center">Descarca & activeaza</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DOWNLOAD ═══ -->
+<section class="download-section" id="download">
+  <div class="download-box">
+    <div style="font-size:40px;margin-bottom:16px">&#128229;</div>
+    <div class="section-title" style="font-size:24px;margin-bottom:8px">Descarca <span class="accent">DRUMIQ</span></div>
+    <p style="font-size:13px;color:var(--textMuted);margin-bottom:24px">Android · APK direct · nu necesita Play Store</p>
+    <a href="https://expo.dev/artifacts/eas/BUILD_ID.apk" id="downloadLink" class="cta cta-primary" style="width:100%;justify-content:center;font-size:16px;padding:18px 32px">
+      DESCARCA APK
+    </a>
+    <div class="download-version">v1.0.0 · build 20 mai 2026 · ro.gopampa.drumiq</div>
+    <p style="font-size:11px;color:var(--textDim);margin-top:12px;line-height:1.6">
+      Necesita Android 8+ · ~25 MB · Permisiuni: Accessibility, Overlay, Baterie
+    </p>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <div class="footer-brand">DRUM<span class="accent">IQ</span></div>
+  <div class="footer-links">
+    <a href="#features">Features</a>
+    <a href="#pricing">Preturi</a>
+    <a href="#download">Download</a>
+    <a href="mailto:contact@drumiq.ro">Contact</a>
+  </div>
+  <div class="footer-copy">&copy; 2026 DRUMIQ by GO PAMPA S.R.L. · Baia Mare, Romania</div>
+  <div class="footer-anpc">
+    <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener">ANPC — SAL</a> ·
+    <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">SOL — platforma UE</a>
+  </div>
+</footer>
 
 <script>
-function subscribe(e){
-  e.preventDefault();
-  var email=document.getElementById('emailInput').value;
-  var msg=document.getElementById('msg');
-  msg.textContent='Te-am notat! Te anuntam cand lansam.';
-  document.getElementById('emailInput').value='';
-  setTimeout(function(){msg.textContent='';},4000);
-  return false;
-}
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t)t.scrollIntoView({behavior:'smooth'});
+  });
+});
 </script>
 </body>
 </html>

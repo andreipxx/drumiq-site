@@ -18,7 +18,6 @@ import SettingsScreen from './src/screens/SettingsScreen';
 // Sub-screens reachable from Settings/Plan/Profil
 import AccessibilityTestScreen from './src/screens/AccessibilityTestScreen';
 import FuelSettingsScreen from './src/screens/FuelSettingsScreen';
-import ProSettingsScreen from './src/screens/ProSettingsScreen';
 import FilterSettingsScreen from './src/screens/FilterSettingsScreen';
 import WorkModeScreen from './src/screens/WorkModeScreen';
 import PaywallUpgradeScreen from './src/screens/PaywallUpgradeScreen';
@@ -28,7 +27,7 @@ import OnboardingScreen, { isOnboardingDone } from './src/screens/OnboardingScre
 import { getLicenseState } from './src/services/licenseManager';
 import { startOverlayController, stopOverlayController } from './src/services/overlayController';
 
-type SubScreen = null | 'accessibility' | 'fuel' | 'pro' | 'filters' | 'upgrade' | 'overlay_demo' | 'workmode';
+type SubScreen = null | 'accessibility' | 'fuel' | 'filters' | 'upgrade' | 'overlay_demo' | 'workmode';
 
 function MainApp() {
   const { colors } = useTheme();
@@ -79,7 +78,6 @@ function MainApp() {
   // === Sub-screens override the tab view ===
   if (sub === 'accessibility') return <AccessibilityTestScreen onBack={() => setSub(null)} />;
   if (sub === 'fuel')          return <FuelSettingsScreen     onBack={() => setSub(null)} />;
-  if (sub === 'pro')           return <ProSettingsScreen      onBack={() => setSub(null)} />;
   if (sub === 'filters')       return <FilterSettingsScreen   onBack={() => setSub(null)} />;
   if (sub === 'workmode')      return <WorkModeScreen         onBack={() => setSub(null)} />;
   if (sub === 'upgrade')       return <PaywallUpgradeScreen   onClose={() => setSub(null)} onActivateCode={() => setSub(null)} />;
@@ -94,7 +92,6 @@ function MainApp() {
       case 'profil':  return <ProfilScreen />;
       case 'settings':return <SettingsScreen
                                 onOpenFuel={() => setSub('fuel')}
-                                onOpenPro={() => setSub('pro')}
                                 onOpenFilters={() => setSub('filters')}
                                 onOpenUpgrade={() => setSub('upgrade')}
                                 onOpenAccessibility={() => setSub('accessibility')}
