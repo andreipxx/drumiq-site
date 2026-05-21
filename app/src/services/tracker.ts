@@ -7,6 +7,16 @@ import type { Ride, TrackerPeriod, TrackerStats } from '../types';
 const STORAGE_KEY = '@dp_rides_v2';
 const MAX_RIDES = 1000; // keep last 1000 rides max (FIFO)
 
+// CRIT-6 FIX: mutex prevents concurrent read-modify-save race conditions
+let _mutex: Promise<void> = Promise.resolve();
+function withLock<T>(fn: () => Promise<T>): Promise<T> {
+  let release: () => void;
+  const next = new Promise<void>(resolve => { release = resolve; });
+  const prev = _mutex;
+  _mutex = next;
+  return prev.then(fn).finally(() => release!());
+}
+
 // === Persistence ===
 export async function loadRides(): Promise<Ride[]> {
   try {
@@ -26,21 +36,25 @@ async function saveRides(rides: Ride[]): Promise<void> {
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
 }
 
-// === CRUD ===
-export async function addRide(ride: Ride): Promise<void> {
-  const all = await loadRides();
-  // Dedupe by id
-  const filtered = all.filter((r) => r.id !== ride.id);
-  filtered.push(ride);
-  await saveRides(filtered);
+// === CRUD (CRIT-6: wrapped with mutex to prevent race conditions) ===
+export function addRide(ride: Ride): Promise<void> {
+  return withLock(async () => {
+    const all = await loadRides();
+    // Dedupe by id
+    const filtered = all.filter((r) => r.id !== ride.id);
+    filtered.push(ride);
+    await saveRides(filtered);
+  });
 }
 
-export async function updateRide(id: string, patch: Partial<Ride>): Promise<void> {
-  const all = await loadRides();
-  const idx = all.findIndex((r) => r.id === id);
-  if (idx === -1) return;
-  all[idx] = { ...all[idx], ...patch };
-  await saveRides(all);
+export function updateRide(id: string, patch: Partial<Ride>): Promise<void> {
+  return withLock(async () => {
+    const all = await loadRides();
+    const idx = all.findIndex((r) => r.id === id);
+    if (idx === -1) return;
+    all[idx] = { ...all[idx], ...patch };
+    await saveRides(all);
+  });
 }
 
 export async function getRide(id: string): Promise<Ride | null> {
@@ -52,10 +66,14 @@ export async function clearAllRides(): Promise<void> {
   await AsyncStorage.removeItem(STORAGE_KEY);
 }
 
-export function generateRideId(timestamp: number, grossEarnings: number): string {
-  // 2-minute window: same offer captured multiple times gets the same ID
+// CRIT-2 FIX: removed cache — 2 offers within 120s with same price+pickup generated
+// the same ID, causing the second to overwrite the first. Every call now returns a unique ID.
+export function generateRideId(timestamp: number, grossEarnings: number, pickupKm?: number): string {
+  const content = `${Math.round(grossEarnings * 100)}_${Math.round((pickupKm ?? 0) * 2)}`;
   const window = Math.floor(timestamp / 120000);
-  return `r_${window}_${Math.round(grossEarnings * 100)}`;
+  const rand = Math.random().toString(36).substring(2, 7); // 5 random chars
+  const id = `r_${window}_${content}_${rand}`;
+  return id;
 }
 
 // === Stats ===
@@ -85,10 +103,12 @@ export function computeStats(rides: Ride[]): TrackerStats {
   }
 
   const completed = rides.filter((r) => r.completed);
-  let earnings = 0, distance = 0, duration = 0;
+  let earnings = 0, distance = 0, tripDistance = 0, duration = 0;
   for (const r of completed) {
     earnings += r.grossEarnings;
-    distance += (r.pickupKm ?? 0) + r.tripKm;
+    distance += (r.pickupKm ?? 0) + (r.tripKm ?? 0);
+    // L2 FIX: track trip-only km for avgPpkm (exclude pickup dead-km)
+    tripDistance += r.tripKm ?? 0;
     duration += r.durationMin;
   }
 
@@ -98,7 +118,8 @@ export function computeStats(rides: Ride[]): TrackerStats {
     offersCount: rides.length,
     distanceKm: round2(distance),
     durationMin: Math.round(duration),
-    avgPpkm: distance > 0 ? round2(earnings / distance) : 0,
+    // L2 FIX: use trip-only km for price-per-km average (fallback to total if no trip data)
+    avgPpkm: tripDistance > 0 ? round2(earnings / tripDistance) : (distance > 0 ? round2(earnings / distance) : 0),
     avgPpmin: duration > 0 ? round2(earnings / duration) : 0,
   };
 }
@@ -123,6 +144,9 @@ export const BOLT_MARKERS = {
   IN_TRIP_CALL:    'Sună pasagerul',                     // appears during trip
   IN_TRIP_END:     'Finalizează cursa',
   RIDE_COMPLETED:  'Câștigurile tale',                   // FIX: appears in trip summary
+  RIDE_COMPLETED2: 'cursă finalizată',
+  RIDE_EARNINGS:   'Ai câștigat',
+  RIDE_SUMMARY:    'Sumar cursă',
 } as const;
 
 export type BoltLifecycleEvent =
@@ -134,6 +158,9 @@ export type BoltLifecycleEvent =
 
 export function detectLifecycleEvent(text: string): BoltLifecycleEvent {
   if (text.includes(BOLT_MARKERS.RIDE_COMPLETED)) return 'completed';
+  if (text.includes(BOLT_MARKERS.RIDE_COMPLETED2)) return 'completed';
+  if (text.includes(BOLT_MARKERS.RIDE_EARNINGS)) return 'completed';
+  if (text.includes(BOLT_MARKERS.RIDE_SUMMARY)) return 'completed';
   if (/Confirmă tariful/.test(text))    return 'completed'; // post_trip_confirm
   if (/Evaluează pasagerul/.test(text)) return 'completed'; // post_trip_rate
   if (text.includes(BOLT_MARKERS.IN_TRIP_END) || text.includes(BOLT_MARKERS.IN_TRIP_CALL)) return 'in_trip';
@@ -146,6 +173,80 @@ export function detectLifecycleEvent(text: string): BoltLifecycleEvent {
   }
   if (/\d+[.,]\d+\s*lei\s*\(NET/i.test(text)) return 'offer_shown';
   return 'unknown';
+}
+
+// CRIT-3 FIX: wrapped with withLock to prevent race with addRide
+export function autoCompleteStaleRides(): Promise<number> {
+  return withLock(async () => {
+    const all = await loadRides();
+    const now = Date.now();
+    const ACCEPTED_STALE_MS = 45 * 60 * 1000;
+    const UNTRACKED_STALE_MS = 2 * 60 * 60 * 1000;
+    const ESTIMATED_RIDE_MIN = 20;
+    let count = 0;
+    for (const r of all) {
+      if (r.completed) continue;
+      const age = now - r.timestamp;
+      const shouldComplete =
+        (r.accepted && age > ACCEPTED_STALE_MS) ||
+        (!r.accepted && age > UNTRACKED_STALE_MS);
+      if (shouldComplete) {
+        r.accepted = true;
+        r.completed = true;
+        r.durationMin = ESTIMATED_RIDE_MIN;
+        r.completedAt = r.timestamp + ESTIMATED_RIDE_MIN * 60 * 1000;
+        count++;
+      }
+    }
+    if (count > 0) await saveRides(all);
+    return count;
+  });
+}
+
+// === Weekly chart data ===
+export interface DayEarnings {
+  label: string;  // LU, MA, MI, JO, VI, SA, DU
+  earnings: number;
+  isToday: boolean;
+  date: number;   // timestamp start of day (ms)
+}
+
+const DAY_LABELS = ['DU', 'LU', 'MA', 'MI', 'JO', 'VI', 'SA'];
+
+export async function getWeeklyChartData(): Promise<DayEarnings[]> {
+  const all = await loadRides();
+  const now = new Date();
+  const result: DayEarnings[] = [];
+
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    d.setHours(0, 0, 0, 0);
+    const dayStart = d.getTime();
+    const dayEnd = dayStart + 86400000;
+
+    const dayRides = all.filter(r => r.completed && r.timestamp >= dayStart && r.timestamp < dayEnd);
+    let earnings = 0;
+    for (const r of dayRides) earnings += r.grossEarnings;
+
+    result.push({
+      label: DAY_LABELS[d.getDay()],
+      earnings: round2(earnings),
+      isToday: i === 0,
+      date: dayStart,
+    });
+  }
+  return result;
+}
+
+// === Day detail (click pe zi in chart) ===
+export async function getStatsForDay(dayTimestamp: number): Promise<{ stats: TrackerStats; rides: Ride[] }> {
+  const dayEnd = dayTimestamp + 86400000;
+  const all = await loadRides();
+  const dayRides = all.filter(r => r.timestamp >= dayTimestamp && r.timestamp < dayEnd);
+  const stats = computeStats(dayRides);
+  const sorted = dayRides.filter(r => r.completed).sort((a, b) => b.timestamp - a.timestamp);
+  return { stats, rides: sorted };
 }
 
 // === Format helpers ===

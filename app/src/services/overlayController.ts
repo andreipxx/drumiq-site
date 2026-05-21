@@ -11,18 +11,20 @@ import { parseBoltRide } from './boltParser';
 import { analyzeRide } from './profitCalculator';
 import { feedScreen } from './rideStateMachine';
 import { getFuelSettings, getDailyGoal } from './userSettings';
+import { getAdaptiveConsumption } from './extendedSettings';
 import { getStatsForPeriod } from './tracker';
 import { getRoute } from './routesApi';
 import { loadThresholds } from './filterEngine';
-import { addRide, updateRide, generateRideId, detectLifecycleEvent } from './tracker';
+import { addRide, updateRide, generateRideId, detectLifecycleEvent, autoCompleteStaleRides } from './tracker';
 import { trackPackageSeen } from './platformDetector';
 import { VERDICT_DISPLAY } from '../types';
 import { logDpEvent } from './dpDebug';
 import type { PlanTier, Ride, RouteSource, UnifiedThresholds } from '../types';
+import type { ParsedBoltRide } from './boltParser';
+import type { ProfitAnalysis } from './profitCalculator';
 
 const OVERLAY_MODE_KEY = '@dp_overlay_mode_pro';
 const STICKY_MS = 15000;
-const STICKY_REFUSE_MS = 1000;
 
 export async function getOverlayModePro(): Promise<OverlayMode> {
   const v = await AsyncStorage.getItem(OVERLAY_MODE_KEY);
@@ -47,50 +49,91 @@ let stickyTimer: ReturnType<typeof setTimeout> | null = null;
 let listenerStop: (() => void) | null = null;
 let controllerPlan: PlanTier | null = null; // BUG4: guards same-plan no-op restart
 let controllerGen = 0;                      // BUG3: stale second-pass guard
+let offerGen = 0;                        // BUG3: invalidates stale handlers on new offer
+let lastOfferGross: number | null = null; // BUG3: tracks current offer's gross for dedup
+let lastOfferPickup: number | null = null; // BUG3: tracks pickup for same-price different-offer detection
+let lastOfferApiResolved = false;                // BUG3-v2: skip fallback re-render after API success
+let lastTripDestination: string | null = null;   // Bug6: destination change tracking
+let destChangeShown = false;                     // Bug6: dedup destination change alert
+let destChangeCandidate: string | null = null;   // Bug6: consecutive-capture confirmation
+let destChangeCandidateCount = 0;                // Bug6: must see same new dest 2x before alert
+
+function normalizeAddress(addr: string): string {
+  return addr
+    .toLowerCase()
+    .replace(/[ăâ]/g, 'a').replace(/[îì]/g, 'i').replace(/[șş]/g, 's').replace(/[țţ]/g, 't')
+    .replace(/[^a-z0-9 ]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 25);
+}
 
 function modeForPlan(plan: PlanTier, proPref: OverlayMode): OverlayMode {
-  if (plan === 'pro') return proPref;
+  if (plan === 'pro' || plan === 'root') return proPref;
   return 'simple';
 }
 
-function buildOverlayPayload(parsed: any, a: any, mode: OverlayMode, label: string,
+function buildOverlayPayload(parsed: ParsedBoltRide, a: ProfitAnalysis, mode: OverlayMode, label: string,
                               tripKmFromApi?: number, tripMinFromApi?: number,
                               source: 'fallback' | 'api' | 'cache' = 'fallback') {
+  const isSanity = !!a.sanityError;
+  const hasOverride = !!a.proOverride;
+  const overrideNet = a.proOverride === 'pickup_too_far'
+    ? `⚠ Pickup ${a.pickupKm}km prea departe`
+    : a.proOverride === 'rating_too_low'
+      ? `⚠ Rating prea mic`
+      : a.proOverride === 'has_stops'
+        ? '⚠ Oprire — verifică km'
+        : null;
   return {
     mode,
     verdict: a.verdict,
     label,
     pickup: parsed.pickupKm != null ? `${parsed.pickupKm} km / ${parsed.pickupMin ?? '?'} min` : '—',
-    trip: tripKmFromApi != null
-      ? `${tripKmFromApi} km / ${tripMinFromApi ?? '?'} min`
-      : '~' + a.tripKmEstimate + ' km',
-    duration: `${a.totalMinutes} min`,
+    trip: isSanity ? '⚠ suspect'
+      : tripKmFromApi != null
+        ? `${tripKmFromApi} km / ${tripMinFromApi ?? '?'} min`
+        : '~' + a.tripKmEstimate + ' km',
+    duration: isSanity ? '—' : `${a.totalMinutes} min`,
     gross: parsed.grossNet != null ? parsed.grossNet.toFixed(2) + ' lei' : '—',
-    profitKm: a.profitPerKm.toFixed(2) + ' RON/km',
-    profitMin: a.profitPerMin.toFixed(2) + ' RON/min',
-    net: a.profit > 0 ? '+' + a.profit.toFixed(2) + ' lei' : a.profit.toFixed(2) + ' lei',
+    profitKm: isSanity ? '—' : `${a.profitPerKm.toFixed(2)} / ${a.grossPerKm.toFixed(1)} lei/km`,
+    profitMin: isSanity ? '—' : a.profitPerMin.toFixed(2) + ' RON/min',
+    net: isSanity ? '—'
+      : overrideNet ?? (a.profit > 0 ? '+' + a.profit.toFixed(2) + ' lei' : a.profit.toFixed(2) + ' lei'),
+    netShort: isSanity ? '—'
+      : hasOverride ? '⚠' : (a.profit > 0 ? '+' + a.profit.toFixed(1) : a.profit.toFixed(1)),
     shortRide: a.shortRideFlag,
     sanityError: a.sanityError,
-    deadKm: String(a.pickupKm),
     source,
   };
 }
 
-function buildLabel(parsed: any, a: any): string {
-  let label = VERDICT_DISPLAY[a.verdict as keyof typeof VERDICT_DISPLAY]?.label || String(a.verdict).toUpperCase();
+function buildLabel(parsed: ParsedBoltRide, a: ProfitAnalysis): string {
+  const vd = VERDICT_DISPLAY[a.verdict as keyof typeof VERDICT_DISPLAY];
+  const symbol = vd?.symbol || '?';
+  const profitStr = a.profit > 0 ? `+${a.profit.toFixed(0)}` : a.profit.toFixed(0);
+
   if (a.proOverride === 'pickup_too_far' && a.overrideThreshold != null) {
-    label = `Pickup ${a.pickupKm}km > ${a.overrideThreshold}km — REFUZĂ`;
-  } else if (a.proOverride === 'rating_too_low' && a.overrideThreshold != null) {
-    label = `Rating ${parsed.passengerRating} < ${a.overrideThreshold} — REFUZĂ`;
-  } else if (a.proOverride === 'has_stops') {
-    label = 'Oprire — verifică distanța';
-  } else if (a.sanityError) {
-    label = 'Distanță suspectă — verifică';
+    return `✕ Pickup ${a.pickupKm}km > ${a.overrideThreshold}km`;
+  }
+  if (a.proOverride === 'rating_too_low' && a.overrideThreshold != null) {
+    return `✕ Rating ${parsed.passengerRating} < ${a.overrideThreshold}`;
+  }
+  if (a.proOverride === 'has_stops') {
+    return `? Oprire — verifică`;
+  }
+  if (a.sanityError) {
+    return `? Distanță suspectă`;
+  }
+
+  let label = `${symbol} ${profitStr} lei`;
+  if (parsed.surgeMultiplier && parsed.surgeMultiplier > 1) {
+    label += ` ⚡${parsed.surgeMultiplier}x`;
   }
   return label;
 }
 
-function buildKey(parsed: any, a: any): string {
+function buildKey(parsed: ParsedBoltRide, a: ProfitAnalysis): string {
   return `${parsed.grossNet}|${Math.round((parsed.pickupKm ?? 0) * 2) / 2}|${a.verdict}|${a.proOverride ?? ''}|${parsed.paymentMethod ?? ''}`;
 }
 
@@ -101,18 +144,34 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
   const myGen = ++controllerGen;
   // Reset dedup state so a restarted controller doesn't skip the active offer
   lastShownKey = '';
+  lastLoggedScreen = '';
+  lastLifecycle = '';
+  lastOfferRideId = null;
   lastShownAt = 0;
+  lastOfferGross = null;
+  lastOfferPickup = null;
+  lastOfferApiResolved = false;
+  offerGen = 0;
+  lastTripDestination = null;
+  destChangeShown = false;
+  destChangeCandidate = null;
+  destChangeCandidateCount = 0;
 
   // mode is read fresh per offer below (so toggle changes apply immediately)
   logDpEvent('CTRL_START', { plan, mode: 'dynamic' });
 
   Accessibility.startListening();
-  // Foreground service keeps the JS process alive while DRUMIQ is minimized
-  // and shows the persistent "V" badge over Bolt as a visual confirmation.
-  Accessibility.startLifeService().catch(() => {});
+  autoCompleteStaleRides().then(n => { if (n > 0) logDpEvent('AUTO_COMPLETE', { count: n }); }).catch(() => {});
+
+  // M5 FIX: busy guard — drop incoming captures while handler is still processing
+  // the previous one, preventing unbounded queue buildup
+  let _handlerBusy = false;
 
   const handler = async (cap: AccessibilityCapture) => {
     if (!cap || !cap.text) return;
+    if (_handlerBusy) return;
+    _handlerBusy = true;
+    try {
       try { trackPackageSeen(cap.package); } catch {}
     // Log non-Bolt captures briefly so we know if Uber/other is hijacking
     const isBolt = cap.package === 'ee.mtakso.driver' || cap.package === 'ro.gopampa.boltsim';
@@ -156,27 +215,50 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
         logDpEvent('OFFER', {
           net: parsed.grossNet, pickupKm: parsed.pickupKm,
           rating: parsed.passengerRating, payment: parsed.paymentMethod,
+          surge: parsed.surgeMultiplier ?? null,
         });
 
+        lastTripDestination = parsed.destinationAddress ?? null;
+        destChangeShown = false;
+        destChangeCandidate = null;
+        destChangeCandidateCount = 0;
         if (parsed.grossNet == null) { logDpEvent('SKIP', 'no_grossNet'); return; }
 
+        // BUG3: increment generation on NEW offer (different gross OR different pickup = different ride)
+        const isNewOffer = parsed.grossNet !== lastOfferGross
+          || (parsed.pickupKm != null && parsed.pickupKm !== lastOfferPickup);
+        if (isNewOffer) {
+          offerGen++;
+          lastOfferGross = parsed.grossNet ?? null;
+          lastOfferPickup = parsed.pickupKm ?? null;
+          lastOfferApiResolved = false;
+        } else if (lastOfferApiResolved) {
+          // BUG3-v2: API already resolved this offer — don't re-render with fallback
+          logDpEvent('SKIP', 'api_resolved');
+          return;
+        } else if (lastShownAt > 0 && Date.now() - lastShownAt < 2000) {
+          logDpEvent('SKIP', 'offer_debounce');
+          return;
+        }
+        const myOfferGen = offerGen;
+
         // Start API fetch IMMEDIATELY — runs in parallel with settings load below
-        const canFetchRoute = plan === 'pro' && !!parsed.pickupAddress && !!parsed.destinationAddress;
+        const canFetchRoute = (plan === 'pro' || plan === 'root') && !!parsed.pickupAddress && !!parsed.destinationAddress;
         const routePromise = canFetchRoute
           ? getRoute(parsed.pickupAddress!, parsed.destinationAddress!).catch(() => null)
           : null;
         if (canFetchRoute) logDpEvent('API_START', { addr: parsed.pickupAddress?.slice(0, 25) });
 
-        let fuel: any, thresholds: UnifiedThresholds, dailyGoal: number, todayEarnings: number;
+        let fuel: any, thresholds: UnifiedThresholds, adaptive: any, dailyGoal: number, todayEarnings: number;
         try {
-          [fuel, thresholds] = await Promise.all([getFuelSettings(), loadThresholds()]);
+          [fuel, thresholds, adaptive] = await Promise.all([getFuelSettings(), loadThresholds(), getAdaptiveConsumption()]);
           const [goal, todayStats] = await Promise.all([getDailyGoal(), getStatsForPeriod('today')]);
           dailyGoal = goal;
           todayEarnings = todayStats.earningsLei;
         } catch (e: any) { logDpEvent('SETTINGS_ERR', String(e?.message || e)); return; }
 
         // FIRST PASS: analyze with fallback estimate (no Routes API)
-        const a1 = analyzeRide(parsed, { fuel, plan, thresholds });
+        const a1 = analyzeRide(parsed, { fuel, plan, thresholds, adaptive });
         const dailyProgressStr = dailyGoal > 0
           ? `${Math.round(todayEarnings)}/${dailyGoal} lei`
           : undefined;
@@ -197,6 +279,7 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
         // (setTimeout in Promise.race is throttled when app is in background on Android,
         // which caused the entire handler to suspend and overlays/tracker to fire 10min late)
         try {
+          if (offerGen !== myOfferGen) { logDpEvent('SKIP', 'stale_first_pass'); return; }
           const payload1 = {
             ...buildOverlayPayload(parsed, a1, mode, label1, undefined, undefined, 'fallback'),
             dailyProgress: dailyProgressStr,
@@ -211,7 +294,7 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
         // Log ride to tracker immediately (fallback data) — accept/complete lifecycle updates follow
         try {
           const ts = Date.now();
-          const rideId = generateRideId(ts, parsed.grossNet || 0);
+          const rideId = generateRideId(ts, parsed.grossNet || 0, parsed.pickupKm);
           const ride: Ride = {
             id: rideId,
             timestamp: ts,
@@ -221,7 +304,7 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
             grossEarnings: parsed.grossNet || 0,
             netEarnings: a1.netAfterTax,
             paymentMethod: parsed.paymentMethod || 'card',
-            passengerRating: parsed.passengerRating || 5.0,
+            passengerRating: parsed.passengerRating ?? null,
             profitPerKm: a1.profitPerKm,
             profitNet: a1.profit,
             verdict: a1.verdict,
@@ -244,11 +327,11 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
           try {
             const route = await routePromise;
             if (!route) { logDpEvent('API_NULL'); }
-            else if (controllerGen !== myGen) { logDpEvent('API_STALE', 'gen_mismatch'); }
+            else if (controllerGen !== myGen || offerGen !== myOfferGen) { logDpEvent('API_STALE', 'gen_mismatch'); }
             else if (lastShownAt === 0) { logDpEvent('API_LATE', 'overlay_dismissed'); }
             else {
               const a2 = analyzeRide(parsed, {
-                fuel, plan, thresholds,
+                fuel, plan, thresholds, adaptive,
                 tripKmFromApi: route.distanceKm, tripMinFromApi: route.durationMin,
               });
               if (a2) {
@@ -260,6 +343,7 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
                 };
                 await Overlay.show(payload2);
                 lastShownKey = buildKey(parsed, a2);
+                lastOfferApiResolved = true;
                 logDpEvent('SHOW_OK', { verdict: a2.verdict, ppkm: a2.profitPerKm, src: route.source });
                 if (capturedRideId) {
                   await updateRide(capturedRideId, {
@@ -283,20 +367,83 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
         logDpEvent('HANDLER_ERR', String(e?.message || e));
       }
     } else {
-      // Non-offer screen: hide faster after refuse (home/map), keep longer during active trip
-      if (lastShownAt > 0 && !stickyTimer) {
+      // Bug 6: destination change detection during active trip
+      // Uses normalized comparison (lowercase, no diacritics, first 25 chars) to avoid
+      // false positives from different extraction formats (offer vs in-trip).
+      // Requires 2 consecutive captures with the same new destination before alerting.
+      if (parsed.screen === 'in_trip_active' && lastOfferRideId && !destChangeShown) {
+        const newDest = parsed.destinationAddress;
+        if (newDest && lastTripDestination && normalizeAddress(newDest) !== normalizeAddress(lastTripDestination)) {
+          const normNew = normalizeAddress(newDest);
+          if (destChangeCandidate === normNew) {
+            destChangeCandidateCount++;
+          } else {
+            destChangeCandidate = normNew;
+            destChangeCandidateCount = 1;
+          }
+          if (destChangeCandidateCount >= 2) {
+            destChangeShown = true;
+            logDpEvent('DEST_CHANGE', { from: lastTripDestination.slice(0, 30), to: newDest.slice(0, 30) });
+            try {
+              const proPrefNow = await getOverlayModePro();
+              const mode = modeForPlan(plan, proPrefNow);
+              await Overlay.show({
+                mode,
+                verdict: 'think',
+                label: 'Destinație schimbată!',
+                pickup: '—',
+                trip: newDest.slice(0, 40),
+                duration: '—',
+                gross: '—',
+                profitKm: '—',
+                profitMin: '—',
+                net: '⚠ Verifică noua rută',
+                shortRide: false,
+                sanityError: false,
+                source: 'fallback',
+              });
+              lastTripDestination = newDest;
+              lastShownAt = Date.now();
+              lastShownKey = `dest_change_${newDest}`;
+              if (lastOfferRideId) {
+                await updateRide(lastOfferRideId, { destinationAddress: newDest });
+              }
+            } catch (e: any) {
+              logDpEvent('DEST_SHOW_ERR', String(e?.message || e).slice(0, 60));
+            }
+          }
+        } else if (newDest && !lastTripDestination) {
+          lastTripDestination = newDest;
+        }
+      }
+
+      if (lastShownAt > 0) {
         const isRefusal = parsed.screen === 'home_idle' || parsed.screen === 'map_idle';
-        const stickyMs = isRefusal ? STICKY_REFUSE_MS : STICKY_MS;
-        const showAge = Date.now() - lastShownAt;
-        const remaining = Math.max(0, stickyMs - showAge);
-        stickyTimer = setTimeout(() => {
+        if (isRefusal) {
           lastShownKey = '';
           lastShownAt = 0;
+          lastOfferGross = null;
+          lastOfferPickup = null;
+          lastOfferApiResolved = false;
+          if (stickyTimer) { clearTimeout(stickyTimer); stickyTimer = null; }
           try { Overlay.hide(); } catch {}
-          stickyTimer = null;
-        }, remaining);
+          logDpEvent('DISMISS', 'instant_refusal');
+        } else if (!stickyTimer) {
+          const showAge = Date.now() - lastShownAt;
+          const remaining = Math.max(0, STICKY_MS - showAge);
+          // M1 FIX: capture controllerGen at timer start, check when it fires
+          const timerGen = controllerGen;
+          stickyTimer = setTimeout(() => {
+            if (controllerGen !== timerGen) { stickyTimer = null; return; }
+            lastShownKey = '';
+            lastShownAt = 0;
+            try { Overlay.hide(); } catch {}
+            stickyTimer = null;
+          }, remaining);
+        }
       }
     }
+    } finally { _handlerBusy = false; }
   };
 
   const unsub = Accessibility.addCaptureListener(handler);
