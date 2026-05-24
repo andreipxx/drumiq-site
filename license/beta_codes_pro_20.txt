@@ -1,0 +1,36 @@
+DrumIQ BETA - 20 Coduri PRO (30 zile)
+Generat: 24 Mai 2026
+Plan: pro_monthly (30 zile, curse nelimitate)
+==========================================
+
+ #  | COD ACTIVARE       | TESTER (nume)      | DATA DISTRIBUIT
+----|--------------------|--------------------|-----------------
+ 1  | DPP-PCRV-4XUG      |                    |
+ 2  | DPP-4D9D-DQL9      |                    |
+ 3  | DPP-QULL-FDSC      |                    |
+ 4  | DPP-574V-3APS      |                    |
+ 5  | DPP-KDC5-Y843      |                    |
+ 6  | DPP-FJYB-ZLB5      |                    |
+ 7  | DPP-GAS3-PWFQ      |                    |
+ 8  | DPP-EM9W-5J8S      |                    |
+ 9  | DPP-M9KV-88PF      |                    |
+10  | DPP-5TY3-DHUX      |                    |
+11  | DPP-JULA-43V3      |                    |
+12  | DPP-SC7Q-EDEN      |                    |
+13  | DPP-9JRZ-7V28      |                    |
+14  | DPP-VSSH-VUFT      |                    |
+15  | DPP-ZAQZ-KJZD      |                    |
+16  | DPP-CERB-TF8M      |                    |
+17  | DPP-J7CR-RF9J      |                    |
+18  | DPP-J7DU-YMA3      |                    |
+19  | DPP-55BY-L9FL      |                    |
+20  | DPP-JHZ5-XYLS      |                    |
+
+INSTRUCTIUNI TESTER:
+1. Descarca DrumIQ din linkul primit
+2. Deschide app-ul > Profil > Activeaza cod
+3. Introdu codul DPP-XXXX-XXXX
+4. App-ul se activeaza PRO pe 30 zile
+
+NOTA: Fiecare cod functioneaza pe UN SINGUR device.
+      La activare, email-ul testerului se salveaza in baza de date.
