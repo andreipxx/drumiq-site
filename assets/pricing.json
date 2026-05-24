@@ -2,9 +2,9 @@
   "standard": {
     "trial": { "price": 0, "duration": "7 zile sau 100 curse" },
     "first_month": { "price": 9, "currency": "RON" },
-    "pro_lunar": { "price": 29, "currency": "RON", "period": "lună" },
-    "pro_anual": { "price": 290, "currency": "RON", "period": "an", "saves": 58 },
-    "pro_lifetime": { "price": 599, "currency": "RON", "one_time": true },
+    "pro_lunar": { "price": 49, "currency": "RON", "period": "lună" },
+    "pro_anual": { "price": 490, "currency": "RON", "period": "an", "saves": 98 },
+    "pro_lifetime": { "price": 888, "currency": "RON", "one_time": true },
     "flote": { "price": 199, "currency": "RON", "period": "lună", "cars": "5-10" },
     "enterprise": { "price": "custom", "cars": "10+" }
   },
@@ -16,8 +16,13 @@
     "lock_price_forever": true
   },
   "referral": {
-    "reward": "1 lună gratis",
-    "trigger": "prieten activează PRO",
-    "limit": null
+    "type": "permanent_discount",
+    "tiers": [
+      { "min_friends": 1, "max_friends": 4, "discount_pct": 10 },
+      { "min_friends": 5, "max_friends": 9, "discount_pct": 20 },
+      { "min_friends": 10, "max_friends": null, "discount_pct": 30 }
+    ],
+    "condition": "prietenii rămân PRO activi",
+    "applies_to": "pro_monthly"
   }
 }

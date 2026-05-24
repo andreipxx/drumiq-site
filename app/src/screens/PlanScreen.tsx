@@ -2,22 +2,26 @@
 // Shows current plan + upgrade options with feature comparison
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { getLicenseState } from '../services/licenseManager';
-import { PLAN_PRICES_RON } from '../constants/config';
+import { PLAN_PRICES_RON, FOUNDING_MEMBER, REFERRAL_TIERS } from '../constants/config';
 import type { PlanTier } from '../types';
 
 interface Props {
   onOpenUpgrade: () => void;
+  onOpenLicense: () => void;
 }
 
 interface PlanCard {
-  id: PlanTier;
+  id: string;
+  planTier: PlanTier;
   name: string;
   price: string;
   priceLabel: string;
-  color: 'go' | 'think';
+  strikePrice?: string;
+  badge?: string;
+  color: 'go' | 'think' | 'accent';
   recommended?: boolean;
   features: { text: string; enabled: boolean }[];
 }
@@ -25,39 +29,74 @@ interface PlanCard {
 const PLAN_CARDS: PlanCard[] = [
   {
     id: 'trial',
+    planTier: 'trial',
     name: 'TRIAL',
     price: 'GRATUIT',
     priceLabel: '100 curse · 7 zile',
     color: 'think',
     features: [
-      { text: 'Bulina verdict ($/?/X)', enabled: true },
+      { text: 'Bulina verdict GO/THINK/STOP', enabled: true },
       { text: '1 filtru personalizat (lei/km)', enabled: true },
       { text: 'Tracker câștiguri', enabled: true },
       { text: 'Calcul Google trafic real', enabled: false },
-      { text: 'Card detaliat overlay', enabled: false },
-      { text: 'Toate 4 filtre + setări Pro', enabled: false },
+      { text: 'Overlay draggable detaliat', enabled: false },
+      { text: 'Toate 6 filtre + setări Pro', enabled: false },
     ],
   },
   {
-    id: 'pro',
-    name: 'PRO',
+    id: 'pro_monthly',
+    planTier: 'pro',
+    name: 'PRO LUNAR',
     price: `${PLAN_PRICES_RON.pro_monthly} RON`,
-    priceLabel: '/lună',
+    priceLabel: `/lună · prima lună ${PLAN_PRICES_RON.first_month} RON`,
     color: 'go',
-    recommended: true,
     features: [
       { text: 'TOT din Trial', enabled: true },
       { text: 'Calcul Google trafic real', enabled: true },
-      { text: 'Card detaliat overlay', enabled: true },
-      { text: 'Toate 4 filtrele personalizabile', enabled: true },
-      { text: 'Rază pickup max (2-40 km)', enabled: true },
-      { text: 'Rating pasager minim', enabled: true },
-      { text: `Anual: ${PLAN_PRICES_RON.pro_annual} RON · Lifetime: ${PLAN_PRICES_RON.pro_lifetime} RON`, enabled: true },
+      { text: 'Overlay draggable detaliat', enabled: true },
+      { text: 'Toate 6 filtrele personalizabile', enabled: true },
+      { text: 'Post-trip sync + tips tracking', enabled: true },
+      { text: 'Anulezi oricând', enabled: true },
+    ],
+  },
+  {
+    id: 'pro_annual',
+    planTier: 'pro',
+    name: 'PRO ANUAL',
+    price: `${FOUNDING_MEMBER.PRO_ANNUAL} RON`,
+    strikePrice: `${PLAN_PRICES_RON.pro_annual} RON`,
+    priceLabel: '/an · 16.6 RON / lună',
+    badge: '★ FOUNDING MEMBER',
+    color: 'go',
+    recommended: true,
+    features: [
+      { text: 'TOT din PRO Lunar', enabled: true },
+      { text: 'Preț blocat 12 luni', enabled: true },
+      { text: 'Post-trip sync + tips tracking', enabled: true },
+      { text: 'Suport prioritar WhatsApp', enabled: true },
+      { text: `Economisești ${PLAN_PRICES_RON.pro_monthly * 12 - FOUNDING_MEMBER.PRO_ANNUAL} RON/an`, enabled: true },
+    ],
+  },
+  {
+    id: 'pro_lifetime',
+    planTier: 'pro',
+    name: 'PRO LIFETIME',
+    price: `${FOUNDING_MEMBER.PRO_LIFETIME} RON`,
+    strikePrice: `${PLAN_PRICES_RON.pro_lifetime} RON`,
+    priceLabel: 'o singură dată · pe viață',
+    badge: '★ FOUNDING MEMBER',
+    color: 'accent',
+    features: [
+      { text: 'TOT din PRO, pentru totdeauna', enabled: true },
+      { text: 'Zero abonamente lunare', enabled: true },
+      { text: 'Toate update-urile viitoare incluse', enabled: true },
+      { text: 'Founding Member badge în app', enabled: true },
+      { text: 'Acces prioritar la features noi', enabled: true },
     ],
   },
 ];
 
-export default function PlanScreen({ onOpenUpgrade }: Props) {
+export default function PlanScreen({ onOpenUpgrade, onOpenLicense }: Props) {
   const { colors } = useTheme();
   const [currentPlan, setCurrentPlan] = useState<PlanTier | null>(null);
 
@@ -77,8 +116,9 @@ export default function PlanScreen({ onOpenUpgrade }: Props) {
       <Text style={[s.sub, { color: colors.textMuted }]}>alege ce ți se potrivește</Text>
 
       {PLAN_CARDS.map((p) => {
-        const isCurrent = p.id === currentPlan;
-        const accentColor = p.color === 'go' ? colors.go : colors.think;
+        const isCurrent = p.planTier === currentPlan;
+        const isRoot = currentPlan === 'root';
+        const accentColor = p.color === 'go' ? colors.go : p.color === 'accent' ? colors.accent : colors.think;
         return (
           <View
             key={p.id}
@@ -100,19 +140,22 @@ export default function PlanScreen({ onOpenUpgrade }: Props) {
                 <Text style={s.recTxt}>★ RECOMANDAT</Text>
               </View>
             )}
+            {!p.recommended && p.badge && (
+              <View style={[s.recBadge, { backgroundColor: accentColor }]}>
+                <Text style={s.recTxt}>{p.badge}</Text>
+              </View>
+            )}
 
             <View style={s.cardHeader}>
               <Text style={[s.cardName, { color: accentColor }]}>{p.name}</Text>
               <View style={{ alignItems: 'flex-end' }}>
+                {p.strikePrice && (
+                  <Text style={[s.strikePrice, { color: colors.textDim }]}>{p.strikePrice}</Text>
+                )}
                 <Text style={[s.cardPrice, { color: colors.text }]}>
                   {p.price}
-                  {p.priceLabel.startsWith('/') && (
-                    <Text style={[s.cardPriceUnit, { color: colors.textMuted }]}>{p.priceLabel}</Text>
-                  )}
                 </Text>
-                {!p.priceLabel.startsWith('/') && (
-                  <Text style={[s.cardSub, { color: colors.textMuted }]}>{p.priceLabel}</Text>
-                )}
+                <Text style={[s.cardSub, { color: colors.textMuted }]}>{p.priceLabel}</Text>
               </View>
             </View>
 
@@ -129,11 +172,15 @@ export default function PlanScreen({ onOpenUpgrade }: Props) {
               ))}
             </View>
 
-            {isCurrent ? (
+            {(isRoot && p.planTier === 'pro') ? (
+              <View style={[s.currentBadge, { borderColor: colors.go }]}>
+                <Text style={[s.currentTxt, { color: colors.go }]}>✓ ACCES ROOT COMPLET</Text>
+              </View>
+            ) : (isCurrent && p.planTier !== 'trial') ? (
               <View style={[s.currentBadge, { borderColor: colors.go }]}>
                 <Text style={[s.currentTxt, { color: colors.go }]}>✓ PLANUL TĂU ACTUAL</Text>
               </View>
-            ) : p.id !== 'trial' ? (
+            ) : p.planTier !== 'trial' ? (
               <TouchableOpacity
                 style={[s.cardBtn, { backgroundColor: accentColor }]}
                 onPress={onOpenUpgrade}
@@ -146,17 +193,48 @@ export default function PlanScreen({ onOpenUpgrade }: Props) {
         );
       })}
 
+      <View style={[s.referralBox, { backgroundColor: colors.surface, borderColor: colors.accent }]}>
+        <Text style={[s.referralTitle, { color: colors.accent }]}>INVITĂ PRIETENI · PLĂTEȘTI MAI PUȚIN</Text>
+        <Text style={[s.referralDesc, { color: colors.textMuted }]}>
+          Discount permanent pe abonament, cât prietenii tăi rămân PRO activi.
+        </Text>
+        {REFERRAL_TIERS.map((tier, i) => (
+          <View key={i} style={s.referralRow}>
+            <Text style={[s.referralTierLabel, { color: colors.text }]}>
+              {tier.max === Infinity ? `${tier.min}+` : `${tier.min}–${tier.max}`} prieteni
+            </Text>
+            <Text style={[s.referralTierValue, { color: colors.go }]}>
+              {tier.discountPct}% off → {Math.round(PLAN_PRICES_RON.pro_monthly * (1 - tier.discountPct / 100))} RON/lună
+            </Text>
+          </View>
+        ))}
+        <TouchableOpacity
+          style={[s.referralBtn, { backgroundColor: colors.accent }]}
+          onPress={() => {
+            const msg = encodeURIComponent(
+              'Salut! Folosesc DRUMIQ — îți arată instant dacă o cursă Bolt merită. ' +
+              'Descarcă de pe drumiq.ro și hai să câștigăm amândoi! 🚗💰'
+            );
+            Linking.openURL(`https://wa.me/?text=${msg}`);
+          }}
+          activeOpacity={0.8}
+        >
+          <Text style={s.referralBtnTxt}>INVITĂ PE WHATSAPP</Text>
+        </TouchableOpacity>
+      </View>
+
       <TouchableOpacity
         style={[s.codeBtn, { borderColor: colors.border }]}
-        onPress={onOpenUpgrade}
+        onPress={onOpenLicense}
         activeOpacity={0.7}
       >
         <Text style={[s.codeBtnTxt, { color: colors.text }]}>📋  AM DEJA UN COD DE ACTIVARE</Text>
       </TouchableOpacity>
 
       <Text style={[s.footer, { color: colors.textDim }]}>
-        Toate planurile pot fi anulate oricând.{'\n'}
-        Plățile sunt procesate prin Stripe.
+        {currentPlan === 'root'
+          ? 'Ai acces ROOT complet. Toate funcțiile sunt deblocate.'
+          : `Toate planurile pot fi anulate oricând.\nPlățile sunt procesate prin Stripe.`}
       </Text>
     </ScrollView>
   );
@@ -176,7 +254,7 @@ const s = StyleSheet.create({
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 },
   cardName: { fontSize: 22, fontWeight: '900', letterSpacing: 1 },
   cardPrice: { fontSize: 18, fontWeight: '800', fontFamily: 'monospace' },
-  cardPriceUnit: { fontSize: 10, fontWeight: '500' },
+  strikePrice: { fontSize: 11, fontFamily: 'monospace', textDecorationLine: 'line-through' as const, marginBottom: 2 },
   cardSub: { fontSize: 9, fontFamily: 'monospace', letterSpacing: 1, marginTop: 2 },
 
   features: { gap: 6, marginBottom: 12 },
@@ -189,6 +267,15 @@ const s = StyleSheet.create({
 
   currentBadge: { padding: 10, borderRadius: 8, borderWidth: 1, alignItems: 'center', backgroundColor: 'transparent' },
   currentTxt: { fontSize: 11, fontWeight: '700', letterSpacing: 1.5 },
+
+  referralBox: { padding: 16, borderRadius: 12, borderWidth: 1, marginBottom: 12, marginTop: 4 },
+  referralTitle: { fontSize: 11, fontWeight: '900', letterSpacing: 2, marginBottom: 6 },
+  referralDesc: { fontSize: 11, marginBottom: 10, lineHeight: 16 },
+  referralRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 4 },
+  referralTierLabel: { fontSize: 12, fontWeight: '600' },
+  referralTierValue: { fontSize: 12, fontWeight: '700', fontFamily: 'monospace' },
+  referralBtn: { padding: 12, borderRadius: 8, alignItems: 'center', marginTop: 10 },
+  referralBtnTxt: { color: '#000', fontSize: 12, fontWeight: '900', letterSpacing: 1.5 },
 
   codeBtn: { padding: 14, borderRadius: 8, borderWidth: 1, borderStyle: 'dashed', alignItems: 'center', marginTop: 8 },
   codeBtnTxt: { fontSize: 12, fontWeight: '700', letterSpacing: 1 },

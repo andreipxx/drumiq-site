@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView, Linking,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
+import type { ThemeColors } from '../constants/theme';
 import { PLAN_PRICES_RON } from '../constants/config';
-import { FOUNDING_MEMBER } from '../config/pricing';
+import { FOUNDING_MEMBER } from '../constants/config';
 
 type PlanChoice = 'pro_monthly' | 'pro_annual' | 'pro_lifetime';
 
@@ -12,17 +14,18 @@ interface Props { onClose: () => void; onActivateCode: () => void; }
 
 export default function PaywallUpgradeScreen({ onClose, onActivateCode }: Props) {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const [selected, setSelected] = useState<PlanChoice>('pro_monthly');
 
   const handlePurchase = async () => {
-    const url = 'https://drumiq.ro/pricing.html';
+    const url = `https://drumiq.ro/pricing.html?plan=${selected}`;
     try { await Linking.openURL(url); } catch {}
   };
 
   const priceMap: Record<PlanChoice, number> = {
     pro_monthly: PLAN_PRICES_RON.pro_monthly,
-    pro_annual: PLAN_PRICES_RON.pro_annual,
-    pro_lifetime: PLAN_PRICES_RON.pro_lifetime,
+    pro_annual: FOUNDING_MEMBER.PRO_ANNUAL,
+    pro_lifetime: FOUNDING_MEMBER.PRO_LIFETIME,
   };
 
   const labelMap: Record<PlanChoice, string> = {
@@ -39,23 +42,23 @@ export default function PaywallUpgradeScreen({ onClose, onActivateCode }: Props)
 
   return (
     <SafeAreaView style={[s.container, { backgroundColor: colors.bg }]}>
-      <TouchableOpacity onPress={onClose} style={s.closeBtn} activeOpacity={0.6}>
+      <TouchableOpacity onPress={onClose} style={[s.closeBtn, { paddingTop: insets.top + 8 }]} activeOpacity={0.6}>
         <Text style={[s.closeText, { color: colors.accent }]}>{'‹ Înapoi'}</Text>
       </TouchableOpacity>
 
       <ScrollView contentContainerStyle={s.scroll}>
         <Text style={[s.title, { color: colors.text }]}>Upgrade la PRO</Text>
-        <Text style={[s.subtitle, { color: colors.textSecondary }]}>Alege planul potrivit pentru tine</Text>
+        <Text style={[s.subtitle, { color: colors.textMuted }]}>Alege planul potrivit pentru tine</Text>
 
         <PlanCard
           title="Pro Lunar"
           price={PLAN_PRICES_RON.pro_monthly}
-          period="/lună"
+          period={`/lună · prima lună ${PLAN_PRICES_RON.first_month} RON`}
           features={[
             { icon: '✓', text: 'Calcul cursă cu trafic real Google', enabled: true },
-            { icon: '✓', text: 'Toate 4 filtrele personalizabile', enabled: true },
-            { icon: '✓', text: 'Card detaliat overlay', enabled: true },
-            { icon: '✓', text: 'Rază pickup + rating pasager', enabled: true },
+            { icon: '✓', text: 'Toate 6 filtrele personalizabile', enabled: true },
+            { icon: '✓', text: 'Overlay draggable detaliat', enabled: true },
+            { icon: '✓', text: 'Post-trip sync + tips tracking', enabled: true },
           ]}
           selected={selected === 'pro_monthly'}
           onSelect={() => setSelected('pro_monthly')}
@@ -64,13 +67,13 @@ export default function PaywallUpgradeScreen({ onClose, onActivateCode }: Props)
 
         <PlanCard
           title="Pro Anual"
-          price={PLAN_PRICES_RON.pro_annual}
-          period="/an"
+          price={FOUNDING_MEMBER.PRO_ANNUAL}
+          period="/an · ★ Founding Member"
           recommended
-          saveBadge="Economisești 58 RON"
           features={[
             { icon: '✓', text: 'TOT din Pro Lunar', enabled: true },
-            { icon: '✓', text: 'Economisești 58 RON/an', enabled: true },
+            { icon: '✓', text: `Economisești ${PLAN_PRICES_RON.pro_monthly * 12 - FOUNDING_MEMBER.PRO_ANNUAL} RON/an`, enabled: true },
+            { icon: '✓', text: 'Preț blocat pentru totdeauna', enabled: true },
           ]}
           selected={selected === 'pro_annual'}
           onSelect={() => setSelected('pro_annual')}
@@ -79,11 +82,12 @@ export default function PaywallUpgradeScreen({ onClose, onActivateCode }: Props)
 
         <PlanCard
           title="Pro Lifetime"
-          price={PLAN_PRICES_RON.pro_lifetime}
-          period=" · o singură plată"
+          price={FOUNDING_MEMBER.PRO_LIFETIME}
+          period=" · ★ Founding Member"
           features={[
             { icon: '✓', text: 'TOT din Pro, pentru totdeauna', enabled: true },
-            { icon: '✓', text: 'Fără reînnoire', enabled: true },
+            { icon: '✓', text: 'Fără reînnoire, zero abonamente', enabled: true },
+            { icon: '✓', text: 'Toate update-urile viitoare incluse', enabled: true },
           ]}
           selected={selected === 'pro_lifetime'}
           onSelect={() => setSelected('pro_lifetime')}
@@ -109,7 +113,7 @@ export default function PaywallUpgradeScreen({ onClose, onActivateCode }: Props)
           <Text style={[s.codeBtnText, { color: colors.text }]}>Am deja un cod de activare</Text>
         </TouchableOpacity>
 
-        <Text style={[s.disclaimer, { color: colors.textTertiary }]}>
+        <Text style={[s.disclaimer, { color: colors.textDim }]}>
           Pentru testing: contactează GO PAMPA S.R.L. pentru un cod gratuit.
         </Text>
       </ScrollView>
@@ -117,7 +121,18 @@ export default function PaywallUpgradeScreen({ onClose, onActivateCode }: Props)
   );
 }
 
-function PlanCard({ title, price, period, recommended, saveBadge, features, selected, onSelect, colors }: any) {
+interface PlanCardProps {
+  title: string;
+  price: number;
+  period: string;
+  recommended?: boolean;
+  features: { icon: string; text: string; enabled: boolean }[];
+  selected: boolean;
+  onSelect: () => void;
+  colors: ThemeColors;
+}
+
+function PlanCard({ title, price, period, recommended, features, selected, onSelect, colors }: PlanCardProps) {
   return (
     <TouchableOpacity onPress={onSelect} activeOpacity={0.7}
       style={[s.card, {
@@ -133,13 +148,13 @@ function PlanCard({ title, price, period, recommended, saveBadge, features, sele
       <View style={s.cardHeader}>
         <Text style={[s.cardTitle, { color: colors.text }]}>{title}</Text>
         <Text style={[s.cardPrice, { color: colors.accent }]}>
-          {price} RON<Text style={[s.cardPriceUnit, { color: colors.textSecondary }]}>{period}</Text>
+          {price} RON<Text style={[s.cardPriceUnit, { color: colors.textMuted }]}>{period}</Text>
         </Text>
       </View>
-      {features.map((f: any, i: number) => (
+      {features.map((f, i) => (
         <View key={i} style={s.featureRow}>
-          <Text style={[s.featureIcon, { color: f.enabled ? colors.bun : colors.critic }]}>{f.icon}</Text>
-          <Text style={[s.featureText, { color: f.enabled ? colors.text : colors.textTertiary }]}>{f.text}</Text>
+          <Text style={[s.featureIcon, { color: f.enabled ? colors.go : colors.stop }]}>{f.icon}</Text>
+          <Text style={[s.featureText, { color: f.enabled ? colors.text : colors.textDim }]}>{f.text}</Text>
         </View>
       ))}
     </TouchableOpacity>
@@ -148,7 +163,7 @@ function PlanCard({ title, price, period, recommended, saveBadge, features, sele
 
 const s = StyleSheet.create({
   container:    { flex: 1 },
-  closeBtn:     { paddingTop: 50, paddingHorizontal: 16, paddingBottom: 8 },
+  closeBtn:     { paddingHorizontal: 16, paddingBottom: 8 },
   closeText:    { fontSize: 17 },
   scroll:       { padding: 20, paddingBottom: 40 },
   title:        { fontSize: 28, fontWeight: '700', marginBottom: 6 },
