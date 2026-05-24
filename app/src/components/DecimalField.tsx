@@ -23,23 +23,32 @@ export default function DecimalField({
   label, hint, suffix, value, onChange, min, max, colors, containerStyle,
 }: DecimalFieldProps) {
   const [localValue, setLocalValue] = useState<string>(String(value));
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const parsed = parseFloat(localValue.replace(',', '.'));
     if (isNaN(parsed) || parsed !== Number(value)) {
       setLocalValue(String(value));
     }
+    setError(null);
   }, [value]);
 
   const handleChange = (text: string) => {
     const normalized = text.replace(',', '.');
     if (!/^\d*\.?\d*$/.test(normalized)) return;
     setLocalValue(text);
+    setError(null);
     if (normalized && normalized !== '.') {
       const num = parseFloat(normalized);
       if (isNaN(num)) return;
-      if (min != null && num < min) return;
-      if (max != null && num > max) return;
+      if (min != null && num < min) {
+        setError(`Min: ${min}`);
+        return;
+      }
+      if (max != null && num > max) {
+        setError(`Max: ${max}`);
+        return;
+      }
       onChange(num);
     }
   };
@@ -60,6 +69,7 @@ export default function DecimalField({
         />
         <Text style={[s.suffix, { color: colors.textTertiary }]}>{suffix}</Text>
       </View>
+      {error && <Text style={[s.error, { color: '#FF3366' }]}>{error}</Text>}
     </View>
   );
 }
@@ -71,4 +81,5 @@ const s = StyleSheet.create({
   fieldRight: { flexDirection: 'row', alignItems: 'center', marginLeft: 12 },
   input:      { borderWidth: StyleSheet.hairlineWidth, borderRadius: 8, paddingVertical: 6, paddingHorizontal: 10, minWidth: 70, textAlign: 'right', fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', fontSize: 15 },
   suffix:     { fontSize: 14, marginLeft: 6, minWidth: 30 },
+  error:      { fontSize: 11, marginTop: 2, marginLeft: 16 },
 });

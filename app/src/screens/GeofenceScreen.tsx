@@ -43,6 +43,7 @@ export default function GeofenceScreen({ onAllowed }: Props) {
       return;
     }
     const entry = { email: waitEmail.trim(), city: waitCity.trim(), date: new Date().toISOString() };
+    // TODO: Send signups to backend (e.g. Supabase waiting_list table)
     await AsyncStorage.setItem(WAITING_LIST_KEY, JSON.stringify(entry));
     setWaitSaved(true);
   };

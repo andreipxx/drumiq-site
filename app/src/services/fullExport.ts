@@ -46,7 +46,7 @@ export async function generateFullExport(): Promise<string> {
   const report = {
     _exportedAt: now.toISOString(),
     _platform: Platform.OS,
-    _appVersion: '1.0.0',
+    _appVersion: require('../../app.json').expo.version,
     _package: 'ro.gopampa.drumiq',
 
     license: {
@@ -71,9 +71,7 @@ export async function generateFullExport(): Promise<string> {
     },
 
     apiKey: {
-      length: apiKeyRaw.length,
-      prefix: apiKeyRaw.slice(0, 6),
-      valid: apiKeyRaw.length >= 30,
+      hasApiKey: apiKeyRaw.length >= 30,
     },
 
     stats: {
@@ -83,7 +81,7 @@ export async function generateFullExport(): Promise<string> {
     },
 
     ridesCount: rides.length,
-    rides: dedupeRides(rides).sort((a, b) => b.timestamp - a.timestamp),
+    rides: anonymizeRides(dedupeRides(rides)).sort((a, b) => b.timestamp - a.timestamp),
 
     debug: {
       stats: debugStats,
@@ -101,6 +99,21 @@ export async function generateFullExport(): Promise<string> {
   } catch (e: any) {
     return JSON.stringify({ error: 'stringify_failed', message: String(e?.message || e) });
   }
+}
+
+function anonymizeAddress(addr?: string): string | undefined {
+  if (!addr) return addr;
+  const firstWord = addr.split(/[\s,]+/)[0];
+  return firstWord ? `${firstWord}...` : '...';
+}
+
+function anonymizeRides(rides: any[]): any[] {
+  return rides.map((r, i) => ({
+    ...r,
+    passengerLabel: `Pasager ${i + 1}`,
+    pickupAddress: anonymizeAddress(r.pickupAddress),
+    destinationAddress: anonymizeAddress(r.destinationAddress),
+  }));
 }
 
 function dedupeRides(rides: any[]): any[] {

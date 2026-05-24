@@ -1,26 +1,3 @@
-// AGP 8.11.0 fix: force all sibling subprojects to configure before dependency resolution
-rootProject.subprojects.findAll { it.path != project.path }.each {
-    evaluationDependsOn(it.path)
-}
-
-// Disable RNGP's auto JDK toolchain alignment for :app ONLY (set via project.ext, only this :app).
-// RNGP's configureJavaToolChains -> kotlinExtension.jvmToolchain(17) triggers
-// "languageVersion is final" because some Expo plugin (applied between
-// 'com.android.application' and 'com.facebook.react' via expo-autolinking-settings'
-// afterAndroidApplicationProject hook) finalizes the Kotlin/Java toolchain first.
-project.ext.set('react.internal.disableJavaVersionAlignment', 'true')
-
-// Align Kotlin jvmTarget to 1.8 on library subprojects to match AGP's default
-// Java sourceCompatibility/targetCompatibility (1.8). RNGP's auto-alignment to 17 cannot
-// reach already-evaluated libraries through finalizeDsl, so we converge from the Kotlin side.
-// Setting kotlinOptions.jvmTarget directly is safe (doesn't touch Java bootstrap classpath
-// like sourceCompatibility on JavaCompile would). :app stays on 17 via the android block below.
-rootProject.subprojects.findAll { it.path != project.path }.each { sub ->
-    sub.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-        kotlinOptions.jvmTarget = '1.8'
-    }
-}
-
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
@@ -133,8 +110,6 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
             def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
             shrinkResources enableShrinkResources.toBoolean()
@@ -152,16 +127,6 @@ android {
     }
     androidResources {
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
-    }
-
-    // Manual JDK 17 alignment because we set react.internal.disableJavaVersionAlignment=true
-    // in gradle.properties (workaround for "languageVersion is final" finalize conflict).
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = '17'
     }
 }
 

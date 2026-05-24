@@ -1,4 +1,4 @@
-import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
+import { NativeModules, NativeEventEmitter, Platform, Alert } from 'react-native';
 
 const { DPAccessibility } = NativeModules;
 
@@ -25,6 +25,20 @@ export interface ExportResult {
 export type CaptureListener = (capture: AccessibilityCapture) => void;
 
 const emitter = DPAccessibility ? new NativeEventEmitter(DPAccessibility) : null;
+
+function _confirmDownloadsExport(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    Alert.alert(
+      'Export in Downloads',
+      'Folderul Downloads este accesibil tuturor aplicatiilor. Datele exportate pot contine informatii private (trasee, adrese, castiguri). Continui?',
+      [
+        { text: 'Anuleaza', style: 'cancel', onPress: () => reject(new Error('user_cancelled')) },
+        { text: 'Exporta', onPress: () => resolve() },
+      ],
+      { cancelable: false },
+    );
+  });
+}
 
 export const Accessibility = {
   isAvailable(): boolean {
@@ -73,11 +87,13 @@ export const Accessibility = {
 
   async copyLogToDownloads(): Promise<ExportResult> {
     if (!DPAccessibility) throw new Error('Native module unavailable');
+    await _confirmDownloadsExport();
     return DPAccessibility.copyLogToDownloads();
   },
 
   async writeExportToDownloads(content: string): Promise<ExportResult> {
     if (!DPAccessibility) throw new Error('Native module unavailable');
+    await _confirmDownloadsExport();
     return DPAccessibility.writeExportToDownloads(content);
   },
 

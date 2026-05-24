@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import type {
@@ -9,6 +10,9 @@ import type {
 import {
   DEFAULT_INDIVIDUAL, DEFAULT_FLOTA, getWeeklyCosts, getMonthlyCosts,
 } from '../services/workMode';
+import {
+  getTaxSettings, setTaxSettings, type TaxSettings, DEFAULT_TAX,
+} from '../services/extendedSettings';
 
 interface Props {
   onSave: (config: WorkModeConfig) => void;
@@ -24,12 +28,18 @@ export default function WorkModeSetup({ onSave, initialConfig }: Props) {
   const [flota, setFlota] = useState<FlotaCosts>(
     initialConfig?.flota ?? DEFAULT_FLOTA
   );
+  const [tax, setTaxState] = useState<TaxSettings | null>(null);
+
+  useEffect(() => { getTaxSettings().then(setTaxState); }, []);
 
   const config: WorkModeConfig = { mode, individual, flota };
   const weeklyCost = useMemo(() => getWeeklyCosts(config), [mode, individual, flota]);
   const monthlyCost = useMemo(() => getMonthlyCosts(config), [mode, individual, flota]);
 
-  const handleSave = () => onSave(config);
+  const handleSave = async () => {
+    if (tax) await setTaxSettings(tax);
+    onSave(config);
+  };
 
   return (
     <ScrollView style={[s.root, { backgroundColor: colors.bg }]} contentContainerStyle={s.content}>
@@ -161,6 +171,39 @@ export default function WorkModeSetup({ onSave, initialConfig }: Props) {
         </View>
       )}
 
+      <View style={[s.costSection, { borderColor: colors.border, marginTop: 20 }]}>
+        <Text style={[s.costSectionTitle, { color: colors.textMuted }]}>TAXE</Text>
+        {tax === null ? (
+          <View style={{ padding: 16, alignItems: 'center' }}>
+            <ActivityIndicator size="small" color={colors.accent} />
+          </View>
+        ) : (
+          <>
+            <CostInput
+              label="Taxe pe venit"
+              value={tax.taxRate}
+              onChange={(v) => setTaxState(prev => prev ? { ...prev, taxRate: v } : prev)}
+              suffix="%"
+              placeholder="0"
+              colors={colors}
+            />
+            <CostInput
+              label="Comision Bolt"
+              value={tax.boltCommission}
+              onChange={(v) => setTaxState(prev => prev ? { ...prev, boltCommission: v } : prev)}
+              suffix="%"
+              placeholder="0"
+              colors={colors}
+            />
+            <View style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
+              <Text style={[s.costSuffix, { color: colors.textMuted, marginLeft: 0 }]}>
+                Taxele se aplică estimativ pe venitul cursei. Dacă Bolt arată deja suma netă, lasă 0%.
+              </Text>
+            </View>
+          </>
+        )}
+      </View>
+
       <TouchableOpacity
         style={[s.saveBtn, { backgroundColor: colors.accent }]}
         onPress={handleSave}
@@ -181,6 +224,10 @@ function CostInput({ label, value, onChange, suffix, placeholder, colors }: {
   colors: any;
 }) {
   const [text, setText] = useState(value > 0 ? String(value) : '');
+
+  useEffect(() => {
+    setText(value > 0 ? String(value) : '');
+  }, [value]);
 
   const handleChange = (t: string) => {
     const normalized = t.replace(',', '.');
@@ -215,7 +262,7 @@ function CostInput({ label, value, onChange, suffix, placeholder, colors }: {
 
 const s = StyleSheet.create({
   root: { flex: 1 },
-  content: { padding: 24, paddingTop: 48 },
+  content: { padding: 24, paddingTop: 48, paddingBottom: 64 },
   title: { fontSize: 26, fontWeight: '800', textAlign: 'center' },
   subtitle: { fontSize: 14, textAlign: 'center', marginTop: 8, marginBottom: 28 },
   modeRow: { gap: 12, marginBottom: 20 },

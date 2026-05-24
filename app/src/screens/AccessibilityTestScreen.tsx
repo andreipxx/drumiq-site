@@ -3,6 +3,7 @@ import {
   View, Text, StyleSheet, TouchableOpacity, SafeAreaView,
   ScrollView, AppState, Platform, Alert,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
 import { Accessibility, type AccessibilityCapture } from '../native/accessibility';
 import { parseBoltRide } from '../services/boltParser';
@@ -14,24 +15,19 @@ import type { UnifiedThresholds } from '../types';
 import { VERDICT_DISPLAY } from '../types';
 import { getDpEvents, getDebugStats } from '../services/dpDebug';
 import { generateFullExport } from '../services/fullExport';
+import { clearAllRides } from '../services/tracker';
 
 interface Props { onBack: () => void; }
 
 export default function AccessibilityTestScreen({ onBack }: Props) {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const [capture, setCapture] = useState<AccessibilityCapture | null>(null);
   const [licInfo, setLicInfo] = useState<{ plan: string; ridesUsed: number; ridesRemaining: number | null; expiresAt: number | null } | null>(null);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [debugEvents, setDebugEvents] = useState<string[]>([]);
   const [debugStats, setDebugStats] = useState<ReturnType<typeof getDebugStats> | null>(null);
-
-  useEffect(() => {
-    const refresh = () => { setDebugEvents(getDpEvents()); setDebugStats(getDebugStats()); };
-    refresh();
-    const i = setInterval(refresh, 1000);
-    return () => clearInterval(i);
-  }, []);
 
   const refreshStatus = useCallback(async () => {
     setEnabled(await Accessibility.isEnabled());
@@ -46,17 +42,25 @@ export default function AccessibilityTestScreen({ onBack }: Props) {
     if (c && c.timestamp > 0) setCapture(c);
   }, []);
 
+  const refreshDebug = useCallback(() => {
+    setDebugEvents(getDpEvents());
+    setDebugStats(getDebugStats());
+  }, []);
+
   useEffect(() => {
-    refreshStatus(); refreshCapture();
-    pollingRef.current = setInterval(refreshCapture, 2000);
+    refreshStatus(); refreshCapture(); refreshDebug();
+    pollingRef.current = setInterval(() => {
+      refreshCapture();
+      refreshDebug();
+    }, 2000);
     const unsub = Accessibility.addCaptureListener(setCapture);
-    const sub = AppState.addEventListener('change', (s) => { if (s === 'active') { refreshStatus(); refreshCapture(); } });
+    const sub = AppState.addEventListener('change', (s) => { if (s === 'active') { refreshStatus(); refreshCapture(); refreshDebug(); } });
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
       unsub();
       sub.remove();
     };
-  }, [refreshStatus, refreshCapture]);
+  }, [refreshStatus, refreshCapture, refreshDebug]);
 
   const [fuel, setFuel] = useState<FuelSettings | null>(null);
   const [thresholds, setThresholdsState] = useState<UnifiedThresholds | null>(null);
@@ -91,12 +95,11 @@ export default function AccessibilityTestScreen({ onBack }: Props) {
     }
   };
 
-
   const available = Accessibility.isAvailable();
 
   return (
     <SafeAreaView style={[s.container, { backgroundColor: colors.bg }]}>
-      <TouchableOpacity onPress={onBack} style={s.backBtn} activeOpacity={0.6}>
+      <TouchableOpacity onPress={onBack} style={[s.backBtn, { paddingTop: insets.top + 8 }]} activeOpacity={0.6}>
         <Text style={[s.backText, { color: colors.accent }]}>‹ Back</Text>
       </TouchableOpacity>
 
@@ -105,7 +108,7 @@ export default function AccessibilityTestScreen({ onBack }: Props) {
 
         {licInfo && (
           <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[s.cardLabel, { color: colors.textTertiary }]}>PLAN ACTIV</Text>
+            <Text style={[s.cardLabel, { color: colors.textDim }]}>PLAN ACTIV</Text>
             <Row label="Plan" value={licInfo.plan.toUpperCase()} colors={colors} valueColor={colors.accent} />
             {licInfo.ridesRemaining != null && (
               <Row label="Curse rămase" value={`${licInfo.ridesRemaining} (folosite ${licInfo.ridesUsed})`} colors={colors} />
@@ -117,10 +120,10 @@ export default function AccessibilityTestScreen({ onBack }: Props) {
         )}
 
         <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={[s.cardLabel, { color: colors.textTertiary }]}>STATUS</Text>
+          <Text style={[s.cardLabel, { color: colors.textDim }]}>STATUS</Text>
           <Row label="Platform" value={Platform.OS} colors={colors} />
-          <Row label="Native module" value={available ? 'detected ✓' : 'missing ✗'} colors={colors} valueColor={available ? colors.bun : colors.critic} />
-          <Row label="Service enabled" value={enabled === null ? '...' : enabled ? 'YES ✓' : 'NO'} colors={colors} valueColor={enabled ? colors.bun : colors.critic} />
+          <Row label="Native module" value={available ? 'detected ✓' : 'missing ✗'} colors={colors} valueColor={available ? colors.go : colors.stop} />
+          <Row label="Service enabled" value={enabled === null ? '...' : enabled ? 'YES ✓' : 'NO'} colors={colors} valueColor={enabled ? colors.go : colors.stop} />
         </View>
 
         {!enabled && available && (
@@ -142,15 +145,34 @@ export default function AccessibilityTestScreen({ onBack }: Props) {
           <Text style={s.btnText}>{exporting ? 'Se exporta...' : 'EXPORT TOT (JSON)'}</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          onPress={() => {
+            Alert.alert(
+              'ATENTIE: Sterge toate datele?',
+              'Aceasta actiune este ireversibila! Cursele, statisticile si cache-ul vor fi sterse permanent. Esti sigur?',
+              [
+              { text: 'Anuleaza', style: 'cancel' },
+              { text: 'Da, sterge tot', style: 'destructive', onPress: async () => {
+                await clearAllRides();
+                Alert.alert('Gata', 'Toate datele au fost sterse.');
+              }},
+            ]);
+          }}
+          style={[s.btnSecondary, { borderColor: colors.stop, marginTop: 10 }]}
+          activeOpacity={0.7}
+        >
+          <Text style={[s.btnSecondaryText, { color: colors.stop }]}>STERGE TOATE DATELE</Text>
+        </TouchableOpacity>
+
         {analysis && parsed?.screen === 'ride_offer' && (
           <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors[analysis.verdict], borderWidth: 2, marginTop: 20 }]}>
-            <Text style={[s.cardLabel, { color: colors.textTertiary }]}>ANALIZĂ PROFIT (preview)</Text>
+            <Text style={[s.cardLabel, { color: colors.textDim }]}>ANALIZĂ PROFIT (preview)</Text>
             <Text style={[s.verdictBig, { color: colors[analysis.verdict] }]}>
               {VERDICT_DISPLAY[analysis.verdict].emoji} {VERDICT_DISPLAY[analysis.verdict].label}
             </Text>
             <Row label="Profit/km" value={`${analysis.profitPerKm.toFixed(2)} RON/km`} colors={colors} valueColor={colors[analysis.verdict]} />
             <Row label="Profit total" value={`${analysis.profit.toFixed(2)} RON`} colors={colors} />
-            <Row label="Net după taxe" value={`${analysis.netAfterTax.toFixed(2)} RON`} colors={colors} />
+            <Row label="Bolt NET" value={`${analysis.boltNet.toFixed(2)} RON`} colors={colors} />
             <Row label="Cost mașină" value={`${analysis.vehicleCost.toFixed(2)} RON`} colors={colors} />
             <Row label="Total km est." value={`${analysis.totalKm.toFixed(1)} km`} colors={colors} />
             {analysis.isExternalRide && <Row label="Tip cursă" value="EXTERNĂ (+25%)" colors={colors} valueColor={colors.accent} />}
@@ -162,7 +184,7 @@ export default function AccessibilityTestScreen({ onBack }: Props) {
 
         {parsed && (
           <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border, marginTop: 20 }]}>
-            <Text style={[s.cardLabel, { color: colors.textTertiary }]}>DATE PARSATE</Text>
+            <Text style={[s.cardLabel, { color: colors.textDim }]}>DATE PARSATE</Text>
             <Row label="Ecran detectat" value={parsed.screen} colors={colors} valueColor={colors.accent} />
             <Row label="Preț NET" value={parsed.grossNet != null ? `${parsed.grossNet} lei` : '—'} colors={colors} />
             <Row label="Pickup km" value={parsed.pickupKm != null ? `${parsed.pickupKm} km` : '—'} colors={colors} />
@@ -178,7 +200,7 @@ export default function AccessibilityTestScreen({ onBack }: Props) {
         )}
 
         <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border, marginTop: 20 }]}>
-          <Text style={[s.cardLabel, { color: colors.textTertiary }]}>ULTIMA CAPTURĂ (polling 2s)</Text>
+          <Text style={[s.cardLabel, { color: colors.textDim }]}>ULTIMA CAPTURĂ (polling 2s)</Text>
           {capture && capture.timestamp > 0 ? (
             <>
               <Row label="Package" value={capture.package} colors={colors} />
@@ -188,16 +210,16 @@ export default function AccessibilityTestScreen({ onBack }: Props) {
               </View>
             </>
           ) : (
-            <Text style={[s.hint, { color: colors.textTertiary }]}>Deschide Bolt Driver / Waze. Polling activ la 2s.</Text>
+            <Text style={[s.hint, { color: colors.textDim }]}>Deschide Bolt Driver / Waze. Polling activ la 2s.</Text>
           )}
         </View>
 
         <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={[s.cardLabel, { color: colors.textTertiary }]}>
+          <Text style={[s.cardLabel, { color: colors.textDim }]}>
             {'DEBUG LIVE (' + (debugStats?.total ?? debugEvents.length) + ' total, sesiune: ' + (debugStats?.curSession ?? 0) + ')'}
           </Text>
           {debugEvents.length === 0 ? (
-            <Text style={[s.hint, { color: colors.textTertiary }]}>Nicio activitate. Deschide Bolt si asteapta o oferta.</Text>
+            <Text style={[s.hint, { color: colors.textDim }]}>Nicio activitate. Deschide Bolt si asteapta o oferta.</Text>
           ) : (
             debugEvents.slice(0, 25).map((e, i) => (
               <Text key={i} style={[s.captureText, { color: colors.text, fontSize: 11, paddingVertical: 1 }]}>{e}</Text>
@@ -213,7 +235,7 @@ export default function AccessibilityTestScreen({ onBack }: Props) {
 function Row({ label, value, colors, valueColor }: any) {
   return (
     <View style={s.row}>
-      <Text style={[s.rowLabel, { color: colors.textSecondary }]}>{label}</Text>
+      <Text style={[s.rowLabel, { color: colors.textMuted }]}>{label}</Text>
       <Text style={[s.rowValue, { color: valueColor || colors.text }]} numberOfLines={2}>{value}</Text>
     </View>
   );
@@ -221,7 +243,7 @@ function Row({ label, value, colors, valueColor }: any) {
 
 const s = StyleSheet.create({
   container:        { flex: 1 },
-  backBtn:          { paddingTop: 50, paddingHorizontal: 16, paddingBottom: 8 },
+  backBtn:          { paddingHorizontal: 16, paddingBottom: 8 },
   backText:         { fontSize: 17 },
   scroll:           { padding: 16, paddingBottom: 60 },
   title:            { fontSize: 28, fontWeight: '700', marginBottom: 20 },

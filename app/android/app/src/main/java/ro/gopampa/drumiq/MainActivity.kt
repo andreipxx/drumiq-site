@@ -1,4 +1,4 @@
-﻿package ro.gopampa.drumiq
+package ro.gopampa.drumiq
 
 import android.os.Build
 import android.os.Bundle

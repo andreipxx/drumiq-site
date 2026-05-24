@@ -9,6 +9,7 @@ data class FuelSettingsKt(
     val consumptionGpl: Double? = null,
     val pricePerUnitGpl: Double? = null,
     val wearPerKm: Double,
+    val gplRatio: Double = 0.7,
 )
 
 data class ProOverridesKt(
@@ -34,7 +35,8 @@ object ProfitCalc {
     private const val CRITIC_MAX = 1.86
     private const val DECIDE_MAX = 2.35
     private const val BUN_MAX    = 3.00
-    private const val TAX_RATE   = 0.33
+    // Bolt already shows NET amounts — no additional tax deduction needed
+    private const val TAX_RATE   = 0.0
     private const val EXT_PICKUP_THRESHOLD = 15.0
     private const val EXT_MULTIPLIER = 1.25
     private const val DEFAULT_TRIP_KM = 2.0
@@ -50,8 +52,9 @@ object ProfitCalc {
     private fun fuelCostPerKm(s: FuelSettingsKt): Double {
         val main = (s.consumption / 100.0) * s.pricePerUnit
         if (s.type == "benzina_gpl" && s.consumptionGpl != null && s.pricePerUnitGpl != null) {
-            val petrolPart = (s.consumption / 100.0) * s.pricePerUnit * 0.20
-            val gplPart = (s.consumptionGpl / 100.0) * s.pricePerUnitGpl * 0.80
+            val gplShare = s.gplRatio
+            val petrolPart = (s.consumption / 100.0) * s.pricePerUnit * (1.0 - gplShare)
+            val gplPart = (s.consumptionGpl / 100.0) * s.pricePerUnitGpl * gplShare
             return petrolPart + gplPart
         }
         return main

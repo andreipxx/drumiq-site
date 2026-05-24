@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Switch, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
 import {
   loadThresholds,
@@ -32,6 +33,7 @@ const HARD_FIELDS: { field: ThresholdField; toggle: ToggleField; prefix: string 
 
 export default function FilterSettingsScreen({ onBack }: Props) {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const [thresholds, setThresholds] = useState<UnifiedThresholds | null>(null);
   const [dirty, setDirty] = useState(false);
   const [inputText, setInputText] = useState<Record<ThresholdField, string>>({
@@ -102,7 +104,7 @@ export default function FilterSettingsScreen({ onBack }: Props) {
 
   return (
     <View style={[s.root, { backgroundColor: colors.bg }]}>
-      <TouchableOpacity onPress={onBack} style={s.backBtn}>
+      <TouchableOpacity onPress={onBack} style={[s.backBtn, { paddingTop: insets.top + 8 }]}>
         <Text style={[s.backTxt, { color: colors.accent }]}>‹ Back</Text>
       </TouchableOpacity>
 
@@ -118,39 +120,53 @@ export default function FilterSettingsScreen({ onBack }: Props) {
           </Text>
         </View>
 
-        {/* PROFIT THRESHOLDS */}
-        <Text style={[s.sectionTitle, { color: colors.textMuted }]}>PRAGURI PROFIT</Text>
-        {PROFIT_FIELDS.map(({ field, toggle }) => (
-          <View key={field} style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <View style={s.cardHeader}>
-              <Text style={[s.cardTitle, { color: colors.text }]}>
-                {THRESHOLD_ICONS[field]}  {THRESHOLD_LABELS[field]}
-              </Text>
-              <Switch
-                value={(thresholds as any)[toggle]}
-                onValueChange={v => update({ [toggle]: v })}
-                thumbColor={colors.surface}
-                trackColor={{ true: colors.go, false: colors.border }}
-              />
-            </View>
-            <Text style={[s.hint, { color: colors.textDim }]}>{THRESHOLD_HINTS[field]}</Text>
-            <View style={s.inputRow}>
-              <Text style={[s.prefix, { color: colors.textMuted }]}>Minim</Text>
-              <TextInput
-                style={[s.input, { backgroundColor: colors.surfaceAlt, borderColor: colors.border, color: colors.text }]}
-                value={inputText[field]}
-                onChangeText={txt => {
-                  const cleaned = txt.replace(/[^0-9.,]/g, '');
-                  setInputText(prev => ({ ...prev, [field]: cleaned }));
-                  const n = parseFloat(cleaned.replace(',', '.'));
-                  if (!isNaN(n) && isFinite(n)) update({ [field]: n });
-                }}
-                keyboardType="decimal-pad"
-              />
-              <Text style={[s.unit, { color: colors.textMuted }]}>{THRESHOLD_UNITS[field]}</Text>
-            </View>
-          </View>
-        ))}
+        {/* PROFIT THRESHOLDS — un singur filtru activ (radio) */}
+        <Text style={[s.sectionTitle, { color: colors.textMuted }]}>PRAG PROFIT (alege unul)</Text>
+        {PROFIT_FIELDS.map(({ field, toggle }) => {
+          const isActive = !!(thresholds as any)[toggle];
+          return (
+            <TouchableOpacity
+              key={field}
+              activeOpacity={0.7}
+              onPress={() => {
+                const patch: Partial<UnifiedThresholds> = {
+                  kmEnabled: false, minEnabled: false, hourEnabled: false,
+                  [toggle]: !isActive,
+                };
+                update(patch);
+              }}
+              style={[s.card, {
+                backgroundColor: colors.surface,
+                borderColor: isActive ? colors.go : colors.border,
+                borderWidth: isActive ? 2 : 1,
+              }]}
+            >
+              <View style={s.cardHeader}>
+                <Text style={[s.cardTitle, { color: isActive ? colors.go : colors.text }]}>
+                  {isActive ? '◉' : '○'}  {THRESHOLD_ICONS[field]}  {THRESHOLD_LABELS[field]}
+                </Text>
+              </View>
+              <Text style={[s.hint, { color: colors.textDim }]}>{THRESHOLD_HINTS[field]}</Text>
+              {isActive && (
+                <View style={s.inputRow}>
+                  <Text style={[s.prefix, { color: colors.textMuted }]}>Minim</Text>
+                  <TextInput
+                    style={[s.input, { backgroundColor: colors.surfaceAlt, borderColor: colors.border, color: colors.text }]}
+                    value={inputText[field]}
+                    onChangeText={txt => {
+                      const cleaned = txt.replace(/[^0-9.,]/g, '');
+                      setInputText(prev => ({ ...prev, [field]: cleaned }));
+                      const n = parseFloat(cleaned.replace(',', '.'));
+                      if (!isNaN(n) && isFinite(n)) update({ [field]: n });
+                    }}
+                    keyboardType="decimal-pad"
+                  />
+                  <Text style={[s.unit, { color: colors.textMuted }]}>{THRESHOLD_UNITS[field]}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          );
+        })}
 
         {/* YELLOW ZONE */}
         <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -236,7 +252,7 @@ export default function FilterSettingsScreen({ onBack }: Props) {
 
 const s = StyleSheet.create({
   root: { flex: 1 },
-  backBtn: { paddingTop: 50, paddingHorizontal: 16, paddingBottom: 8 },
+  backBtn: { paddingHorizontal: 16, paddingBottom: 8 },
   backTxt: { fontSize: 17 },
   content: { padding: 16, paddingTop: 0, paddingBottom: 40 },
   title: { fontSize: 22, fontWeight: '900', letterSpacing: 1, marginTop: 4 },

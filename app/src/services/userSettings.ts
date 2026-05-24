@@ -3,7 +3,7 @@
 // All persisted to AsyncStorage, with sane defaults for each fuel type.
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NativeModules } from 'react-native';
+import { NativeModules, DeviceEventEmitter } from 'react-native';
 
 const DPNative = NativeModules.DPAccessibility;
 
@@ -41,19 +41,21 @@ export interface FuelSettings {
   pricePerKwh?: number;
   /** Only used for hybrid_phev: ratio of distance in electric mode (0-1, default 0.6) */
   electricRatio?: number;
+  /** Only used for benzina_gpl: ratio of distance on GPL (0-1, default 0.8) */
+  gplRatio?: number;
   /** Vehicle wear cost per km */
   wearPerKm: number;
 }
 
 export const DEFAULTS: Record<FuelType, FuelSettings> = {
-  benzina:      { type: 'benzina',      consumption:  8.0, pricePerUnit:  7.50, wearPerKm: 0.35 },
-  diesel:       { type: 'diesel',       consumption:  6.0, pricePerUnit:  7.80, wearPerKm: 0.35 },
-  electric:     { type: 'electric',     consumption: 17.0, pricePerUnit:  1.50, wearPerKm: 0.35 },
-  benzina_gpl:  { type: 'benzina_gpl',  consumption:  7.0, pricePerUnit:  7.50,
-                  consumptionGpl: 7.0, pricePerUnitGpl: 3.50, wearPerKm: 0.35 },
-  hybrid_hev:   { type: 'hybrid_hev',   consumption:  4.5, pricePerUnit:  7.50, wearPerKm: 0.35 },
-  hybrid_phev:  { type: 'hybrid_phev',  consumption:  5.0, pricePerUnit:  7.50,
-                  consumptionKwh: 18.0, pricePerKwh: 1.20, electricRatio: 0.60, wearPerKm: 0.35 },
+  benzina:      { type: 'benzina',      consumption:  7.5, pricePerUnit:  7.50, wearPerKm: 0.20 },
+  diesel:       { type: 'diesel',       consumption:  7.0, pricePerUnit:  7.80, wearPerKm: 0.22 },
+  electric:     { type: 'electric',     consumption: 15.0, pricePerUnit:  1.50, wearPerKm: 0.12 },
+  benzina_gpl:  { type: 'benzina_gpl',  consumption:  6.5, pricePerUnit:  7.50,
+                  consumptionGpl: 8.0, pricePerUnitGpl: 3.50, gplRatio: 0.7, wearPerKm: 0.22 },
+  hybrid_hev:   { type: 'hybrid_hev',   consumption:  4.7, pricePerUnit:  7.50, wearPerKm: 0.15 },
+  hybrid_phev:  { type: 'hybrid_phev',  consumption:  5.5, pricePerUnit:  7.50,
+                  consumptionKwh: 18.0, pricePerKwh: 1.20, electricRatio: 0.60, wearPerKm: 0.13 },
 };
 
 const FUEL_KEY = '@dp_fuel_settings_v1';
@@ -72,6 +74,7 @@ export async function getFuelSettings(): Promise<FuelSettings> {
 export async function setFuelSettings(s: FuelSettings): Promise<void> {
   await AsyncStorage.setItem(FUEL_KEY, JSON.stringify(s));
   await syncFuelToNative(s);
+  DeviceEventEmitter.emit('dp_fuel_changed');
 }
 
 // === Vehicle Info (free-text, user-entered) ===
@@ -110,12 +113,12 @@ export async function setVehicleInfo(v: VehicleInfo): Promise<void> {
  */
 export function fuelCostPerKm(s: FuelSettings): number {
   if (s.type === 'benzina_gpl') {
-    const petrolConsum = s.consumption ?? 9.0;
-    const petrolPrice  = s.pricePerUnit ?? 7.5;
-    const gplConsum    = s.consumptionGpl ?? petrolConsum;          // assume similar
-    const gplPrice     = s.pricePerUnitGpl ?? (petrolPrice * 0.50); // GPL ~50% of petrol
-    const petrolPart   = (petrolConsum / 100) * petrolPrice * 0.20;
-    const gplPart      = (gplConsum    / 100) * gplPrice    * 0.80;
+    const def = DEFAULTS.benzina_gpl;
+    const gplConsum    = s.consumptionGpl ?? def.consumptionGpl!;
+    const gplPrice     = s.pricePerUnitGpl ?? def.pricePerUnitGpl!;
+    const gplRatio     = s.gplRatio ?? def.gplRatio!;
+    const petrolPart   = (s.consumption / 100) * s.pricePerUnit * (1 - gplRatio);
+    const gplPart      = (gplConsum     / 100) * gplPrice       * gplRatio;
     return petrolPart + gplPart;
   }
   if (s.type === 'hybrid_phev') {
@@ -149,12 +152,15 @@ export async function saveDailyGoal(goal: number): Promise<void> {
   await AsyncStorage.setItem(DAILY_GOAL_KEY, String(Math.max(0, Math.round(goal))));
 }
 
-// Bootstrap sync on app start so native code has fuel settings
+// L3 FIX: Bootstrap sync on app start so native code has fuel settings
+// Wrapped with __DEV__ logging to surface failures during development
 (async () => {
   try {
     const fuel = await getFuelSettings();
     await syncFuelToNative(fuel);
-  } catch (e) { console.warn('bootstrap sync failed', e); }
+  } catch (e) {
+    if (__DEV__) console.warn('[userSettings] bootstrap sync failed:', e);
+  }
 })();
 
 

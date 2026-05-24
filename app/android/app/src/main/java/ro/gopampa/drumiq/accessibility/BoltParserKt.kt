@@ -39,7 +39,7 @@ object BoltParser {
     private val RE_NUMERAR         = Regex("""Numerar""", RegexOption.IGNORE_CASE)
     private val RE_CARD            = Regex("""\bCard\b""", RegexOption.IGNORE_CASE)
     private val RE_SURGE           = Regex("""Cerere mare\s+(\d+(?:[.,]\d+)?)x""", RegexOption.IGNORE_CASE)
-    private val RE_STOPS           = Regex("""\d+\s*oprire""", RegexOption.IGNORE_CASE)
+    private val RE_STOPS           = Regex("""\d+\s*oprir[ei]""", RegexOption.IGNORE_CASE)
     private val RE_RATING_LINE     = Regex("""^(\d(?:[.,]\d)?)\s*$""", RegexOption.MULTILINE)
     private val RE_PICKUP_MIN_LINE = Regex("""^(<1|\d+)\s*min$""", RegexOption.MULTILINE)
     private val RE_ADDR            = Regex("""\b(Strada|Str\.|B[-]?dul|Bulevardul|Calea|Aleea|Piaţ[ăa]|Piata|Splaiul|Aeroport|VIVO|Auchan|Kaufland|Centrul)\b""", RegexOption.IGNORE_CASE)
@@ -52,6 +52,12 @@ object BoltParser {
         if (text.contains("Începe cursa") || text.contains("Incepe cursa")) return BoltScreen.AT_PICKUP_WAITING
         if (text.contains("Finalizează cursa")) return BoltScreen.IN_TRIP_ACTIVE
         if (text.contains("Am ajuns")) return BoltScreen.IN_TRIP_TO_PICKUP
+
+        // Fallback: if screen has "Refuza" (no diacritic) and "(NET", it's a ride offer
+        // even when the Accept button text is not detected (Build 18 TS parity)
+        if (text.contains("Refuza") && text.contains("(NET")) {
+            return BoltScreen.RIDE_OFFER
+        }
 
         val hasAcceptToken =
             Regex("""Acceptă\b""").containsMatchIn(text) ||
@@ -101,12 +107,22 @@ object BoltParser {
         val surge = RE_SURGE.find(text)?.groupValues?.get(1)?.let { toDouble(it) }
         val hasStops = RE_STOPS.containsMatchIn(text)
 
-        // Address extraction
+        // Address extraction — try strict keyword regex first, fallback to permissive
         val lines = text.split('\n').map { it.trim() }
         val acceptIdx = lines.indexOfFirst { RE_ACCEPT_LINE.matches(it) }
-        val candidates = lines
+        val addrPool = lines
             .let { if (acceptIdx >= 0) it.subList(0, acceptIdx) else it }
-            .filter { l -> RE_ADDR.containsMatchIn(l) && l.length in 6..99 }
+            .filter { it.length in 6..99 }
+
+        var candidates = addrPool.filter { l -> RE_ADDR.containsMatchIn(l) }
+
+        // Fallback: if strict keywords found nothing, accept lines with a digit
+        // (street number) or at least 3 words (likely an address)
+        if (candidates.isEmpty()) {
+            candidates = addrPool.filter { l ->
+                l.contains(Regex("""\d""")) || l.split(Regex("""\s+""")).size >= 3
+            }
+        }
 
         val pickupAddress = candidates.firstOrNull()
         val destinationAddress = if (candidates.size >= 2) candidates.last() else null

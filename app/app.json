@@ -2,51 +2,21 @@
   "expo": {
     "name": "DRUMIQ",
     "slug": "drumiq",
-    "version": "1.0.0",
-    "orientation": "default",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0d0a08"
-    },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "ro.gopampa.drumiq"
-    },
-    "android": {
-      "package": "ro.gopampa.drumiq",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0d0a08"
-      },
-      "edgeToEdgeEnabled": true
-    },
     "scheme": "drumiq",
+    "version": "1.0.0",
+    "newArchEnabled": true,
+    "runtimeVersion": "1.0.0",
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-dev-client",
-      "expo-secure-store",
-      "expo-web-browser",
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "enableProguardInReleaseBuilds": true,
-            "enableShrinkResourcesInReleaseBuilds": true
-          }
-        }
-      ]
-    ],
     "extra": {
       "eas": {
         "projectId": "d005a96a-a41c-4cc2-b6ed-af2eb0dca575"
       }
     },
-    "owner": "andreipxx"
+    "owner": "andreipxx",
+    "updates": {
+      "url": "https://u.expo.dev/d005a96a-a41c-4cc2-b6ed-af2eb0dca575"
+    }
   }
 }

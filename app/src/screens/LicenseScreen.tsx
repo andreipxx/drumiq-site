@@ -8,10 +8,10 @@ import {
 } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { activateCode } from '../services/licenseManager';
+import { isValidFormat } from '../constants/licenses';
+import { APP_VERSION } from '../constants/config';
 import AppMascot from '../components/AppMascot';
-import type { License } from '../types';
-
-interface Props { onActivated: (license: License) => void; }
+interface Props { onActivated: () => void; }
 
 export default function LicenseScreen({ onActivated }: Props) {
   const { colors } = useTheme();
@@ -22,8 +22,8 @@ export default function LicenseScreen({ onActivated }: Props) {
     if (!key.trim()) return;
     setLoading(true);
     try {
-      const license = await activateCode(key);
-      onActivated(license);
+      await activateCode(key);
+      onActivated();
     } catch (e: any) {
       Alert.alert('Eroare activare', e?.message || 'Cod invalid.');
     } finally {
@@ -31,7 +31,7 @@ export default function LicenseScreen({ onActivated }: Props) {
     }
   };
 
-  const canActivate = key.trim().length >= 5 && !loading;
+  const canActivate = isValidFormat(key) && !loading;
 
   return (
     <SafeAreaView style={[s.root, { backgroundColor: colors.bg }]}>
@@ -120,7 +120,7 @@ export default function LicenseScreen({ onActivated }: Props) {
 
           {/* Version */}
           <Text style={[s.version, { color: colors.textDim }]}>
-            v1.0.0 · GO PAMPA S.R.L.
+            v{APP_VERSION} · GO PAMPA S.R.L.
           </Text>
         </ScrollView>
       </KeyboardAvoidingView>

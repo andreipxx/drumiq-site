@@ -32,7 +32,18 @@ export interface ThemeColors {
   go: string;           // green - $ verdict
   goGlow: string;
 
-  // Legacy aliases (v1 backwards compat — alias to v2 names)
+  // Extended palette (UI Pro v1)
+  surfaceHigh: string;    // elevated surface for cards
+  textSoft: string;       // readable but softer text
+  borderLight: string;    // lighter border for emphasis
+  accentDeep: string;     // deep green for gradient starts
+  accentGlow: string;     // green with alpha for glow/shadow effects
+  accentGlow2: string;    // subtler glow
+  goBg: string;           // go verdict background (with alpha)
+  thinkBg: string;        // think verdict background (with alpha)
+  stopBg: string;         // stop verdict background (with alpha)
+
+  // Active aliases (v1 names mapped to v2 colors, used by screens)
   textSecondary: string; // → textMuted
   textTertiary: string; // → textDim
   critic: string;       // → stop
@@ -66,7 +77,18 @@ export const DARK: ThemeColors = {
   go:              '#00FF88',
   goGlow:          '#00FF8866',
 
-  // Legacy aliases
+  // Extended palette (UI Pro v1)
+  surfaceHigh:     '#1E2820',
+  textSoft:        '#C0D8C2',
+  borderLight:     '#2A3A2C',
+  accentDeep:      '#00994F',
+  accentGlow:      'rgba(0, 255, 136, 0.15)',
+  accentGlow2:     'rgba(0, 255, 136, 0.08)',
+  goBg:            'rgba(0, 255, 136, 0.08)',
+  thinkBg:         'rgba(255, 184, 0, 0.08)',
+  stopBg:          'rgba(255, 51, 102, 0.08)',
+
+  // Active aliases (v1 names, used by screens)
   textSecondary:   '#7A8A7C',
   textTertiary:    '#4A5A4C',  // → textDim
   critic:          '#FF3366',  // → stop
@@ -100,7 +122,18 @@ export const LIGHT: ThemeColors = {
   go:              '#00CC6A',
   goGlow:          '#00CC6A44',
 
-  // Legacy aliases
+  // Extended palette (UI Pro v1)
+  surfaceHigh:     '#FFFFFF',
+  textSoft:        '#3A4B3C',
+  borderLight:     '#C8D5C9',
+  accentDeep:      '#008844',
+  accentGlow:      'rgba(0, 204, 106, 0.15)',
+  accentGlow2:     'rgba(0, 204, 106, 0.08)',
+  goBg:            'rgba(0, 204, 106, 0.08)',
+  thinkBg:         'rgba(255, 136, 0, 0.08)',
+  stopBg:          'rgba(255, 26, 77, 0.08)',
+
+  // Active aliases (v1 names, used by screens)
   textSecondary:   '#5A6B5C',
   textTertiary:    '#8A9B8C',
   critic:          '#FF1A4D',

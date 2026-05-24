@@ -4,8 +4,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, View } from 'react-native';
 import Svg, {
-  Defs, LinearGradient, RadialGradient, Stop, Filter,
-  FeGaussianBlur, FeMerge, FeMergeNode,
+  Defs, LinearGradient, RadialGradient, Stop,
   Path, Rect, Circle, Ellipse, Line, Text as SvgText, G,
 } from 'react-native-svg';
 

@@ -3,22 +3,23 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../hooks/useTheme';
 
 export type TabKey = 'home' | 'tracker' | 'plan' | 'profil' | 'settings';
 
 interface TabDef {
   key: TabKey;
-  icon: string;
+  icon: keyof typeof Ionicons.glyphMap;
   label: string;
 }
 
 const TABS: TabDef[] = [
-  { key: 'home',     icon: '🏠', label: 'ACASĂ' },
-  { key: 'tracker',  icon: '📊', label: 'TRACKER' },
-  { key: 'plan',     icon: '💎', label: 'PLAN' },
-  { key: 'profil',   icon: '👤', label: 'PROFIL' },
-  { key: 'settings', icon: '⚙️', label: 'SETĂRI' },
+  { key: 'home',     icon: 'home-outline',     label: 'ACASĂ' },
+  { key: 'tracker',  icon: 'stats-chart',       label: 'TRACKER' },
+  { key: 'plan',     icon: 'diamond-outline',   label: 'PLAN' },
+  { key: 'profil',   icon: 'person-outline',    label: 'PROFIL' },
+  { key: 'settings', icon: 'settings-outline',  label: 'SETĂRI' },
 ];
 
 interface Props {
@@ -41,7 +42,7 @@ export default function BottomTabs({ current, onChange }: Props) {
             activeOpacity={0.7}
           >
             {active && <View style={[s.indicator, { backgroundColor: colors.accent, shadowColor: colors.accent }]} />}
-            <Text style={[s.icon, { opacity: active ? 1 : 0.55 }]}>{t.icon}</Text>
+            <Ionicons name={t.icon} size={20} color={active ? colors.accent : colors.textMuted} style={s.icon} />
             <Text style={[s.label, { color: active ? colors.accent : colors.textMuted }]}>
               {t.label}
             </Text>
@@ -67,15 +68,14 @@ const s = StyleSheet.create({
   indicator: {
     position: 'absolute',
     top: -8,
-    left: '25%',
-    right: '25%',
+    alignSelf: 'center',
+    width: '50%',
     height: 2,
     shadowOpacity: 0.8,
     shadowRadius: 4,
     elevation: 4,
   },
   icon: {
-    fontSize: 18,
     marginBottom: 4,
   },
   label: {

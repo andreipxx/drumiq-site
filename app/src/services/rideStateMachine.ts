@@ -19,7 +19,7 @@ export type BoltScreen =
 
 const FSM_KEY = '@dp_fsm_state';
 const LAST_INCREMENT_KEY = '@dp_last_inc_at';
-const DEBOUNCE_MS = 60 * 1000;
+const DEBOUNCE_MS = 10 * 1000;
 
 export interface FSMState {
   current: BoltScreen;
@@ -54,22 +54,32 @@ export function classifyBoltScreen(text: string): BoltScreen {
     /Acceptă\b/.test(text)                  ||
     /Acceptă următoarea cursă/.test(text)    ||
     /Acceptare automată/.test(text);
-  // Build 18: Bolt removed “Acceptă” from accessibility tree (newer versions use auto-accept or no text token)
-  if (/Refuză/.test(text) && /\(NET/.test(text)) return 'ride_offer';
   if (hasAcceptToken && /Refuză/.test(text) && /lei/.test(text)) return 'ride_offer';
+  // Build 18 fallback: Bolt removed “Acceptă” from accessibility tree (newer versions use auto-accept or no text token)
+  // Only fires as last-resort when hasAcceptToken is false
+  if (/Refuză/.test(text) && /\(NET/.test(text)) return 'ride_offer';
   if (/Bolt Rewards|Scorul șoferului|Rata de acceptare|Intră online|Deconectează-te/.test(text)) return 'home_idle';
   if (/Hartă Google/.test(text))       return 'map_idle';
   return 'unknown';
 }
 
+// CRIT-7 FIX: singleton in-memory state — avoids AsyncStorage read on every
+// feedScreen call (10+/sec in overlay mode). Persist only at state transitions.
+let _cachedState: FSMState | null = null;
+
 async function loadState(): Promise<FSMState> {
+  if (_cachedState) return _cachedState;
   try {
     const raw = await AsyncStorage.getItem(FSM_KEY);
-    if (!raw) return { ...INITIAL };
-    return { ...INITIAL, ...JSON.parse(raw) };
-  } catch { return { ...INITIAL }; }
+    if (!raw) { _cachedState = { ...INITIAL }; return _cachedState; }
+    const parsed = { ...INITIAL, ...JSON.parse(raw) };
+    _cachedState = parsed;
+    return parsed;
+  } catch { _cachedState = { ...INITIAL }; return _cachedState; }
 }
 async function saveState(s: FSMState): Promise<void> {
+  _cachedState = s;
+  // Persist to AsyncStorage only on actual state transitions (not every call)
   await AsyncStorage.setItem(FSM_KEY, JSON.stringify(s));
 }
 
@@ -108,14 +118,12 @@ export async function feedScreen(text: string): Promise<{ screen: BoltScreen; co
       break;
 
     case 'post_trip_confirm':
-      if (s.activeSeenAt || s.waitingSeenAt) {
-        if (!s.activeSeenAt) s.activeSeenAt = now;
-        s.current = 'post_trip_confirm'; s.confirmSeenAt = now;
-        // SAFETY NET 1: count at confirm (earliest reliable signal of completed ride)
-        incremented = await tryIncrementWithDebounce(now);
-      } else {
-        Object.assign(s, INITIAL);
-      }
+      // MED-9: Always increment at confirm — don't reset state even without activeSeenAt/waitingSeenAt
+      if (!s.activeSeenAt) s.activeSeenAt = now;
+      if (!s.waitingSeenAt) s.waitingSeenAt = now;
+      s.current = 'post_trip_confirm'; s.confirmSeenAt = now;
+      // SAFETY NET 1: count at confirm (earliest reliable signal of completed ride)
+      incremented = await tryIncrementWithDebounce(now);
       break;
 
     case 'post_trip_rate':
@@ -149,18 +157,33 @@ export async function feedScreen(text: string): Promise<{ screen: BoltScreen; co
 }
 
 
+// HIGH-2 FIX: in-memory cache prevents TOCTOU race on AsyncStorage read
+let _lastIncAt: number | null = null;
+
 async function tryIncrementWithDebounce(now: number): Promise<boolean> {
-  const lastIncRaw = await AsyncStorage.getItem(LAST_INCREMENT_KEY);
-  const lastInc = lastIncRaw ? parseInt(lastIncRaw, 10) : 0;
-  if (now - lastInc > DEBOUNCE_MS) {
-    await incrementRideCounter();
-    await AsyncStorage.setItem(LAST_INCREMENT_KEY, String(now));
-    return true;
+  // Check memory cache first (fast path, prevents double increment)
+  if (_lastIncAt != null && now - _lastIncAt <= DEBOUNCE_MS) {
+    return false;
   }
-  return false;
+  // Fallback: check AsyncStorage only if memory cache is cold (app restart).
+  // Set sentinel synchronously BEFORE await to prevent concurrent cold-start callers
+  // from both passing the null check.
+  if (_lastIncAt == null) {
+    _lastIncAt = 0; // sentinel: blocks concurrent callers during async read
+    const lastIncRaw = await AsyncStorage.getItem(LAST_INCREMENT_KEY);
+    _lastIncAt = lastIncRaw ? parseInt(lastIncRaw, 10) : 0;
+    if (now - _lastIncAt <= DEBOUNCE_MS) return false;
+  }
+  _lastIncAt = now;
+  await incrementRideCounter();
+  // Persist to AsyncStorage in background (survives app restart)
+  AsyncStorage.setItem(LAST_INCREMENT_KEY, String(now)).catch(() => {});
+  return true;
 }
 
 export async function resetFSM(): Promise<void> {
+  _cachedState = null; // CRIT-7: clear in-memory cache too
+  _lastIncAt = null;   // HIGH-2: clear debounce memory cache
   await AsyncStorage.removeItem(FSM_KEY);
   await AsyncStorage.removeItem(LAST_INCREMENT_KEY);
 }

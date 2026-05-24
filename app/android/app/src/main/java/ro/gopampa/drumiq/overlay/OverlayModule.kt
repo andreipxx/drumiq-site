@@ -60,7 +60,6 @@ class OverlayModule(reactContext: ReactApplicationContext) :
             intent.putExtra(DPOverlayService.EXTRA_SHORT_RIDE, shortRide)
             val sanityError = data.hasKey("sanityError") && !data.isNull("sanityError") && data.getBoolean("sanityError")
             intent.putExtra(DPOverlayService.EXTRA_SANITY, sanityError)
-            putString(intent, DPOverlayService.EXTRA_DEAD_KM,  data, "deadKm",        "")
             putString(intent, DPOverlayService.EXTRA_DAILY,    data, "dailyProgress", "")
             ctx.startService(intent)
             promise.resolve(true)

@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Platform, Alert,
+  View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Platform, Alert, Switch,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
 import {
   getFuelSettings, setFuelSettings, DEFAULTS, totalCostPerKm, type FuelType, type FuelSettings,
 } from '../services/userSettings';
+import {
+  getAdaptiveConsumption, setAdaptiveConsumption, type AdaptiveConsumption, DEFAULT_ADAPTIVE,
+} from '../services/extendedSettings';
 
 interface Props { onBack: () => void; }
 
@@ -15,14 +19,19 @@ const FUEL_LABELS: { type: FuelType; label: string; unit: string; consumptionUni
   { type: 'electric',    label: 'Electric',    unit: 'RON/kWh', consumptionUnit: 'kWh/100km' },
   { type: 'benzina_gpl', label: 'Benzină+GPL', unit: 'RON/L',   consumptionUnit: 'L/100km'   },
   { type: 'hybrid_hev',  label: 'Hybrid (HEV)',  unit: 'RON/L',   consumptionUnit: 'L/100km'   },
-  { type: 'hybrid_phev', label: 'Hybrid+GPL (PHEV)', unit: 'RON/L',  consumptionUnit: 'L/100km'   },
+  { type: 'hybrid_phev', label: 'Plug-in Hybrid (PHEV)', unit: 'RON/L',  consumptionUnit: 'L/100km'   },
 ];
 
 export default function FuelSettingsScreen({ onBack }: Props) {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const [settings, setSettings] = useState<FuelSettings | null>(null);
+  const [adaptive, setAdaptiveState] = useState<AdaptiveConsumption>(DEFAULT_ADAPTIVE);
 
-  useEffect(() => { getFuelSettings().then(setSettings); }, []);
+  useEffect(() => {
+    getFuelSettings().then(setSettings);
+    getAdaptiveConsumption().then(setAdaptiveState);
+  }, []);
 
   if (!settings) return null;
 
@@ -39,6 +48,7 @@ export default function FuelSettingsScreen({ onBack }: Props) {
   const handleSave = async () => {
     try {
       await setFuelSettings(settings);
+      await setAdaptiveConsumption(adaptive);
       Alert.alert('Salvat', 'Setările carburant au fost salvate.');
       onBack();
     } catch (e: any) {
@@ -46,21 +56,22 @@ export default function FuelSettingsScreen({ onBack }: Props) {
     }
   };
 
-  const meta = FUEL_LABELS.find((f) => f.type === settings.type)!;
+  const meta = FUEL_LABELS.find((f) => f.type === settings.type) ?? FUEL_LABELS[0];
   const isGpl = settings.type === 'benzina_gpl';
   const isPhev = settings.type === 'hybrid_phev';
+  const isElectric = settings.type === 'electric';
   const totalCost = totalCostPerKm(settings).toFixed(2);
 
   return (
     <SafeAreaView style={[s.container, { backgroundColor: colors.bg }]}>
-      <TouchableOpacity onPress={onBack} style={s.backBtn} activeOpacity={0.6}>
+      <TouchableOpacity onPress={onBack} style={[s.backBtn, { paddingTop: insets.top + 8 }]} activeOpacity={0.6}>
         <Text style={[s.backText, { color: colors.accent }]}>‹ Back</Text>
       </TouchableOpacity>
 
       <ScrollView contentContainerStyle={s.scroll}>
         <Text style={[s.title, { color: colors.text }]}>Carburant</Text>
 
-        <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>TIP CARBURANT</Text>
+        <Text style={[s.sectionLabel, { color: colors.textDim }]}>TIP CARBURANT</Text>
         <View style={[s.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           {FUEL_LABELS.map((f, i) => {
             const sel = settings.type === f.type;
@@ -77,7 +88,7 @@ export default function FuelSettingsScreen({ onBack }: Props) {
           })}
         </View>
 
-        <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>VALORI {meta.label.toUpperCase()}</Text>
+        <Text style={[s.sectionLabel, { color: colors.textDim }]}>VALORI {meta.label.toUpperCase()}</Text>
         <View style={[s.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Field label="Consum" suffix={meta.consumptionUnit} value={String(settings.consumption)}
                  onChange={(v: string) => updateField('consumption', v)} colors={colors} />
@@ -92,6 +103,13 @@ export default function FuelSettingsScreen({ onBack }: Props) {
               <Divider colors={colors} />
               <Field label="Preț GPL" suffix="RON/L" value={String(settings.pricePerUnitGpl ?? 0)}
                      onChange={(v: string) => updateField('pricePerUnitGpl', v)} colors={colors} />
+              <Divider colors={colors} />
+              <Field label="Ratio GPL" suffix="%" value={String(Math.round((settings.gplRatio ?? 0.8) * 100))}
+                     onChange={(v: string) => {
+                       const pct = parseFloat(v.replace(',', '.'));
+                       if (isNaN(pct) || pct < 0 || pct > 100) return;
+                       setSettings({ ...settings, gplRatio: pct / 100 });
+                     }} colors={colors} />
             </>
           )}
           {isPhev && (
@@ -103,8 +121,12 @@ export default function FuelSettingsScreen({ onBack }: Props) {
               <Field label="Preț kWh" suffix="RON/kWh" value={String(settings.pricePerKwh ?? 0)}
                      onChange={(v: string) => updateField('pricePerKwh', v)} colors={colors} />
               <Divider colors={colors} />
-              <Field label="Procent electric" suffix="(0-1)" value={String(settings.electricRatio ?? 0.6)}
-                     onChange={(v: string) => updateField('electricRatio', v)} colors={colors} />
+              <Field label="Procent electric" suffix="%" value={String(Math.round((settings.electricRatio ?? 0.6) * 100))}
+                     onChange={(v: string) => {
+                       const pct = parseFloat(v.replace(',', '.'));
+                       if (isNaN(pct) || pct < 0 || pct > 100) return;
+                       setSettings({ ...settings, electricRatio: pct / 100 });
+                     }} colors={colors} />
             </>
           )}
           <Divider colors={colors} />
@@ -112,9 +134,66 @@ export default function FuelSettingsScreen({ onBack }: Props) {
                  onChange={(v: string) => updateField('wearPerKm', v)} colors={colors} />
         </View>
 
-        <Text style={[s.hint, { color: colors.textTertiary }]}>
-          Cost total estimat: {totalCost} RON/km{isGpl ? '\n(estimat la 80% GPL + 20% benzină)' : ''}{isPhev ? `\n(${Math.round((settings.electricRatio ?? 0.6) * 100)}% electric + ${Math.round((1 - (settings.electricRatio ?? 0.6)) * 100)}% benzină)` : ''}
+        <Text style={[s.hint, { color: colors.textDim }]}>
+          Cost total estimat: {totalCost} RON/km{isGpl ? `\n(${Math.round((settings.gplRatio ?? 0.8) * 100)}% GPL + ${Math.round((1 - (settings.gplRatio ?? 0.8)) * 100)}% benzină)` : ''}{isPhev ? `\n(${Math.round((settings.electricRatio ?? 0.6) * 100)}% electric + ${Math.round((1 - (settings.electricRatio ?? 0.6)) * 100)}% benzină)` : ''}
         </Text>
+
+        {/* === CONSUM ADAPTIV (din bord) === */}
+        <Text style={[s.sectionLabel, { color: colors.textDim }]}>CONSUM ADAPTIV (DIN BORD)</Text>
+        <View style={[s.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={s.fieldRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={[s.fieldLabel, { color: colors.text }]}>Folosește consumul real</Text>
+              <Text style={[s.adaptiveHint, { color: colors.textDim }]}>
+                Înlocuiește valorile de mai sus cu ce arată bordul
+              </Text>
+            </View>
+            <Switch value={adaptive.enabled}
+              onValueChange={(v) => setAdaptiveState(prev => ({ ...prev, enabled: v }))}
+              thumbColor={colors.surface} trackColor={{ true: colors.accent, false: colors.border }}
+            />
+          </View>
+          {adaptive.enabled && (
+            <>
+              {!isElectric && (
+                <>
+                  <Divider colors={colors} />
+                  <Field
+                    label={isGpl ? 'Consum mixt bord' : 'Consum mediu bord'}
+                    suffix="L/100km"
+                    value={String(adaptive.manualAverage ?? 0)}
+                    onChange={(v: string) => {
+                      const num = parseFloat(v);
+                      if (!isNaN(num) && num >= 0) setAdaptiveState(prev => ({ ...prev, manualAverage: num }));
+                    }}
+                    colors={colors}
+                  />
+                </>
+              )}
+              {(isElectric || isPhev) && (
+                <>
+                  <Divider colors={colors} />
+                  <Field
+                    label={isElectric ? 'Consum electric bord' : 'Consum electric bord'}
+                    suffix="kWh/100km"
+                    value={String(adaptive.manualKwh ?? 0)}
+                    onChange={(v: string) => {
+                      const num = parseFloat(v);
+                      if (!isNaN(num) && num >= 0) setAdaptiveState(prev => ({ ...prev, manualKwh: num }));
+                    }}
+                    colors={colors}
+                  />
+                </>
+              )}
+            </>
+          )}
+        </View>
+
+        {adaptive.enabled && (
+          <Text style={[s.hint, { color: colors.accent }]}>
+            {'⚡ Overlay va folosi consumul din bord în loc de valorile de mai sus'}
+          </Text>
+        )}
 
         <TouchableOpacity onPress={handleSave} activeOpacity={0.7}
           style={[s.cta, { backgroundColor: colors.accent }]}>
@@ -152,7 +231,7 @@ function Field({ label, suffix, value, onChange, colors }: any) {
         <TextInput value={localValue} onChangeText={handleChange} keyboardType="decimal-pad"
           style={[s.input, { color: colors.text, backgroundColor: colors.bg, borderColor: colors.border }]}
           selectionColor={colors.accent} />
-        <Text style={[s.suffix, { color: colors.textTertiary }]}>{suffix}</Text>
+        <Text style={[s.suffix, { color: colors.textDim }]}>{suffix}</Text>
       </View>
     </View>
   );
@@ -164,7 +243,7 @@ function Divider({ colors }: any) {
 
 const s = StyleSheet.create({
   container:    { flex: 1 },
-  backBtn:      { paddingTop: 50, paddingHorizontal: 16, paddingBottom: 8 },
+  backBtn:      { paddingHorizontal: 16, paddingBottom: 8 },
   backText:     { fontSize: 17 },
   scroll:       { padding: 16, paddingBottom: 60 },
   title:        { fontSize: 28, fontWeight: '700', marginBottom: 20 },
@@ -180,6 +259,7 @@ const s = StyleSheet.create({
   input:        { borderWidth: StyleSheet.hairlineWidth, borderRadius: 8, paddingVertical: 6, paddingHorizontal: 10, minWidth: 80, textAlign: 'right', fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', fontSize: 15 },
   suffix:       { fontSize: 12, marginLeft: 8, minWidth: 60 },
   hint:         { fontSize: 12, paddingHorizontal: 4, paddingTop: 12, lineHeight: 17, fontStyle: 'italic' },
+  adaptiveHint: { fontSize: 11, marginTop: 2 },
   cta:          { marginTop: 24, paddingVertical: 16, borderRadius: 12, alignItems: 'center' },
   ctaText:      { color: '#fff', fontSize: 16, fontWeight: '700' },
 });

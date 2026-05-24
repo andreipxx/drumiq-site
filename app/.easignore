@@ -1,0 +1,60 @@
+# EAS Build ignore (extends .gitignore patterns)
+# Copy of .gitignore + extra exclusions for EAS upload
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# generated native folders
+/ios
+
+# Secrets
+.env
+.env.local
+*.keystore
+google-services.json
+
+# Build artifacts
+*.apk
+*.aab
+
+# Gradle cache (causes EBUSY lock errors on upload)
+android/.gradle/
+
+# Build artifacts with stale Windows paths (must be regenerated on EAS Linux)
+android/build/
+
+# Local SDK path (only for local builds)
+android/local.properties

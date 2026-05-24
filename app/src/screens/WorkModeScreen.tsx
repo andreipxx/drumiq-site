@@ -1,36 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
-import WorkModeSetup from '../components/WorkModeSetup';
-import { getWorkMode, setWorkMode, type WorkModeConfig } from '../services/workMode';
 
 interface Props { onBack: () => void; }
 
 export default function WorkModeScreen({ onBack }: Props) {
   const { colors } = useTheme();
-  const [config, setConfig] = useState<WorkModeConfig | null>(null);
-
-  useEffect(() => { getWorkMode().then(setConfig); }, []);
-
-  if (!config) return <View style={{ flex: 1, backgroundColor: colors.bg }} />;
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <TouchableOpacity onPress={onBack} style={s.backBtn} activeOpacity={0.6}>
+    <View style={[s.container, { backgroundColor: colors.bg }]}>
+      <TouchableOpacity onPress={onBack} style={[s.backBtn, { paddingTop: insets.top + 8 }]} activeOpacity={0.6}>
         <Text style={[s.backText, { color: colors.accent }]}>{'‹ Setări'}</Text>
       </TouchableOpacity>
-      <WorkModeSetup
-        initialConfig={config}
-        onSave={async (cfg) => {
-          await setWorkMode(cfg);
-          onBack();
-        }}
-      />
+
+      <View style={s.center}>
+        <Text style={s.lockIcon}>{'🔒'}</Text>
+        <Text style={[s.title, { color: colors.text }]}>MOD DE LUCRU</Text>
+        <View style={[s.badge, { backgroundColor: colors.accent }]}>
+          <Text style={s.badgeText}>COMING SOON</Text>
+        </View>
+        <Text style={[s.description, { color: colors.textDim }]}>
+          Costuri fixe (rate, asigurare, telefon) vor fi incluse automat în calculul profitului.
+        </Text>
+      </View>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  backBtn: { paddingTop: 50, paddingHorizontal: 16, paddingBottom: 8 },
+  container: { flex: 1 },
+  backBtn: { paddingHorizontal: 16, paddingBottom: 8 },
   backText: { fontSize: 17 },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32 },
+  lockIcon: { fontSize: 48, marginBottom: 16 },
+  title: { fontSize: 22, fontWeight: '800', letterSpacing: 1, marginBottom: 12 },
+  badge: { borderRadius: 8, paddingHorizontal: 14, paddingVertical: 5, marginBottom: 20 },
+  badgeText: { color: '#fff', fontSize: 12, fontWeight: '800', letterSpacing: 1.5 },
+  description: { fontSize: 14, textAlign: 'center', lineHeight: 20 },
 });

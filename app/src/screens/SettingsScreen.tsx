@@ -1,21 +1,16 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState, useRef } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView, Alert, Switch,
+  View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView, Switch,
   TextInput, Platform,
 } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import type { ThemeMode } from '../constants/theme';
-import { getLicenseState, clearLicense } from '../services/licenseManager';
-import { signOut } from '../services/auth';
+import { getLicenseState } from '../services/licenseManager';
+import { confirmChangeCode, confirmLogout } from '../services/accountActions';
 import { getOverlayModePro, setOverlayModePro } from '../services/overlayController';
 import { Overlay } from '../native/overlay';
-import { DeviceEventEmitter } from 'react-native';
-import {
-  getAdaptiveConsumption, setAdaptiveConsumption, type AdaptiveConsumption,
-  getTaxSettings, setTaxSettings, type TaxSettings,
-  DEFAULT_ADAPTIVE, DEFAULT_TAX,
-} from '../services/extendedSettings';
 import { getWorkMode } from '../services/workMode';
+import { APP_VERSION } from '../constants/config';
 
 interface Props {
   onOpenFuel: () => void;
@@ -23,6 +18,7 @@ interface Props {
   onOpenUpgrade: () => void;
   onOpenAccessibility: () => void;
   onOpenWorkMode: () => void;
+  onOpenLicense: () => void;
 }
 
 const THEME_OPTIONS: { mode: ThemeMode; label: string; icon: string }[] = [
@@ -31,29 +27,29 @@ const THEME_OPTIONS: { mode: ThemeMode; label: string; icon: string }[] = [
   { mode: 'dark',      label: 'Dark',      icon: '☾' },
 ];
 
-export default function SettingsScreen({ onOpenFuel, onOpenFilters, onOpenUpgrade, onOpenAccessibility, onOpenWorkMode }: Props) {
+export default function SettingsScreen({ onOpenFuel, onOpenFilters, onOpenUpgrade, onOpenAccessibility, onOpenWorkMode, onOpenLicense }: Props) {
   const { mode, setMode, colors } = useTheme();
   const [plan, setPlan] = useState<string | null>(null);
   const [proCard, setProCard] = useState(false);
   const [overlayPerm, setOverlayPerm] = useState<boolean | null>(null);
-  const [adaptive, setAdaptiveState] = useState<AdaptiveConsumption>(DEFAULT_ADAPTIVE);
-  const [adaptiveSaved, setAdaptiveSaved] = useState(true);
-  const [tax, setTaxState] = useState<TaxSettings>(DEFAULT_TAX);
-  const [taxSaved, setTaxSaved] = useState(true);
   const [workModeLabel, setWorkModeLabel] = useState('');
+  const overlayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => { (async () => {
     const st = await getLicenseState();
     if (st.license) setPlan(st.license.plan);
     setProCard((await getOverlayModePro()) === 'full');
     setOverlayPerm(await Overlay.canDrawOverlays());
-    setAdaptiveState(await getAdaptiveConsumption());
-    setTaxState(await getTaxSettings());
     const wm = await getWorkMode();
     setWorkModeLabel(wm.mode === 'flota' ? 'Flotă / mașină închiriată' : 'Individual / PFA / SRL');
   })(); }, []);
 
-  const isPro = plan === 'pro';
+  // MED-14: cleanup overlay permission timer on unmount
+  useEffect(() => () => {
+    if (overlayTimerRef.current) clearTimeout(overlayTimerRef.current);
+  }, []);
+
+  const isPro = plan === 'pro' || plan === 'root';
 
   const handleToggleProCard = async (val: boolean) => {
     if (!isPro) { onOpenUpgrade(); return; }
@@ -63,19 +59,14 @@ export default function SettingsScreen({ onOpenFuel, onOpenFilters, onOpenUpgrad
 
   const handleRequestOverlay = async () => {
     await Overlay.requestPermission();
-    setTimeout(async () => setOverlayPerm(await Overlay.canDrawOverlays()), 1500);
+    overlayTimerRef.current = setTimeout(async () => {
+      overlayTimerRef.current = null;
+      setOverlayPerm(await Overlay.canDrawOverlays());
+    }, 1500);
   };
 
-  const handleResetLicense = () => {
-    Alert.alert('Schimbă cod', 'Vei fi delogat și redirectat la activare. Continui?', [
-      { text: 'Anulează', style: 'cancel' },
-      { text: 'Continuă', style: 'destructive', onPress: async () => {
-        try { await signOut(); } catch {}
-        await clearLicense();
-        DeviceEventEmitter.emit('dp_license_changed');
-      } },
-    ]);
-  };
+  const handleChangeCode = () => confirmChangeCode(onOpenLicense);
+  const handleLogout = () => confirmLogout();
 
   return (
     <SafeAreaView style={[s.container, { backgroundColor: colors.bg }]}>
@@ -84,85 +75,91 @@ export default function SettingsScreen({ onOpenFuel, onOpenFilters, onOpenUpgrad
 
         {plan && (
           <>
-            <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>PLAN</Text>
+            <Text style={[s.sectionLabel, { color: colors.textDim }]}>PLAN</Text>
             <View style={[s.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <View style={s.row}>
                 <Text style={[s.label, { color: colors.text }]}>Plan curent</Text>
                 <Text style={[s.value, { color: colors.accent }]}>{plan.toUpperCase()}</Text>
               </View>
-              {plan !== 'pro' && (
+              {!isPro && (
                 <TouchableOpacity onPress={onOpenUpgrade} activeOpacity={0.6}
                   style={[s.row, { borderTopColor: colors.divider, borderTopWidth: StyleSheet.hairlineWidth }]}>
                   <Text style={[s.label, { color: colors.accent }]}>⭐ Upgrade plan</Text>
                 </TouchableOpacity>
               )}
-              <TouchableOpacity onPress={handleResetLicense} activeOpacity={0.6}
+              <TouchableOpacity onPress={handleChangeCode} activeOpacity={0.6}
                 style={[s.row, { borderTopColor: colors.divider, borderTopWidth: StyleSheet.hairlineWidth }]}>
-                <Text style={[s.label, { color: colors.critic }]}>Schimbă cod / Logout</Text>
+                <Text style={[s.label, { color: colors.accent }]}>Schimbă cod de activare</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleLogout} activeOpacity={0.6}
+                style={[s.row, { borderTopColor: colors.divider, borderTopWidth: StyleSheet.hairlineWidth }]}>
+                <Text style={[s.label, { color: colors.stop }]}>Logout</Text>
               </TouchableOpacity>
             </View>
           </>
         )}
 
-        <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>CARBURANT</Text>
+        <Text style={[s.sectionLabel, { color: colors.textDim }]}>CARBURANT</Text>
         <View style={[s.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <TouchableOpacity onPress={onOpenFuel} activeOpacity={0.6} style={s.row}>
             <Text style={[s.label, { color: colors.text }]}>⛽ Tip & preț carburant</Text>
-            <Text style={[s.chevron, { color: colors.textTertiary }]}>›</Text>
+            <Text style={[s.chevron, { color: colors.textDim }]}>›</Text>
           </TouchableOpacity>
         </View>
 
-        <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>MOD DE LUCRU</Text>
-        <View style={[s.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <TouchableOpacity onPress={onOpenWorkMode} activeOpacity={0.6} style={s.row}>
+        <Text style={[s.sectionLabel, { color: colors.textDim }]}>MOD DE LUCRU</Text>
+        <View style={[s.group, { backgroundColor: colors.surface, borderColor: colors.border, opacity: 0.5 }]}>
+          <View style={s.row}>
             <View style={{ flex: 1 }}>
               <Text style={[s.label, { color: colors.text }]}>
-                {workModeLabel || 'Mod de lucru'}
+                {'🔒 Mod de lucru'}
               </Text>
-              <Text style={[s.subLabel, { color: colors.textTertiary }]}>
+              <Text style={[s.subLabel, { color: colors.textDim }]}>
                 Costuri fixe săptămânale pentru calculul profitului
               </Text>
             </View>
-            <Text style={[s.chevron, { color: colors.textTertiary }]}>›</Text>
-          </TouchableOpacity>
+            <View style={{ backgroundColor: colors.accent, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 }}>
+              <Text style={{ color: '#fff', fontSize: 10, fontWeight: '700' }}>COMING SOON</Text>
+            </View>
+          </View>
         </View>
 
         {/* === PRAGURI PROFITABILITATE === */}
-        <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>PRAGURI PROFITABILITATE</Text>
+        <Text style={[s.sectionLabel, { color: colors.textDim }]}>PRAGURI PROFITABILITATE</Text>
         <View style={[s.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <TouchableOpacity onPress={onOpenFilters} activeOpacity={0.6} style={s.row}>
             <View style={{ flex: 1 }}>
               <Text style={[s.label, { color: colors.text }]}>Praguri & filtre curse</Text>
-              <Text style={[s.subLabel, { color: colors.textTertiary }]}>
+              <Text style={[s.subLabel, { color: colors.textDim }]}>
                 RON/km, RON/min, pickup max, rating min
               </Text>
             </View>
-            <Text style={[s.chevron, { color: colors.textTertiary }]}>›</Text>
+            <Text style={[s.chevron, { color: colors.textDim }]}>›</Text>
           </TouchableOpacity>
         </View>
 
         {/* === ACCESSIBILITY TEST === */}
-        <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>🔍 DIAGNOSTIC</Text>
+        <Text style={[s.sectionLabel, { color: colors.textDim }]}>🔍 DIAGNOSTIC</Text>
         <View style={[s.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <TouchableOpacity onPress={onOpenAccessibility} activeOpacity={0.6} style={s.row}>
             <View style={{ flex: 1 }}>
               <Text style={[s.label, { color: colors.text }]}>Accessibility Test</Text>
-              <Text style={[s.subLabel, { color: colors.textTertiary }]}>
+              <Text style={[s.subLabel, { color: colors.textDim }]}>
                 Verifică că DRUMIQ citește Bolt corect
               </Text>
             </View>
-            <Text style={[s.chevron, { color: colors.textTertiary }]}>›</Text>
+            <Text style={[s.chevron, { color: colors.textDim }]}>›</Text>
           </TouchableOpacity>
         </View>
 
-        <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>PRO {!isPro && '🔒'}</Text>
+        <Text style={[s.sectionLabel, { color: colors.textDim }]}>PRO {!isPro && '🔒'}</Text>
         <View style={[s.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <View style={s.row}>
             <View style={{ flex: 1 }}>
-              <Text style={[s.label, { color: isPro ? colors.text : colors.textTertiary }]}>
+              <Text style={[s.label, { color: isPro ? colors.text : colors.textDim }]}>
                 {!isPro && '🔒 '}Card complet (overlay detaliat)
               </Text>
-              <Text style={[s.subLabel, { color: colors.textTertiary }]}>
+              <Text style={[s.subLabel, { color: colors.textDim }]}>
                 {isPro ? (proCard ? 'Card complet activ' : 'Bulina simplă activă') : 'Disponibil în planul Pro'}
               </Text>
             </View>
@@ -171,12 +168,12 @@ export default function SettingsScreen({ onOpenFuel, onOpenFilters, onOpenUpgrad
           </View>
         </View>
 
-        <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>OVERLAY PERMISSION</Text>
+        <Text style={[s.sectionLabel, { color: colors.textDim }]}>OVERLAY PERMISSION</Text>
         <View style={[s.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <View style={s.row}>
             <View style={{ flex: 1 }}>
               <Text style={[s.label, { color: colors.text }]}>Display over other apps</Text>
-              <Text style={[s.subLabel, { color: colors.textTertiary }]}>{overlayPerm === null ? '...' : overlayPerm ? 'Acordată ✓' : 'Lipsă — apasă pentru a acorda'}</Text>
+              <Text style={[s.subLabel, { color: colors.textDim }]}>{overlayPerm === null ? '...' : overlayPerm ? 'Acordată ✓' : 'Lipsă — apasă pentru a acorda'}</Text>
             </View>
             {overlayPerm === false && (
               <TouchableOpacity onPress={handleRequestOverlay} activeOpacity={0.7} style={[s.smallBtn, { backgroundColor: colors.accent }]}>
@@ -186,103 +183,9 @@ export default function SettingsScreen({ onOpenFuel, onOpenFilters, onOpenUpgrad
           </View>
         </View>
 
-        {/* === CONSUM ADAPTIV (2.4.4) === */}
-        <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>CONSUM ADAPTIV</Text>
-        <View style={[s.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <View style={s.row}>
-            <View style={{ flex: 1 }}>
-              <Text style={[s.label, { color: colors.text }]}>Consum adaptiv (manual din bord)</Text>
-            </View>
-            <Switch value={adaptive.enabled}
-              onValueChange={(v) => {
-                const next = { ...adaptive, enabled: v };
-                setAdaptiveState(next);
-                setAdaptiveSaved(false);
-              }}
-              thumbColor={colors.surface} trackColor={{ true: colors.accent, false: colors.border }}
-            />
-          </View>
-          {adaptive.enabled && (
-            <>
-              <View style={[s.row, { borderTopColor: colors.divider, borderTopWidth: StyleSheet.hairlineWidth }]}>
-                <View style={{ flex: 1 }}>
-                  <Text style={[s.label, { color: colors.text }]}>Consum mediu (manual din bord)</Text>
-                  <Text style={[s.subLabel, { color: colors.textTertiary }]}>
-                    Valoarea reala din computerul de bord
-                  </Text>
-                </View>
-                <SettingsNumberInput
-                  value={adaptive.manualAverage ?? adaptive.city}
-                  onChange={(v) => {
-                    setAdaptiveState(prev => ({ ...prev, manualAverage: v }));
-                    setAdaptiveSaved(false);
-                  }}
-                  suffix="l/100km"
-                  colors={colors}
-                />
-              </View>
-              <TouchableOpacity
-                style={[s.row, { borderTopColor: colors.divider, borderTopWidth: StyleSheet.hairlineWidth, justifyContent: 'center' }]}
-                onPress={async () => { await setAdaptiveConsumption(adaptive); setAdaptiveSaved(true); }}
-                activeOpacity={0.7}
-              >
-                <Text style={{ fontSize: 14, fontWeight: '800', color: adaptiveSaved ? colors.textTertiary : colors.accent, letterSpacing: 1 }}>
-                  {adaptiveSaved ? '✓ SALVAT' : '💾 SALVEAZĂ'}
-                </Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
+        {/* Consum adaptiv mutat in FuelSettingsScreen */}
 
-        {/* === TAXE (2.4.5) === */}
-        <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>TAXE</Text>
-        <View style={[s.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <View style={s.row}>
-            <View style={{ flex: 1 }}>
-              <Text style={[s.label, { color: colors.text }]}>Taxe</Text>
-              <Text style={[s.subLabel, { color: colors.textTertiary }]}>
-                Taxele se aplică estimativ pe venitul cursei
-              </Text>
-            </View>
-            <SettingsNumberInput
-              value={tax.taxRate}
-              onChange={(v) => {
-                setTaxState(prev => ({ ...prev, taxRate: v }));
-                setTaxSaved(false);
-              }}
-              suffix="%"
-              colors={colors}
-            />
-          </View>
-          <View style={[s.row, { borderTopColor: colors.divider, borderTopWidth: StyleSheet.hairlineWidth }]}>
-            <View style={{ flex: 1 }}>
-              <Text style={[s.label, { color: colors.text }]}>Comision Bolt</Text>
-              <Text style={[s.subLabel, { color: colors.textTertiary }]}>
-                Dacă suma Bolt e deja netă, lasă 0%
-              </Text>
-            </View>
-            <SettingsNumberInput
-              value={tax.boltCommission}
-              onChange={(v) => {
-                setTaxState(prev => ({ ...prev, boltCommission: v }));
-                setTaxSaved(false);
-              }}
-              suffix="%"
-              colors={colors}
-            />
-          </View>
-          <TouchableOpacity
-            style={[s.row, { borderTopColor: colors.divider, borderTopWidth: StyleSheet.hairlineWidth, justifyContent: 'center' }]}
-            onPress={async () => { await setTaxSettings(tax); setTaxSaved(true); }}
-            activeOpacity={0.7}
-          >
-            <Text style={{ fontSize: 14, fontWeight: '800', color: taxSaved ? colors.textTertiary : colors.accent, letterSpacing: 1 }}>
-              {taxSaved ? '✓ SALVAT' : '💾 SALVEAZĂ'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <Text style={[s.sectionLabel, { color: colors.textTertiary }]}>THEME</Text>
+        <Text style={[s.sectionLabel, { color: colors.textDim }]}>THEME</Text>
         <View style={[s.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           {THEME_OPTIONS.map((opt, i) => {
             const sel = mode === opt.mode;
@@ -300,8 +203,8 @@ export default function SettingsScreen({ onOpenFuel, onOpenFilters, onOpenUpgrad
           })}
         </View>
 
-        <Text style={[s.footnote, { color: colors.textTertiary }]}>
-          DRUMIQ · v1.0.0 · GO PAMPA S.R.L.
+        <Text style={[s.footnote, { color: colors.textDim }]}>
+          DRUMIQ · v{APP_VERSION} · GO PAMPA S.R.L.
         </Text>
       </ScrollView>
     </SafeAreaView>
@@ -312,6 +215,15 @@ function SettingsNumberInput({ value, onChange, suffix, colors }: {
   value: number; onChange: (v: number) => void; suffix: string; colors: any;
 }) {
   const [text, setText] = useState(String(value));
+
+  // MED-15: sync text when prop value changes externally, but don't overwrite mid-typing
+  useEffect(() => {
+    const parsed = parseFloat(text.replace(',', '.'));
+    if (isNaN(parsed) || parsed !== value) {
+      setText(String(value));
+    }
+  }, [value, text]);
+
   const handleChange = (t: string) => {
     const normalized = t.replace(',', '.');
     if (!/^\d*\.?\d*$/.test(normalized)) return;
@@ -334,7 +246,7 @@ function SettingsNumberInput({ value, onChange, suffix, colors }: {
         }}
         selectionColor={colors.accent}
       />
-      <Text style={{ fontSize: 11, color: colors.textTertiary, marginLeft: 4 }}>{suffix}</Text>
+      <Text style={{ fontSize: 11, color: colors.textDim, marginLeft: 4 }}>{suffix}</Text>
     </View>
   );
 }

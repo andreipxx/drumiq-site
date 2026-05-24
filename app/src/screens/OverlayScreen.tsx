@@ -1,35 +1,56 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, StatusBar, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
 import { VERDICT_DISPLAY, type ProfitVerdict } from '../types';
+import type { OverlayMode } from '../native/overlay';
 
 interface Props {
   onOpenSettings: () => void;
   onOpenAccessibility: () => void;
 }
 
-type OverlayMode = 'simple' | 'pro';
-
 interface DemoData {
-  ppkm: string;
+  profitKm: string;
+  profitMin: string;
   pickup: string;
   cursa: string;
-  enc: string;
-  profit: string;
+  gross: string;
+  durata: string;
   net: string;
   source: 'api' | 'fallback';
   daily: string;
+  warning?: string;
+  warningColor?: string;
 }
 
 const DEMO_DATA: Record<ProfitVerdict, DemoData> = {
-  go:    { ppkm: '4.68 RON/km', pickup: '1.5 km / 2 min', cursa: '2.0 km / 2 min', enc: '31.12 lei', profit: '9.36 lei', net: '+9.36 lei', source: 'api', daily: '145/200 lei' },
-  think: { ppkm: '2.10 RON/km', pickup: '2.3 km / 5 min', cursa: '~2.0 km',        enc: '15.15 lei', profit: '8.40 lei', net: '+8.40 lei', source: 'fallback', daily: '145/200 lei' },
-  stop:  { ppkm: '0.07 RON/km', pickup: '1.5 km / 2 min', cursa: '11.0 km / 15 min', enc: '31.12 lei', profit: '0.85 lei', net: '+0.85 lei', source: 'api', daily: '145/200 lei' },
+  go: {
+    profitKm: '4.68 / 5.2 lei/km', profitMin: '2.34 RON/min',
+    pickup: '1.5 km / 2 min', cursa: '2.0 km / 2 min',
+    gross: '31.12 lei', durata: '4 min', net: '+9.36 lei',
+    source: 'api', daily: '247/300 lei',
+  },
+  think: {
+    profitKm: '2.10 / 3.0 lei/km', profitMin: '1.20 RON/min',
+    pickup: '2.3 km / 5 min', cursa: '~2.0 km',
+    gross: '15.15 lei', durata: '7 min', net: '+8.40 lei',
+    source: 'fallback', daily: '247/300 lei',
+    warning: 'Cerere mare 1.2x', warningColor: '#FFB800',
+  },
+  stop: {
+    profitKm: '0.07 / 0.9 lei/km', profitMin: '0.05 RON/min',
+    pickup: '1.5 km / 2 min', cursa: '11.0 km / 15 min',
+    gross: '9.75 lei', durata: '17 min', net: '+0.85 lei',
+    source: 'api', daily: '247/300 lei',
+    warning: 'Pickup 1.5km > prag', warningColor: '#FF3366',
+  },
 };
 
 export default function OverlayScreen({ onOpenSettings, onOpenAccessibility }: Props) {
   const { colors } = useTheme();
-  const [mode, setMode] = useState<OverlayMode>('pro');
+  const insets = useSafeAreaInsets();
+  const [mode, setMode] = useState<OverlayMode>('full');
   const [verdict, setVerdict] = useState<ProfitVerdict>('go');
 
   const data = DEMO_DATA[verdict];
@@ -38,9 +59,9 @@ export default function OverlayScreen({ onOpenSettings, onOpenAccessibility }: P
     <View style={[s.root, { backgroundColor: colors.bg }]}>
       <StatusBar barStyle="light-content" backgroundColor={colors.bg} />
 
-      <View style={s.header}>
+      <View style={[s.header, { paddingTop: insets.top + 8 }]}>
         <TouchableOpacity onPress={onOpenSettings} style={s.headerBtn}>
-          <Text style={[s.backTxt, { color: colors.accent }]}>‹ Înapoi</Text>
+          <Text style={[s.backTxt, { color: colors.accent }]}>‹ Inapoi</Text>
         </TouchableOpacity>
         <View style={{ flex: 1, alignItems: 'center' }}>
           <Text style={[s.title, { color: colors.text }]}>OVERLAY DEMO</Text>
@@ -53,7 +74,7 @@ export default function OverlayScreen({ onOpenSettings, onOpenAccessibility }: P
 
         <View style={s.boltMock}>
           <View style={s.boltRefuza}>
-            <Text style={s.boltRefuzaTxt}>✕ Refuză</Text>
+            <Text style={s.boltRefuzaTxt}>✕ Refuza</Text>
           </View>
 
           <View style={s.overlayWrap}>
@@ -67,21 +88,23 @@ export default function OverlayScreen({ onOpenSettings, onOpenAccessibility }: P
           <View style={s.boltCard}>
             <View style={s.boltTags}>
               <View style={[s.boltTag, { backgroundColor: '#f0f0f0' }]}>
-                <Text style={{ fontSize: 10, fontWeight: '700', color: '#333' }}>🚗 Bolt</Text>
+                <Text style={{ fontSize: 10, fontWeight: '700', color: '#333' }}>Bolt</Text>
               </View>
               <View style={[s.boltTag, { backgroundColor: '#d8f3dc' }]}>
                 <Text style={{ fontSize: 10, fontWeight: '700', color: '#1b6e3a' }}>$ Numerar</Text>
               </View>
-              <View style={[s.boltTag, { backgroundColor: '#fde9d6' }]}>
-                <Text style={{ fontSize: 10, fontWeight: '700', color: '#8b4513' }}>📍 Locație</Text>
-              </View>
+              {verdict === 'stop' && (
+                <View style={[s.boltTag, { backgroundColor: '#f8d7da' }]}>
+                  <Text style={{ fontSize: 10, fontWeight: '700', color: '#721c24' }}>In afara razei</Text>
+                </View>
+              )}
             </View>
-            <Text style={s.boltPrice}>{data.enc} <Text style={{ fontSize: 11, color: '#555', fontWeight: '500' }}>(NET, taxe incluse)</Text></Text>
+            <Text style={s.boltPrice}>{data.gross} <Text style={{ fontSize: 11, color: '#555', fontWeight: '500' }}>(NET, taxe incluse)</Text></Text>
             <Text style={s.boltInfo}>Respingerea nu va afecta rata de acceptare</Text>
-            <Text style={s.boltPass}>Marcu • 5.0 ★</Text>
-            <Text style={s.boltRoute}>{data.pickup}{'\n'}Spitalul Județean Baia Mare</Text>
+            <Text style={s.boltPass}>Marcu · 5.0 ★</Text>
+            <Text style={s.boltRoute}>{data.pickup}{'\n'}Spitalul Judetean Baia Mare</Text>
             <View style={s.boltAccept}>
-              <Text style={{ color: 'white', fontSize: 13, fontWeight: '700' }}>Acceptă</Text>
+              <Text style={{ color: 'white', fontSize: 13, fontWeight: '700' }}>Accepta</Text>
             </View>
           </View>
         </View>
@@ -101,12 +124,12 @@ export default function OverlayScreen({ onOpenSettings, onOpenAccessibility }: P
           <TouchableOpacity
             style={[
               s.modeBtn,
-              { backgroundColor: mode === 'pro' ? colors.accent : colors.surface, borderColor: mode === 'pro' ? colors.accent : colors.border },
+              { backgroundColor: mode === 'full' ? colors.accent : colors.surface, borderColor: mode === 'full' ? colors.accent : colors.border },
             ]}
-            onPress={() => setMode('pro')}
+            onPress={() => setMode('full')}
           >
-            <Text style={[s.modeBtnTxt, { color: mode === 'pro' ? '#000' : colors.text }]}>PRO</Text>
-            <Text style={[s.modeBtnSub, { color: mode === 'pro' ? '#000' : colors.textMuted }]}>card detaliat</Text>
+            <Text style={[s.modeBtnTxt, { color: mode === 'full' ? '#000' : colors.text }]}>PRO</Text>
+            <Text style={[s.modeBtnSub, { color: mode === 'full' ? '#000' : colors.textMuted }]}>card detaliat</Text>
           </TouchableOpacity>
         </View>
 
@@ -115,32 +138,39 @@ export default function OverlayScreen({ onOpenSettings, onOpenAccessibility }: P
           {(['go', 'think', 'stop'] as ProfitVerdict[]).map((vk) => {
             const vd = VERDICT_DISPLAY[vk];
             const active = verdict === vk;
+            // GO = green bg always, Gandeste = yellow border, Refuza = red border
+            const isGo = vk === 'go';
             return (
               <TouchableOpacity
                 key={vk}
                 style={[
                   s.verdictBtn,
                   {
-                    backgroundColor: active ? vd.color : colors.surface,
+                    backgroundColor: active
+                      ? vd.color
+                      : isGo
+                        ? vd.color + '22'
+                        : colors.surface,
                     borderColor: vd.color,
+                    borderWidth: 2,
                   },
                 ]}
                 onPress={() => setVerdict(vk)}
               >
                 <Text style={[s.verdictSym, { color: active ? '#000' : vd.color }]}>{vd.symbol}</Text>
-                <Text style={[s.verdictLbl, { color: active ? '#000' : colors.textMuted }]}>{vd.label}</Text>
+                <Text style={[s.verdictLbl, { color: active ? '#000' : vd.color }]}>{vd.label}</Text>
               </TouchableOpacity>
             );
           })}
         </View>
 
         <TouchableOpacity onPress={onOpenAccessibility} style={[s.diagBtn, { borderColor: colors.border }]}>
-          <Text style={[s.diagTxt, { color: colors.textMuted }]}>🔍 ACCESSIBILITY DIAGNOSTIC</Text>
+          <Text style={[s.diagTxt, { color: colors.textMuted }]}>ACCESSIBILITY DIAGNOSTIC</Text>
         </TouchableOpacity>
 
         <Text style={[s.note, { color: colors.textDim }]}>
           Acesta este doar un preview.{'\n'}
-          În condusul real, overlay-ul apare automat peste Bolt.
+          In condusul real, overlay-ul apare automat peste Bolt.
         </Text>
 
       </ScrollView>
@@ -151,16 +181,19 @@ export default function OverlayScreen({ onOpenSettings, onOpenAccessibility }: P
 function SimpleOverlay({ verdict, data }: { verdict: ProfitVerdict; data: DemoData }) {
   const v = VERDICT_DISPLAY[verdict];
   return (
-    <View style={[sov.card, { backgroundColor: 'rgba(10,14,11,0.70)' }]}>
-      <View style={[sov.colorBar, { backgroundColor: v.color }]} />
-      <View style={sov.cardBody}>
-        <View style={sov.verdictRow}>
-          <View style={[sov.symbolCircle, { backgroundColor: v.color }]}>
-            <Text style={sov.symbolTxt}>{v.symbol}</Text>
+    <View style={[sov.cardOuter, { width: 180 }]}>
+      <View style={[sov.card, { backgroundColor: 'rgba(10,14,11,0.96)' }]}>
+        <View style={[sov.colorBar, { backgroundColor: v.color }]} />
+        <View style={sov.cardBody}>
+          <View style={sov.verdictRow}>
+            <View style={[sov.symbolCircle, { backgroundColor: v.color, shadowColor: v.color, shadowOpacity: 0.8, shadowRadius: 12, elevation: 10 }]}>
+              <Text style={sov.symbolTxt}>{v.symbol}</Text>
+            </View>
+            <Text style={[sov.heroNetSimple, { color: v.color }]}>{data.net}</Text>
           </View>
-          <Text style={[sov.ppkmSimple, { color: v.color }]}>{data.ppkm}</Text>
+          <Text style={[sov.profitKmSub, { color: v.color }]}>{data.profitKm}</Text>
+          <Text style={[sov.daily, { color: '#FFB800' }]}>AZI: {data.daily}</Text>
         </View>
-        <Text style={[sov.daily, { color: '#FFB800' }]}>AZI: {data.daily}</Text>
       </View>
     </View>
   );
@@ -169,54 +202,74 @@ function SimpleOverlay({ verdict, data }: { verdict: ProfitVerdict; data: DemoDa
 function ProOverlay({ verdict, data }: { verdict: ProfitVerdict; data: DemoData }) {
   const v = VERDICT_DISPLAY[verdict];
   return (
-    <View style={[sov.cardPro, { backgroundColor: 'rgba(10,14,11,0.70)' }]}>
-      <View style={[sov.colorBar, { backgroundColor: v.color, height: 5 }]} />
-      <View style={sov.proBody}>
-        <View style={sov.verdictRow}>
-          <View style={[sov.symbolCirclePro, { backgroundColor: v.color }]}>
-            <Text style={sov.symbolTxtPro}>{v.symbol}</Text>
+    <View style={[sov.cardOuter, { width: 234 }]}>
+      <View style={[sov.cardPro, { backgroundColor: 'rgba(10,14,11,0.96)' }]}>
+        <View style={[sov.colorBar, { backgroundColor: v.color }]} />
+        <View style={sov.proBody}>
+          {/* Hero: Symbol + Bani in buzunar */}
+          <View style={sov.verdictRow}>
+            <View style={[sov.symbolCirclePro, { backgroundColor: v.color, shadowColor: v.color, shadowOpacity: 0.8, shadowRadius: 14, elevation: 12 }]}>
+              <Text style={sov.symbolTxtPro}>{v.symbol}</Text>
+            </View>
+            <Text style={[sov.heroNet, { color: v.color }]}>{data.net}</Text>
           </View>
-          <View style={{ flex: 1, marginLeft: 10 }}>
-            <Text style={sov.proLbl}>PROFIT/KM</Text>
-            <Text style={[sov.proPpkm, { color: v.color }]}>{data.ppkm}</Text>
-          </View>
-        </View>
 
-        <View style={[sov.divider, { backgroundColor: '#1E2A1F' }]} />
+          <View style={[sov.divider, { backgroundColor: '#1E2A1F' }]} />
 
-        <View style={sov.statsRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={sov.statLbl}>PICKUP</Text>
-            <Text style={sov.statVal}>{data.pickup}</Text>
+          {/* Metric rows */}
+          <View style={sov.statsRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={sov.statLbl}>PICKUP</Text>
+              <Text style={sov.statVal}>{data.pickup}</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={sov.statLbl}>CURSA</Text>
+              <Text style={sov.statVal}>{data.cursa}</Text>
+            </View>
           </View>
-          <View style={{ flex: 1 }}>
-            <Text style={sov.statLbl}>CURSĂ</Text>
-            <Text style={sov.statVal}>{data.cursa}</Text>
+          <View style={sov.statsRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={sov.statLbl}>DURATA</Text>
+              <Text style={sov.statVal}>{data.durata}</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={sov.statLbl}>NET</Text>
+              <Text style={sov.statVal}>{data.gross}</Text>
+            </View>
           </View>
-        </View>
-        <View style={sov.statsRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={sov.statLbl}>ÎNCASARE</Text>
-            <Text style={sov.statVal}>{data.enc}</Text>
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={sov.statLbl}>DURATĂ</Text>
-            <Text style={sov.statVal}>—</Text>
-          </View>
-        </View>
 
-        <View style={[sov.statsRow, { marginTop: 6 }]}>
-          <View style={{ flex: 1 }}>
-            <Text style={sov.statLbl}>ÎN BUZUNAR</Text>
-            <Text style={[sov.statVal, { color: v.color }]}>{data.net}</Text>
-          </View>
-        </View>
+          <View style={[sov.divider, { backgroundColor: '#1E2A1F' }]} />
 
-        <View style={[sov.divider, { backgroundColor: '#1E2A1F', marginTop: 8 }]} />
-        <Text style={[sov.proSrc, { color: data.source === 'api' ? '#00FF88' : '#7A8A7C' }]}>
-          {data.source === 'api' ? '✓ Google trafic real' : '~ estimat'}
-        </Text>
-        <Text style={[sov.daily, { color: '#FFB800' }]}>AZI: {data.daily}</Text>
+          {/* Profit/km + Profit/min — bottom, verdict color */}
+          <View style={sov.statsRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={sov.statLbl}>PROFIT/KM</Text>
+              <Text style={[sov.statVal, { color: v.color }]}>{data.profitKm}</Text>
+            </View>
+          </View>
+          <View style={sov.statsRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={sov.statLbl}>PROFIT/MIN</Text>
+              <Text style={[sov.statVal, { color: v.color }]}>{data.profitMin}</Text>
+            </View>
+          </View>
+
+          {/* Daily + Source */}
+          <View style={[sov.divider, { backgroundColor: '#1E2A1F' }]} />
+          <View style={sov.sourceRow}>
+            <Text style={[sov.daily, { color: '#FFB800' }]}>AZI: {data.daily}</Text>
+            <Text style={[sov.proSrc, { color: data.source === 'api' ? '#00FF88' : '#7A8A7C' }]}>
+              {data.source === 'api' ? '✓ Google trafic real' : '~ estimat'}
+            </Text>
+          </View>
+
+          {/* Warning strip */}
+          {data.warning && (
+            <View style={[sov.warningStrip, { backgroundColor: (data.warningColor || '#FFB800') + '1A', borderColor: (data.warningColor || '#FFB800') + '44' }]}>
+              <Text style={[sov.warningTxt, { color: data.warningColor || '#FFB800' }]}>{data.warning}</Text>
+            </View>
+          )}
+        </View>
       </View>
     </View>
   );
@@ -224,13 +277,15 @@ function ProOverlay({ verdict, data }: { verdict: ProfitVerdict; data: DemoData 
 
 const s = StyleSheet.create({
   root: { flex: 1 },
-  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 50, paddingBottom: 8 },
+  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingBottom: 8 },
   headerBtn: { width: 70 },
   backTxt: { fontSize: 15, fontWeight: '600' },
   title: { fontSize: 18, fontWeight: '900', letterSpacing: 2 },
-  sub: { fontSize: 9, fontFamily: 'monospace', letterSpacing: 1, marginTop: 2 },
+  sub: { fontSize: 9, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', letterSpacing: 1, marginTop: 2 },
   scroll: { padding: 16, paddingBottom: 40 },
 
+  // Bolt mock colors are intentionally hardcoded to simulate the Bolt app UI,
+  // regardless of DrumIQ theme. The overlay (sov) is also always dark by design.
   boltMock: {
     backgroundColor: '#f5f5f5',
     borderRadius: 16,
@@ -274,12 +329,12 @@ const s = StyleSheet.create({
   label: { fontSize: 10, letterSpacing: 2.5, fontWeight: '900', marginTop: 8, marginBottom: 8 },
 
   modeRow: { flexDirection: 'row', gap: 8, marginBottom: 8 },
-  modeBtn: { flex: 1, padding: 14, borderRadius: 8, borderWidth: 1, alignItems: 'center' },
+  modeBtn: { flex: 1, padding: 14, borderRadius: 12, borderWidth: 1, alignItems: 'center' },
   modeBtnTxt: { fontSize: 13, fontWeight: '900', letterSpacing: 1.5 },
-  modeBtnSub: { fontSize: 9, fontFamily: 'monospace', marginTop: 2 },
+  modeBtnSub: { fontSize: 9, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', marginTop: 2 },
 
   verdictRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },
-  verdictBtn: { flex: 1, padding: 12, borderRadius: 8, borderWidth: 2, alignItems: 'center' },
+  verdictBtn: { flex: 1, padding: 12, borderRadius: 12, borderWidth: 2, alignItems: 'center' },
   verdictSym: { fontSize: 22, fontWeight: '900' },
   verdictLbl: { fontSize: 9, fontWeight: '700', marginTop: 2, letterSpacing: 1 },
 
@@ -290,40 +345,52 @@ const s = StyleSheet.create({
 });
 
 const sov = StyleSheet.create({
+  cardOuter: {
+    shadowColor: '#000',
+    shadowOpacity: 0.5,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 20,
+  },
   card: {
-    minWidth: 180,
-    maxWidth: 220,
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: 'hidden',
-    elevation: 14,
   },
   cardPro: {
-    width: 220,
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: 'hidden',
-    elevation: 14,
   },
   colorBar: { height: 4, width: '100%' },
-  cardBody: { padding: 10 },
-  proBody: { padding: 14 },
-  verdictRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
+  cardBody: { padding: 10, paddingTop: 8 },
+  proBody: { padding: 14, paddingTop: 10 },
+  verdictRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
   symbolCircle: {
-    width: 30, height: 30, borderRadius: 15,
+    width: 36, height: 36, borderRadius: 18,
     alignItems: 'center', justifyContent: 'center',
   },
   symbolCirclePro: {
-    width: 38, height: 38, borderRadius: 19,
+    width: 44, height: 44, borderRadius: 22,
     alignItems: 'center', justifyContent: 'center',
   },
-  symbolTxt: { fontSize: 18, fontWeight: '900', color: '#000' },
-  symbolTxtPro: { fontSize: 22, fontWeight: '900', color: '#000' },
-  ppkmSimple: { fontSize: 14, fontWeight: '700', fontFamily: 'monospace', marginLeft: 8, flex: 1 },
-  proLbl: { fontSize: 9, color: '#7A8A7C', fontWeight: '700', letterSpacing: 1.5 },
-  proPpkm: { fontSize: 16, fontWeight: '700', fontFamily: 'monospace' },
-  daily: { fontSize: 10, fontFamily: 'monospace', fontWeight: '700', marginTop: 3 },
-  divider: { height: 1, marginVertical: 6 },
-  statsRow: { flexDirection: 'row', marginVertical: 3 },
+  symbolTxt: { fontSize: 20, fontWeight: '900', color: '#000' },
+  symbolTxtPro: { fontSize: 26, fontWeight: '900', color: '#000' },
+  heroNetSimple: { fontSize: 15, fontWeight: '900', fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', marginLeft: 10, flex: 1 },
+  profitKmSub: { fontSize: 10, fontWeight: '700', fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', marginTop: 2, marginBottom: 4 },
+  heroNet: { fontSize: 20, fontWeight: '900', fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', marginLeft: 12, flex: 1 },
+  daily: { fontSize: 10, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', fontWeight: '700' },
+  divider: { height: 1, marginVertical: 7 },
+  statsRow: { flexDirection: 'row', marginVertical: 4 },
   statLbl: { fontSize: 8, color: '#5A6B5C', fontWeight: '700', letterSpacing: 1.2 },
-  statVal: { fontSize: 11, color: '#E8FFE8', fontFamily: 'monospace', fontWeight: '600', marginTop: 1 },
-  proSrc: { fontSize: 9, fontFamily: 'monospace' },
+  statVal: { fontSize: 12, color: '#E8FFE8', fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', fontWeight: '600', marginTop: 2 },
+  sourceRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  proSrc: { fontSize: 9, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace' },
+  warningStrip: {
+    marginTop: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  warningTxt: { fontSize: 10, fontWeight: '700', fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', letterSpacing: 0.5 },
 });

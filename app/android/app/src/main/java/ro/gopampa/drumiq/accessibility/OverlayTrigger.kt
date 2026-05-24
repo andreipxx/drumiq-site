@@ -8,10 +8,10 @@ object OverlayTrigger {
 
     fun show(ctx: Context, parsed: ParsedBoltRide, a: ProfitAnalysisKt, mode: String) {
         val verdictStr = when (a.verdict) {
-            ProfitVerdict.CRITIC  -> "critic"
-            ProfitVerdict.DECIDE  -> "decide"
-            ProfitVerdict.BUN     -> "bun"
-            ProfitVerdict.PREMIUM -> "premium"
+            ProfitVerdict.CRITIC  -> "stop"
+            ProfitVerdict.DECIDE  -> "think"
+            ProfitVerdict.BUN     -> "go"
+            ProfitVerdict.PREMIUM -> "go"
         }
         val label = buildLabel(parsed, a)
 

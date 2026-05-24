@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import carsData from '../data/cars.json';
 
@@ -77,6 +77,11 @@ export default function CarSelector({ onSelect }: Props) {
         </>
       )}
 
+      {/* MOTOR step: apare cand un model are engines definite in cars.json.
+         Multe modele au o singura optiune generica ("Standard (setez manual)"),
+         dar unele (Dacia Duster, BMW Seria 3, Hyundai Tucson, Kia Ceed etc.)
+         au mai multe motorizari specifice cu consum/uzura diferita.
+         Userul trebuie sa confirme selectia — la tap se apeleaza onSelect(). */}
       {engines.length > 0 && (
         <>
           <Text style={[s.label, { color: colors.textMuted }]}>MOTOR</Text>

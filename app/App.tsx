@@ -2,7 +2,7 @@
 // Bottom-tab navigation: Acasă / Tracker / Plan / Profil / Setări
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, StyleSheet, StatusBar, BackHandler } from 'react-native';
+import { View, StyleSheet, StatusBar, BackHandler, DeviceEventEmitter } from 'react-native';
 import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ThemeProvider, useTheme } from './src/hooks/useTheme';
 import LicenseGate from './src/components/LicenseGate';
@@ -21,13 +21,14 @@ import FuelSettingsScreen from './src/screens/FuelSettingsScreen';
 import FilterSettingsScreen from './src/screens/FilterSettingsScreen';
 import WorkModeScreen from './src/screens/WorkModeScreen';
 import PaywallUpgradeScreen from './src/screens/PaywallUpgradeScreen';
+import LicenseScreen from './src/screens/LicenseScreen';
 import OverlayScreen from './src/screens/OverlayScreen';
 import OnboardingScreen, { isOnboardingDone } from './src/screens/OnboardingScreen';
 
 import { getLicenseState } from './src/services/licenseManager';
 import { startOverlayController, stopOverlayController } from './src/services/overlayController';
 
-type SubScreen = null | 'accessibility' | 'fuel' | 'filters' | 'upgrade' | 'overlay_demo' | 'workmode';
+type SubScreen = null | 'accessibility' | 'fuel' | 'filters' | 'upgrade' | 'overlay_demo' | 'workmode' | 'license';
 
 function MainApp() {
   const { colors } = useTheme();
@@ -80,7 +81,8 @@ function MainApp() {
   if (sub === 'fuel')          return <FuelSettingsScreen     onBack={() => setSub(null)} />;
   if (sub === 'filters')       return <FilterSettingsScreen   onBack={() => setSub(null)} />;
   if (sub === 'workmode')      return <WorkModeScreen         onBack={() => setSub(null)} />;
-  if (sub === 'upgrade')       return <PaywallUpgradeScreen   onClose={() => setSub(null)} onActivateCode={() => setSub(null)} />;
+  if (sub === 'upgrade')       return <PaywallUpgradeScreen   onClose={() => setSub(null)} onActivateCode={() => setSub('license')} />;
+  if (sub === 'license')       return <LicenseScreen onActivated={() => { setSub(null); DeviceEventEmitter.emit('dp_license_changed'); }} />;
   if (sub === 'overlay_demo')  return <OverlayScreen onOpenSettings={() => { setSub(null); setTab('settings'); }} onOpenAccessibility={() => setSub('accessibility')} />;
 
   // === Main tab content ===
@@ -88,14 +90,15 @@ function MainApp() {
     switch (tab) {
       case 'home':    return <HomeScreen onOpenOverlayDemo={() => setSub('overlay_demo')} onOpenTracker={() => setTab('tracker')} />;
       case 'tracker': return <TrackerScreen />;
-      case 'plan':    return <PlanScreen onOpenUpgrade={() => setSub('upgrade')} />;
-      case 'profil':  return <ProfilScreen />;
+      case 'plan':    return <PlanScreen onOpenUpgrade={() => setSub('upgrade')} onOpenLicense={() => setSub('license')} />;
+      case 'profil':  return <ProfilScreen onOpenLicense={() => setSub('license')} />;
       case 'settings':return <SettingsScreen
                                 onOpenFuel={() => setSub('fuel')}
                                 onOpenFilters={() => setSub('filters')}
                                 onOpenUpgrade={() => setSub('upgrade')}
                                 onOpenAccessibility={() => setSub('accessibility')}
                                 onOpenWorkMode={() => setSub('workmode')}
+                                onOpenLicense={() => setSub('license')}
                               />;
     }
   };

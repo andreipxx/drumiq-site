@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { Appearance, ColorSchemeName } from 'react-native';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import { Appearance, AppState, ColorSchemeName } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LIGHT, DARK, type ThemeColors, type ThemeMode } from '../constants/theme';
 
@@ -17,13 +17,15 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [system, setSystem] = useState<ColorSchemeName>(() => Appearance.getColorScheme());
   const [mode, setModeState] = useState<ThemeMode>('automatic');
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const sub = Appearance.addChangeListener(({ colorScheme }) => {
       setSystem(colorScheme);
     });
-    return () => sub.remove();
+    const appSub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') setSystem(Appearance.getColorScheme());
+    });
+    return () => { sub.remove(); appSub.remove(); };
   }, []);
 
   useEffect(() => {
@@ -33,7 +35,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           setModeState(v);
         }
       })
-      .finally(() => setLoaded(true));
+      .catch(() => {});
   }, []);
 
   const setMode = useCallback((next: ThemeMode) => {
@@ -45,10 +47,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     mode === 'automatic' ? (system === 'dark' ? 'dark' : 'light') : mode;
   const colors = effective === 'dark' ? DARK : LIGHT;
 
-  if (!loaded) return null;
+  const value = useMemo<ThemeContextValue>(
+    () => ({ mode, setMode, colors, isDark: effective === 'dark' }),
+    [mode, setMode, colors, effective]
+  );
 
   return (
-    <ThemeContext.Provider value={{ mode, setMode, colors, isDark: effective === 'dark' }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   );

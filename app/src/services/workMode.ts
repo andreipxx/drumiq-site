@@ -40,12 +40,34 @@ export const DEFAULT_WORK_MODE: WorkModeConfig = {
 
 const WORK_MODE_KEY = '@drumiq_work_mode_v1';
 
+function deepMerge<T extends Record<string, any>>(target: T, source: Record<string, any>): T {
+  const result = { ...target } as any;
+  for (const key of Object.keys(source)) {
+    if (
+      source[key] !== null &&
+      typeof source[key] === 'object' &&
+      !Array.isArray(source[key]) &&
+      typeof result[key] === 'object' &&
+      result[key] !== null &&
+      !Array.isArray(result[key])
+    ) {
+      result[key] = deepMerge(result[key], source[key]);
+    } else {
+      result[key] = source[key];
+    }
+  }
+  return result as T;
+}
+
 export async function getWorkMode(): Promise<WorkModeConfig> {
   try {
     const raw = await AsyncStorage.getItem(WORK_MODE_KEY);
-    if (!raw) return DEFAULT_WORK_MODE;
-    return { ...DEFAULT_WORK_MODE, ...JSON.parse(raw) };
-  } catch { return DEFAULT_WORK_MODE; }
+    if (!raw) return { ...DEFAULT_WORK_MODE, individual: { ...DEFAULT_INDIVIDUAL }, flota: { ...DEFAULT_FLOTA } };
+    return deepMerge(
+      { ...DEFAULT_WORK_MODE, individual: { ...DEFAULT_INDIVIDUAL }, flota: { ...DEFAULT_FLOTA } },
+      JSON.parse(raw),
+    );
+  } catch { return { ...DEFAULT_WORK_MODE, individual: { ...DEFAULT_INDIVIDUAL }, flota: { ...DEFAULT_FLOTA } }; }
 }
 
 export async function setWorkMode(config: WorkModeConfig): Promise<void> {

@@ -1,7 +1,6 @@
 import { supabase } from './supabase';
 import type { Session, AuthChangeEvent } from '@supabase/supabase-js';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri } from 'expo-auth-session';
 
 export interface Profile {
   id: string;
@@ -74,6 +73,7 @@ export async function getProfile(): Promise<Profile | null> {
     .single();
 
   if (error) throw new Error(error.message);
+  if (!data || typeof data.plan !== 'string' || typeof data.email !== 'string') return null;
   return data as Profile;
 }
 
@@ -85,11 +85,11 @@ export async function syncPlanToSupabase(plan: string): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     await supabase.from('profiles').update({ plan }).eq('id', user.id);
-  } catch {}
+  } catch (e) { console.warn('syncPlanToSupabase failed:', e); }
 }
 
 export async function signInWithGoogle() {
-  const redirectTo = makeRedirectUri({ scheme: 'drumiq', path: 'auth-callback' });
+  const redirectTo = 'drumiq://auth-callback';
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',

@@ -1,18 +1,23 @@
 ﻿// DRUMIQ v1.0.0 — Profile Screen
 // Driver info + vehicle + platform connections + lifetime stats
 
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, DeviceEventEmitter, TextInput } from 'react-native';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, DeviceEventEmitter, TextInput, Linking, Share } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
-import { getProfile, signOut, onAuthStateChange } from '../services/auth';
-import { getLicenseState, clearLicense } from '../services/licenseManager';
+import { getProfile, onAuthStateChange } from '../services/auth';
+import { getLicenseState } from '../services/licenseManager';
+import { confirmChangeCode, confirmLogout } from '../services/accountActions';
 import { loadRides } from '../services/tracker';
 import { getFuelSettings, setFuelSettings, getVehicleInfo, setVehicleInfo, totalCostPerKm, getDailyGoal, saveDailyGoal, type FuelSettings, type VehicleInfo } from '../services/userSettings';
 import carsData from '../data/cars.json';
 import { getPlatformStatuses, formatLastSeen, type PlatformStatus } from '../services/platformDetector';
 import type { PlanTier } from '../types';
+import { APP_VERSION, PLAN_PRICES_RON, REFERRAL_TIERS } from '../constants/config';
+import { getOrCreateReferralCode, getReferralInfo, type ReferralInfo } from '../services/referralService';
 
-export default function ProfilScreen() {
+interface ScreenProps { onOpenLicense: () => void; }
+
+export default function ProfilScreen({ onOpenLicense }: ScreenProps) {
   const { colors } = useTheme();
   const [profileName, setProfileName] = useState<string>('Utilizator');
   const [profileEmail, setProfileEmail] = useState<string>('');
@@ -23,10 +28,17 @@ export default function ProfilScreen() {
   const [platforms, setPlatforms] = useState<PlatformStatus[]>([]);
   const [editingPlate, setEditingPlate] = useState<string>('');
   const [editingModel, setEditingModel] = useState<string>('');
-  const [lifetimeRides, setLifetimeRides] = useState<number>(0);
-  const [lifetimeEarnings, setLifetimeEarnings] = useState<number>(0);
-  const [lifetimeKm, setLifetimeKm] = useState<number>(0);
+  const [completedRides, setCompletedRides] = useState<any[]>([]);
   const [dailyGoal, setDailyGoal] = useState<number>(0);
+  const [referral, setReferral] = useState<ReferralInfo | null>(null);
+  const [referralLoading, setReferralLoading] = useState(false);
+
+  // MED-18: derive lifetime stats from stored rides instead of 3 separate useStates
+  const lifetimeStats = useMemo(() => ({
+    rides: completedRides.length,
+    earnings: completedRides.reduce((sum, r) => sum + (r.netEarnings ?? 0), 0),
+    km: completedRides.reduce((sum, r) => sum + (r.tripKm ?? 0), 0),
+  }), [completedRides]);
   const [editingGoal, setEditingGoal] = useState<string>('');
 
   const fetchProfile = async () => {
@@ -50,16 +62,20 @@ export default function ProfilScreen() {
     };
   }, []);
 
+  const reloadFuel = async () => {
+    const f = await getFuelSettings();
+    setFuel(f);
+  };
+
   useEffect(() => {
     (async () => {
       try {
         const lic = await getLicenseState();
         if (lic.license) {
           setPlan(lic.license.plan);
-          setLicKey(lic.license.key);
+          setLicKey(lic.license.plan.toUpperCase());
         }
-        const f = await getFuelSettings();
-        setFuel(f);
+        await reloadFuel();
         const veh = await getVehicleInfo();
         setVehicle(veh);
         const plats = await getPlatformStatuses();
@@ -67,16 +83,47 @@ export default function ProfilScreen() {
         setEditingPlate(veh.licensePlate);
         setEditingModel(veh.model);
         const rides = await loadRides();
-        const completed = rides.filter((r) => r.completed);
-        setLifetimeRides(completed.length);
-        setLifetimeEarnings(completed.reduce((sum, r) => sum + r.netEarnings, 0));
-        setLifetimeKm(completed.reduce((sum, r) => sum + r.tripKm, 0));
+        setCompletedRides(rides.filter((r) => r.completed));
         const goal = await getDailyGoal();
         setDailyGoal(goal);
         setEditingGoal(goal > 0 ? String(goal) : '');
       } catch {}
     })();
+    const sub = DeviceEventEmitter.addListener('dp_fuel_changed', reloadFuel);
+    return () => sub.remove();
   }, []);
+
+  const loadReferral = useCallback(async () => {
+    setReferralLoading(true);
+    try {
+      const info = await getReferralInfo();
+      setReferral(info);
+    } catch {}
+    setReferralLoading(false);
+  }, []);
+
+  useEffect(() => { loadReferral(); }, [loadReferral]);
+
+  const handleShareReferral = useCallback(async () => {
+    let code = referral?.referralCode;
+    if (!code) {
+      code = await getOrCreateReferralCode();
+      if (code) setReferral(prev => prev ? { ...prev, referralCode: code! } : prev);
+    }
+    if (!code) { Alert.alert('Eroare', 'Nu s-a putut genera codul de referral.'); return; }
+    const msg = `Folosește codul meu ${code} la DrumIQ și primim amândoi discount! Descarcă: https://drumiq.ro`;
+    Share.share({ message: msg });
+  }, [referral]);
+
+  const handleCopyCode = useCallback(async () => {
+    let code = referral?.referralCode;
+    if (!code) {
+      code = await getOrCreateReferralCode();
+      if (code) setReferral(prev => prev ? { ...prev, referralCode: code! } : prev);
+    }
+    if (!code) { Alert.alert('Eroare', 'Nu s-a putut genera codul.'); return; }
+    Share.share({ message: code });
+  }, [referral]);
 
   const handleSaveVehicle = async () => {
     const next: VehicleInfo = { licensePlate: editingPlate, model: editingModel };
@@ -105,24 +152,8 @@ export default function ProfilScreen() {
 
   const vehicleDirty = editingPlate.toUpperCase().replace(/\s+/g, '') !== vehicle.licensePlate || editingModel.trim() !== vehicle.model;
 
-  const handleLogout = () => {
-    Alert.alert(
-      'Logout?',
-      'Vei fi deconectat și vei fi cerut codul de activare.',
-      [
-        { text: 'Anulează', style: 'cancel' },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: async () => {
-            try { await signOut(); } catch {}
-            await clearLicense();
-            DeviceEventEmitter.emit('dp_license_changed');
-          },
-        },
-      ]
-    );
-  };
+  const handleChangeCode = () => confirmChangeCode(onOpenLicense);
+  const handleLogout = () => confirmLogout();
 
   const formatLifetimeRon = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}k` : n.toFixed(0);
 
@@ -174,7 +205,7 @@ export default function ProfilScreen() {
             style={[s.input, { color: colors.text, backgroundColor: colors.surfaceAlt, borderColor: colors.border }]}
           />
         </View>
-        <View style={s.divider} />
+        <View style={[s.divider, { backgroundColor: colors.divider }]} />
         <View style={s.editRow}>
           <Text style={[s.rowLbl, { color: colors.textMuted }]}>Model</Text>
           <TextInput
@@ -191,12 +222,19 @@ export default function ProfilScreen() {
             <Text style={s.saveVehicleTxt}>💾  SALVEAZĂ DATELE VEHICULULUI</Text>
           </TouchableOpacity>
         )}
-        <View style={s.divider} />
+        <View style={[s.divider, { backgroundColor: colors.divider }]} />
         <View style={s.row}>
           <Text style={[s.rowLbl, { color: colors.textMuted }]}>Carburant</Text>
-          <Text style={[s.rowVal, { color: colors.text }]}>{fuel?.type === 'benzina_gpl' ? 'Benzină + GPL' : fuel?.type === 'diesel' ? 'Diesel' : fuel?.type === 'electric' ? 'Electric' : 'Benzină'}</Text>
+          <Text style={[s.rowVal, { color: colors.text }]}>{
+            fuel?.type === 'benzina_gpl' ? 'Benzină + GPL'
+            : fuel?.type === 'diesel' ? 'Diesel'
+            : fuel?.type === 'electric' ? 'Electric'
+            : fuel?.type === 'hybrid_hev' ? 'Hybrid (HEV)'
+            : fuel?.type === 'hybrid_phev' ? 'Plug-in Hybrid (PHEV)'
+            : 'Benzină'
+          }</Text>
         </View>
-        <View style={s.divider} />
+        <View style={[s.divider, { backgroundColor: colors.divider }]} />
         <View style={s.row}>
           <Text style={[s.rowLbl, { color: colors.textMuted }]}>Cost total/km</Text>
           <Text style={[s.rowVal, { color: colors.go }]}>
@@ -238,7 +276,7 @@ export default function ProfilScreen() {
           const icon = pl.id === 'bolt' ? '🚗' : '🚙';
           return (
             <React.Fragment key={pl.id}>
-              {idx > 0 && <View style={s.divider} />}
+              {idx > 0 && <View style={[s.divider, { backgroundColor: colors.divider }]} />}
               <View style={s.row}>
                 <View style={{ flex: 1 }}>
                   <Text style={[s.rowLbl, { color: colors.text }]}>{icon} {pl.name}</Text>
@@ -260,15 +298,15 @@ export default function ProfilScreen() {
       <View style={s.statGrid}>
         <View style={[s.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={[s.statLbl, { color: colors.textMuted }]}>CURSE TOTAL</Text>
-          <Text style={[s.statVal, { color: colors.text }]}>{lifetimeRides}</Text>
+          <Text style={[s.statVal, { color: colors.text }]}>{lifetimeStats.rides}</Text>
         </View>
         <View style={[s.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={[s.statLbl, { color: colors.textMuted }]}>VENIT NET</Text>
-          <Text style={[s.statVal, { color: colors.go }]}>{formatLifetimeRon(lifetimeEarnings)}<Text style={[s.statUnit, { color: colors.textMuted }]}> RON</Text></Text>
+          <Text style={[s.statVal, { color: colors.go }]}>{formatLifetimeRon(lifetimeStats.earnings)}<Text style={[s.statUnit, { color: colors.textMuted }]}> RON</Text></Text>
         </View>
         <View style={[s.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={[s.statLbl, { color: colors.textMuted }]}>KM PARCURȘI</Text>
-          <Text style={[s.statVal, { color: colors.text }]}>{lifetimeKm.toFixed(0)}<Text style={[s.statUnit, { color: colors.textMuted }]}> km</Text></Text>
+          <Text style={[s.statVal, { color: colors.text }]}>{lifetimeStats.km.toFixed(0)}<Text style={[s.statUnit, { color: colors.textMuted }]}> km</Text></Text>
         </View>
         <View style={[s.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={[s.statLbl, { color: colors.textMuted }]}>LICENȚĂ</Text>
@@ -276,17 +314,90 @@ export default function ProfilScreen() {
         </View>
       </View>
 
+      {/* Referral */}
+      <Text style={[s.sectionLbl, { color: colors.textMuted }]}>INVITĂ PRIETENI · DISCOUNT</Text>
+      <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        {referral?.referralCode ? (
+          <View style={s.refCodeRow}>
+            <Text style={[s.refCodeLabel, { color: colors.textMuted }]}>Codul tău:</Text>
+            <Text style={[s.refCode, { color: colors.accent }]}>{referral.referralCode}</Text>
+          </View>
+        ) : (
+          <Text style={[s.refCodeLabel, { color: colors.textMuted }]}>
+            {referralLoading ? 'Se încarcă...' : 'Trimite invitație pentru a genera codul'}
+          </Text>
+        )}
+        <View style={[s.divider, { backgroundColor: colors.divider }]} />
+        <View style={s.row}>
+          <Text style={[s.rowLbl, { color: colors.textMuted }]}>Prieteni activi PRO</Text>
+          <Text style={[s.rowVal, { color: colors.go }]}>{referral?.activeReferrals ?? 0}</Text>
+        </View>
+        <View style={[s.divider, { backgroundColor: colors.divider }]} />
+        <View style={s.row}>
+          <Text style={[s.rowLbl, { color: colors.textMuted }]}>Discount curent</Text>
+          <Text style={[s.rowVal, { color: referral?.discountPct ? colors.go : colors.textMuted }]}>
+            {referral?.discountPct ? `${referral.discountPct}%` : '—'}
+          </Text>
+        </View>
+        {referral?.discountPct ? (
+          <>
+            <View style={[s.divider, { backgroundColor: colors.divider }]} />
+            <View style={s.row}>
+              <Text style={[s.rowLbl, { color: colors.textMuted }]}>Preț lunar efectiv</Text>
+              <Text style={[s.rowVal, { color: colors.go }]}>{referral.effectivePrice} RON</Text>
+            </View>
+          </>
+        ) : null}
+        <View style={[s.divider, { backgroundColor: colors.divider }]} />
+        <Text style={[s.refTiersTitle, { color: colors.textMuted }]}>TREPTE DISCOUNT</Text>
+        {REFERRAL_TIERS.map((t, i) => (
+          <View key={i} style={s.refTierRow}>
+            <Text style={[s.refTierLabel, { color: colors.text }]}>
+              {t.min}–{t.max === Infinity ? '∞' : t.max} prieteni
+            </Text>
+            <Text style={[s.refTierVal, { color: colors.accent }]}>
+              {t.discountPct}% → {Math.round(PLAN_PRICES_RON.pro_monthly * (1 - t.discountPct / 100))} RON/lună
+            </Text>
+          </View>
+        ))}
+        <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
+          <TouchableOpacity
+            onPress={handleShareReferral}
+            style={[s.refBtn, { backgroundColor: '#25D366', flex: 1 }]}
+            activeOpacity={0.7}
+          >
+            <Text style={s.refBtnTxt}>TRIMITE INVITAȚIE</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleCopyCode}
+            style={[s.refBtn, { backgroundColor: colors.accent, flex: 1 }]}
+            activeOpacity={0.7}
+          >
+            <Text style={s.refBtnTxt}>SHARE COD</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Change code */}
+      <TouchableOpacity
+        style={[s.changeCodeBtn, { borderColor: colors.accent }]}
+        onPress={handleChangeCode}
+        activeOpacity={0.7}
+      >
+        <Text style={[s.changeCodeTxt, { color: colors.accent }]}>SCHIMBĂ COD DE ACTIVARE</Text>
+      </TouchableOpacity>
+
       {/* Logout */}
       <TouchableOpacity
         style={[s.logoutBtn, { borderColor: colors.stop }]}
         onPress={handleLogout}
         activeOpacity={0.7}
       >
-        <Text style={[s.logoutTxt, { color: colors.stop }]}>SCHIMBĂ COD / LOGOUT</Text>
+        <Text style={[s.logoutTxt, { color: colors.stop }]}>LOGOUT</Text>
       </TouchableOpacity>
 
       <Text style={[s.footer, { color: colors.textDim }]}>
-        DRUMIQ · v1.0.0{'\n'}GO PAMPA S.R.L.
+        DRUMIQ · v{APP_VERSION}{'\n'}GO PAMPA S.R.L.
       </Text>
     </ScrollView>
   );
@@ -313,7 +424,7 @@ const s = StyleSheet.create({
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 4 },
   rowLbl: { fontSize: 11 },
   rowVal: { fontSize: 12, fontWeight: '700', fontFamily: 'monospace' },
-  divider: { height: 1, backgroundColor: '#1E2A1F', marginVertical: 4 },
+  divider: { height: 1, marginVertical: 4 },
 
   statusPill: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 12, borderWidth: 1 },
   platSub: { fontSize: 9, fontFamily: 'monospace', marginTop: 2 },
@@ -332,8 +443,20 @@ const s = StyleSheet.create({
   hintTxt: { fontSize: 9, fontFamily: 'monospace', marginTop: 4, lineHeight: 13 },
   saveVehicleBtn: { padding: 10, borderRadius: 6, alignItems: 'center', marginTop: 10 },
   saveVehicleTxt: { color: '#000', fontSize: 11, fontWeight: '900', letterSpacing: 1.2 },
+  changeCodeBtn: { padding: 14, borderRadius: 8, borderWidth: 1, alignItems: 'center', marginTop: 8 },
+  changeCodeTxt: { fontSize: 12, fontWeight: '700', letterSpacing: 1.5 },
   logoutBtn: { padding: 14, borderRadius: 8, borderWidth: 1, alignItems: 'center', marginTop: 8 },
   logoutTxt: { fontSize: 12, fontWeight: '700', letterSpacing: 1.5 },
+
+  refCodeRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 6 },
+  refCodeLabel: { fontSize: 11 },
+  refCode: { fontSize: 16, fontWeight: '900', fontFamily: 'monospace', letterSpacing: 2 },
+  refTiersTitle: { fontSize: 8, letterSpacing: 2, fontWeight: '700', marginTop: 4, marginBottom: 4 },
+  refTierRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 3 },
+  refTierLabel: { fontSize: 11 },
+  refTierVal: { fontSize: 11, fontWeight: '700', fontFamily: 'monospace' },
+  refBtn: { padding: 12, borderRadius: 8, alignItems: 'center' },
+  refBtnTxt: { color: '#000', fontSize: 11, fontWeight: '900', letterSpacing: 1 },
 
   footer: { fontSize: 9, textAlign: 'center', marginTop: 20, fontFamily: 'monospace', lineHeight: 14 },
 });

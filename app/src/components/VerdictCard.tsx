@@ -55,7 +55,7 @@ export default function VerdictCard({ analysis, grossEarnings, rideType, onDetai
         <StatCell label="Lei/oră" value={analysis.profitPerHour.toFixed(2)} color={display.color} />
         <StatCell label="Km total" value={analysis.totalKm.toFixed(1)} color={colors.textMuted} />
         <StatCell label="Timp" value={`${analysis.totalMinutes} min`} color={colors.textMuted} />
-        <StatCell label="Comision Bolt" value={`${analysis.boltCommissionAmount.toFixed(2)} lei`} color={colors.textMuted} />
+        <StatCell label="Cost vehicul" value={`${analysis.vehicleCost.toFixed(2)} lei`} color={colors.textMuted} />
       </View>
 
       {onDetails && (

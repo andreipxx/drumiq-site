@@ -6,11 +6,11 @@
 //
 // Re-checks state on AppState 'active' (foreground) so expiration in background is caught.
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, ActivityIndicator, AppState, StyleSheet, DeviceEventEmitter } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import {
-  isToSAccepted, getLicenseState,
+  isToSAccepted, getLicenseState, activateTrial,
   type LicenseState,
 } from '../services/licenseManager';
 import { syncServerTime, shouldResyncNow } from '../services/timeSync';
@@ -27,8 +27,11 @@ export default function LicenseGate({ children }: Props) {
   const { colors } = useTheme();
   const [tosOk, setTosOk] = useState<boolean | null>(null);
   const [authOk, setAuthOk] = useState<boolean | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [state, setState] = useState<LicenseState | null>(null);
   const [forceLicense, setForceLicense] = useState(false);
+  const trialAttempted = useRef<string | null>(null);
+  const trialInProgress = useRef(false);
 
   const refresh = useCallback(async () => {
     await resetIfVersionChanged();
@@ -39,13 +42,14 @@ export default function LicenseGate({ children }: Props) {
     try {
       const session = await getSession();
       setAuthOk(!!session);
+      setCurrentUserId(session?.user?.id ?? null);
       if (!session) { setState(null); return; }
     } catch {
       setAuthOk(false);
       setState(null);
       return;
     }
-    if (await shouldResyncNow()) { syncServerTime().catch(() => {}); }
+    if (await shouldResyncNow()) { try { await syncServerTime(); } catch {} }
     const st = await getLicenseState();
     setState(st);
   }, []);
@@ -91,8 +95,25 @@ export default function LicenseGate({ children }: Props) {
     );
   }
 
-  if (forceLicense || (state && state.expirationReason === 'no_license')) {
+  if (forceLicense) {
     return <LicenseScreen onActivated={() => { setForceLicense(false); refresh(); }} />;
+  }
+
+  if (state && state.expirationReason === 'no_license') {
+    const sessionKey = currentUserId || '__device__';
+    if (trialAttempted.current !== sessionKey && !trialInProgress.current) {
+      trialAttempted.current = sessionKey;
+      trialInProgress.current = true;
+      activateTrial()
+        .then(() => refresh())
+        .catch(() => setForceLicense(true))
+        .finally(() => { trialInProgress.current = false; });
+    }
+    return (
+      <View style={[s.center, { backgroundColor: colors.bg }]}>
+        <ActivityIndicator size="large" color={colors.accent} />
+      </View>
+    );
   }
 
   if (state && state.expirationReason) {

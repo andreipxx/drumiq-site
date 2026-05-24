@@ -181,20 +181,21 @@ export function autoCompleteStaleRides(): Promise<number> {
     const all = await loadRides();
     const now = Date.now();
     const ACCEPTED_STALE_MS = 45 * 60 * 1000;
-    const UNTRACKED_STALE_MS = 2 * 60 * 60 * 1000;
-    const ESTIMATED_RIDE_MIN = 20;
+    const FALLBACK_RIDE_MIN = 20;
+    const AVG_CITY_SPEED_KMH = 25;
     let count = 0;
     for (const r of all) {
       if (r.completed) continue;
+      if (!r.accepted) continue;
       const age = now - r.timestamp;
-      const shouldComplete =
-        (r.accepted && age > ACCEPTED_STALE_MS) ||
-        (!r.accepted && age > UNTRACKED_STALE_MS);
-      if (shouldComplete) {
-        r.accepted = true;
+      if (age > ACCEPTED_STALE_MS) {
+        // Estimate duration from trip distance if available (~25 km/h city avg), fallback to 20 min
+        const durationMin = (r.tripKm != null && r.tripKm > 0)
+          ? Math.round(r.tripKm / AVG_CITY_SPEED_KMH * 60)
+          : FALLBACK_RIDE_MIN;
         r.completed = true;
-        r.durationMin = ESTIMATED_RIDE_MIN;
-        r.completedAt = r.timestamp + ESTIMATED_RIDE_MIN * 60 * 1000;
+        r.durationMin = durationMin;
+        r.completedAt = r.timestamp + durationMin * 60 * 1000;
         count++;
       }
     }

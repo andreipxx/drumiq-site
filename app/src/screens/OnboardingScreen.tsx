@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, Dimensions, ScrollView,
+  View, Text, StyleSheet, TouchableOpacity, ScrollView,
   Linking, Platform, ActivityIndicator, AppState,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,9 +10,8 @@ import CarSelector from '../components/CarSelector';
 import { setFuelSettings, type FuelSettings, DEFAULTS } from '../services/userSettings';
 import { Overlay, Battery } from '../native/overlay';
 import { Accessibility } from '../native/accessibility';
-import { PRICING } from '../config/pricing';
+import { TRIAL } from '../constants/config';
 
-const { width: SCREEN_W } = Dimensions.get('window');
 const ONBOARDING_KEY = '@drumiq_onboarded';
 
 type Step = 'splash' | 'welcome' | 'geofence' | 'geofence_fail' | 'car' | 'permissions' | 'ready' | 'bolt';
@@ -70,7 +69,8 @@ export default function OnboardingScreen({ onComplete }: Props) {
       const r = await checkCityEligibility();
       setGeoResult(r);
       setStep(r.allowed ? 'car' : 'geofence_fail');
-    } catch {
+    } catch (e) {
+      console.warn('Geofence check failed:', e);
       setStep('geofence_fail');
     }
   };
@@ -93,17 +93,20 @@ export default function OnboardingScreen({ onComplete }: Props) {
       if (Platform.OS === 'android') {
         await Linking.sendIntent('android.settings.ACCESSIBILITY_SETTINGS');
       }
-    } catch {
-      try { await Linking.openURL('android.settings.ACCESSIBILITY_SETTINGS'); } catch {}
+    } catch (e) {
+      console.warn('sendIntent failed, falling back to openSettings:', e);
+      try { await Linking.openSettings(); } catch (e2) {
+        console.warn('openSettings also failed:', e2);
+      }
     }
   };
 
   const requestOverlay = async () => {
-    try { await Overlay.requestPermission(); } catch {}
+    try { await Overlay.requestPermission(); } catch (e) { console.warn('Overlay permission request failed:', e); }
   };
 
   const requestBattery = async () => {
-    try { await Battery.requestIgnore(); } catch {}
+    try { await Battery.requestIgnore(); } catch (e) { console.warn('Battery optimization request failed:', e); }
   };
 
   const finish = async () => {
@@ -113,8 +116,11 @@ export default function OnboardingScreen({ onComplete }: Props) {
 
   const openBolt = async () => {
     await finish();
-    try { await Linking.openURL('boltdriver://'); } catch {
-      try { await Linking.openURL('https://play.google.com/store/apps/details?id=ee.mtakso.driver'); } catch {}
+    try { await Linking.openURL('boltdriver://'); } catch (e) {
+      console.warn('Bolt deeplink failed:', e);
+      try { await Linking.openURL('https://play.google.com/store/apps/details?id=ee.mtakso.driver'); } catch (e2) {
+        console.warn('Play Store link also failed:', e2);
+      }
     }
   };
 
@@ -180,13 +186,17 @@ export default function OnboardingScreen({ onComplete }: Props) {
         <Text style={{ fontSize: 48, marginBottom: 16 }}>{'🔒'}</Text>
         <Text style={[s.stepTitle, { color: colors.text }]}>DRUMIQ nu este disponibil aici</Text>
         <Text style={[s.hint, { color: colors.textMuted }]}>Orașul detectat: {detected}</Text>
+        {/* M10: geofence currently only includes Baia Mare — update if cities are added */}
         <Text style={[s.hint, { color: '#00FF7F' }]}>Disponibil în: Baia Mare, România</Text>
         <TouchableOpacity style={[s.btn, { backgroundColor: colors.accent }]} onPress={doGeoCheck} activeOpacity={0.7}>
           <Text style={s.btnTxt}>VERIFICĂ DIN NOU</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setStep('car')} activeOpacity={0.6}>
-          <Text style={[s.skipLink, { color: colors.textMuted }]}>{'Continuă oricum (demo) →'}</Text>
-        </TouchableOpacity>
+        {/* L6: __DEV__ skip is intentional — allows developers to bypass geofence in dev builds only */}
+        {__DEV__ && (
+          <TouchableOpacity onPress={() => setStep('car')} activeOpacity={0.6}>
+            <Text style={[s.skipLink, { color: colors.textMuted }]}>{'Continuă oricum (demo) →'}</Text>
+          </TouchableOpacity>
+        )}
       </View>
     );
   }
@@ -273,7 +283,7 @@ export default function OnboardingScreen({ onComplete }: Props) {
         <View style={[s.trialBox, { backgroundColor: colors.surface, borderColor: colors.accent + '40' }]}>
           <Text style={[s.trialTitle, { color: colors.text }]}>Trial activ</Text>
           <Text style={[s.trialDetail, { color: colors.accent }]}>
-            {PRICING.TRIAL.RIDES} curse · {PRICING.TRIAL.DAYS} zile
+            {TRIAL.RIDES} curse · {TRIAL.DAYS} zile
           </Text>
         </View>
         <TouchableOpacity style={[s.btn, { backgroundColor: colors.accent }]} onPress={() => setStep('bolt')} activeOpacity={0.7}>

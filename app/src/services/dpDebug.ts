@@ -65,14 +65,14 @@ export function getDebugStats(): { total: number; curSession: number; sid: strin
 }
 
 export function exportAsJsonl(): string {
-  const today = new Date().toISOString().slice(0, 10);
-  return [...prevSessions, cur].flatMap(sess =>
-    sess.events.map(ev => {
+  return [...prevSessions, cur].flatMap(sess => {
+    const sessDate = new Date(sess.startedAt).toISOString().slice(0, 10);
+    return sess.events.map(ev => {
       const m = ev.match(/^\[(\d{2}:\d{2}:\d{2}\.\d{3})\]/);
-      const iso = m ? `${today}T${m[1]}` : new Date().toISOString();
+      const iso = m ? `${sessDate}T${m[1]}` : new Date(sess.startedAt).toISOString();
       return JSON.stringify({ sid: sess.sid, iso, ev });
-    })
-  ).join('\n');
+    });
+  }).join('\n');
 }
 
 export function clearDpEvents(): void {

@@ -4,7 +4,7 @@ import {
   SafeAreaView, KeyboardAvoidingView, Platform, ScrollView, Alert,
 } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
-import { activateCode } from '../services/licenseManager';
+import { activateCode, activateTrial } from '../services/licenseManager';
 import type { License } from '../types';
 
 interface Props {
@@ -39,6 +39,18 @@ export default function LoginScreen({ onActivated }: Props) {
       onActivated(license);
     } catch (e: any) {
       Alert.alert('Eroare activare', e?.message || 'Cheie invalidă.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTrial = async () => {
+    setLoading(true);
+    try {
+      const license = await activateTrial();
+      onActivated(license);
+    } catch (e: any) {
+      Alert.alert('Eroare trial', e?.message || 'Nu s-a putut activa perioada de probă.');
     } finally {
       setLoading(false);
     }
@@ -113,9 +125,14 @@ export default function LoginScreen({ onActivated }: Props) {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={s.trialLink} activeOpacity={0.6}>
-              <Text style={[s.trialText, { color: colors.accent }]}>
-                Nu am cheie — încerc gratuit 1 zi
+            <TouchableOpacity
+              style={s.trialLink}
+              activeOpacity={0.6}
+              onPress={handleTrial}
+              disabled={loading}
+            >
+              <Text style={[s.trialText, { color: colors.accent, opacity: loading ? 0.5 : 1 }]}>
+                {loading ? 'Se activează...' : 'Nu am cheie — încerc gratuit 1 zi'}
               </Text>
             </TouchableOpacity>
           </View>

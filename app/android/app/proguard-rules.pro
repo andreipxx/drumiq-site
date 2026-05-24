@@ -11,4 +11,8 @@
 -keep class com.swmansion.reanimated.** { *; }
 -keep class com.facebook.react.turbomodule.** { *; }
 
-# Add any project specific keep options here:
+# Expo modules — keep classes referenced by expo-font FontLoaderModule
+-keep class expo.modules.kotlin.types.** { *; }
+-keep class expo.modules.font.** { *; }
+-keep class expo.modules.** { *; }
+-dontwarn expo.modules.**

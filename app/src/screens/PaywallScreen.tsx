@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import type { ExpirationReason } from '../services/licenseManager';
+import { TRIAL } from '../constants/config';
 
 interface Props {
   reason: ExpirationReason;
@@ -23,11 +24,11 @@ export default function PaywallScreen({ reason, ridesUsed, onActivateNew }: Prop
 
   return (
     <SafeAreaView style={[s.container, { backgroundColor: colors.bg }]}>
-      <View style={[s.banner, { backgroundColor: colors.critic + '20', borderColor: colors.critic }]}>
-        <Text style={[s.title, { color: colors.critic }]}>{t.title}</Text>
+      <View style={[s.banner, { backgroundColor: colors.stop + '20', borderColor: colors.stop }]}>
+        <Text style={[s.title, { color: colors.stop }]}>{t.title}</Text>
         <Text style={[s.body, { color: colors.text }]}>{t.body}</Text>
         {reason === 'rides_expired' && ridesUsed != null && (
-          <Text style={[s.stats, { color: colors.textSecondary }]}>Curse efectuate: {ridesUsed}/100</Text>
+          <Text style={[s.stats, { color: colors.textMuted }]}>Curse efectuate: {ridesUsed}/{TRIAL.RIDES}</Text>
         )}
       </View>
 
@@ -36,7 +37,7 @@ export default function PaywallScreen({ reason, ridesUsed, onActivateNew }: Prop
         <Text style={s.ctaText}>Activează cod nou</Text>
       </TouchableOpacity>
 
-      <Text style={[s.support, { color: colors.textTertiary }]}>
+      <Text style={[s.support, { color: colors.textDim }]}>
         Pentru asistență contactează GO PAMPA S.R.L., Baia Mare.
       </Text>
     </SafeAreaView>

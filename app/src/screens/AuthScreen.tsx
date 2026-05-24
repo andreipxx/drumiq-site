@@ -9,6 +9,7 @@ import { signUp, signIn, signInWithGoogle } from '../services/auth';
 import { supabase } from '../services/supabase';
 import AppMascot from '../components/AppMascot';
 import TurnstileCaptcha from '../components/TurnstileCaptcha';
+import { APP_VERSION } from '../constants/config';
 
 interface Props {
   onAuthenticated: () => void;
@@ -29,10 +30,13 @@ export default function AuthScreen({ onAuthenticated }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [lastResetAt, setLastResetAt] = useState<number>(0);
 
   const switchMode = (next: Mode) => {
     setMode(next);
     setError(null);
+    setPassword('');
+    setConfirmPassword('');
     setCaptchaToken(null);
   };
 
@@ -40,15 +44,27 @@ export default function AuthScreen({ onAuthenticated }: Props) {
     if (!EMAIL_REGEX.test(email.trim())) {
       return 'Adresa de email nu este valida.';
     }
-    if (password.length < 6) {
-      return 'Parola trebuie sa aiba minim 6 caractere.';
-    }
     if (mode === 'register') {
+      // Reguli mai stricte la inregistrare
+      if (password.length < 8) {
+        return 'Parola trebuie sa aiba minim 8 caractere.';
+      }
+      if (!/[A-Z]/.test(password)) {
+        return 'Parola trebuie sa contina cel putin o litera mare.';
+      }
+      if (!/\d/.test(password)) {
+        return 'Parola trebuie sa contina cel putin o cifra.';
+      }
       if (!name.trim()) {
         return 'Te rugam sa introduci numele.';
       }
       if (password !== confirmPassword) {
         return 'Parolele nu se potrivesc.';
+      }
+    } else {
+      // Login: pastram pragul vechi ca sa nu blocam conturile existente cu parola de 6 chars
+      if (password.length < 6) {
+        return 'Parola trebuie sa aiba minim 6 caractere.';
       }
     }
     return null;
@@ -86,8 +102,20 @@ export default function AuthScreen({ onAuthenticated }: Props) {
       setError('Introdu adresa de email mai intai.');
       return;
     }
+    if (!captchaToken) {
+      setError('Te rugam sa completezi verificarea CAPTCHA inainte de resetare.');
+      return;
+    }
+    const now = Date.now();
+    if (now - lastResetAt < 60000) {
+      const secLeft = Math.ceil((60000 - (now - lastResetAt)) / 1000);
+      setError(`Asteapta ${secLeft}s inainte de a trimite din nou.`);
+      return;
+    }
     try {
-      await supabase.auth.resetPasswordForEmail(email.trim());
+      await supabase.auth.resetPasswordForEmail(email.trim(), { captchaToken });
+      setCaptchaToken(null);
+      setLastResetAt(Date.now());
       Alert.alert(
         'Resetare parola',
         'Un email de resetare a fost trimis la adresa ta (daca exista un cont asociat).',
@@ -202,7 +230,7 @@ export default function AuthScreen({ onAuthenticated }: Props) {
             <TextInput
               value={password}
               onChangeText={setPassword}
-              placeholder="minim 6 caractere"
+              placeholder={mode === 'register' ? 'minim 8 caractere, 1 majuscula, 1 cifra' : 'minim 6 caractere'}
               placeholderTextColor={colors.textDim}
               secureTextEntry={!showPassword}
               autoCapitalize="none"
@@ -301,7 +329,7 @@ export default function AuthScreen({ onAuthenticated }: Props) {
 
           {/* Footer */}
           <Text style={[s.version, { color: colors.textDim }]}>
-            v1.0.0 · GO PAMPA S.R.L.
+            v{APP_VERSION} · GO PAMPA S.R.L.
           </Text>
         </ScrollView>
       </KeyboardAvoidingView>

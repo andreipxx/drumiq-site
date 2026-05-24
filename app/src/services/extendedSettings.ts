@@ -2,17 +2,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // ═══ Consum Adaptiv Oraș/Exterior ═══
 
+// HIGH-1 FIX: removed dead `city` and `exterior` fields — they were never used
+// in any calculation. Only manualAverage (real dashboard consumption) is used.
 export interface AdaptiveConsumption {
   enabled: boolean;
-  city: number;       // l/100km oraș (default 7.8)
-  exterior: number;   // l/100km exterior (default 5.4)
-  manualAverage?: number;  // override manual — consumul real din bord (null = calculat automat)
+  manualAverage?: number;  // consum benzina/diesel/GPL din bord (L/100km)
+  manualKwh?: number;      // consum electric din bord (kWh/100km) — pt PHEV si electric
 }
 
 export const DEFAULT_ADAPTIVE: AdaptiveConsumption = {
   enabled: false,
-  city: 7.8,
-  exterior: 5.4,
 };
 
 const ADAPTIVE_KEY = '@drumiq_adaptive_consumption_v1';
@@ -29,12 +28,15 @@ export async function setAdaptiveConsumption(a: AdaptiveConsumption): Promise<vo
   await AsyncStorage.setItem(ADAPTIVE_KEY, JSON.stringify(a));
 }
 
-export function getConsumptionForDistance(_distance: number, adaptive: AdaptiveConsumption, fallback: number): number {
+export function getConsumptionForDistance(adaptive: AdaptiveConsumption, fallback: number): number {
   if (!adaptive.enabled) return fallback;
   return adaptive.manualAverage ?? fallback;
 }
 
 // ═══ 2.4.5 — Comision Bolt + Taxe Configurabile ═══
+// DEPRECATED: TaxSettings is no longer used in profitCalculator.
+// Bolt displays NET price (after commission). Tax deduction removed — driver sees
+// real money in hand. Kept for future WorkMode integration (COMING SOON).
 
 export interface TaxSettings {
   taxRate: number;          // procent taxe (0 = Bolt arata NET)

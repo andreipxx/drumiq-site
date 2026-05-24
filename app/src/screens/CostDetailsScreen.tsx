@@ -13,11 +13,6 @@ interface Props {
 export default function CostDetailsScreen({ analysis, pickupAddress, destinationAddress, onBack }: Props) {
   const { colors } = useTheme();
 
-  const fuelCost = analysis.vehicleCost - (analysis.totalKm * 0); // vehicleCost includes wear
-  const taxAmount = analysis.netAfterTax > 0
-    ? (analysis.profit + analysis.vehicleCost + analysis.fixedCostForRide + analysis.netAfterTax) - analysis.netAfterTax / (1 - 0.10) * 0.10
-    : 0;
-
   return (
     <ScrollView style={[s.root, { backgroundColor: colors.bg }]} contentContainerStyle={s.content}>
       <TouchableOpacity onPress={onBack} activeOpacity={0.6}>
@@ -34,12 +29,7 @@ export default function CostDetailsScreen({ analysis, pickupAddress, destination
 
       <Text style={[s.sectionLabel, { color: colors.textMuted }]}>COSTURI</Text>
       <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <DetailRow label="Cost vehicul (combustibil + uzură)" value={`${analysis.vehicleCost.toFixed(2)} lei`} colors={colors} />
-        <DetailRow label="Comision Bolt" value={`${analysis.boltCommissionAmount.toFixed(2)} lei`} colors={colors} />
-        {analysis.fixedCostForRide > 0 && (
-          <DetailRow label="Costuri fixe (chirie/contab.)" value={`${analysis.fixedCostForRide.toFixed(2)} lei`} colors={colors} />
-        )}
-        <DetailRow label="Taxe estimate" value={`${(analysis.netAfterTax * 0.1).toFixed(2)} lei`} colors={colors} last />
+        <DetailRow label="Cost vehicul (combustibil + uzura)" value={`${analysis.vehicleCost.toFixed(2)} lei`} colors={colors} last />
       </View>
 
       <Text style={[s.sectionLabel, { color: colors.textMuted }]}>PROFIT</Text>

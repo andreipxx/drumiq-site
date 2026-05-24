@@ -4,6 +4,16 @@ import { DEFAULT_THRESHOLDS } from '../types';
 
 const STORAGE_KEY = '@drumiq_unified_thresholds_v1';
 
+// M3 FIX: mutex prevents concurrent saveThresholds from corrupting data
+let _saveMutex: Promise<void> = Promise.resolve();
+function withSaveLock<T>(fn: () => Promise<T>): Promise<T> {
+  let release: () => void;
+  const next = new Promise<void>(resolve => { release = resolve; });
+  const prev = _saveMutex;
+  _saveMutex = next;
+  return prev.then(fn).finally(() => release!());
+}
+
 export async function loadThresholds(): Promise<UnifiedThresholds> {
   try {
     const raw = await AsyncStorage.getItem(STORAGE_KEY);
@@ -14,8 +24,30 @@ export async function loadThresholds(): Promise<UnifiedThresholds> {
   }
 }
 
-export async function saveThresholds(t: UnifiedThresholds): Promise<void> {
-  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(t));
+export function saveThresholds(t: UnifiedThresholds): Promise<void> {
+  return withSaveLock(async () => {
+    const copy = { ...t };
+    const enabledFlags: (keyof UnifiedThresholds)[] = ['kmEnabled', 'minEnabled', 'hourEnabled'];
+    const count = enabledFlags.filter(f => copy[f]).length;
+    if (count > 1) {
+      // Find which flag was newly toggled on by comparing to stored state
+      let prev: UnifiedThresholds | null = null;
+      try {
+        const raw = await AsyncStorage.getItem(STORAGE_KEY);
+        if (raw) prev = { ...DEFAULT_THRESHOLDS, ...JSON.parse(raw) };
+      } catch {}
+      // The newly enabled flag is one that's true in copy but false (or absent) in prev
+      const newlyEnabled = prev
+        ? enabledFlags.find(f => copy[f] && !prev![f])
+        : null;
+      // Keep only the newly enabled flag; fall back to the first enabled flag
+      const keepFlag = newlyEnabled || enabledFlags.find(f => copy[f]);
+      for (const f of enabledFlags) {
+        (copy as any)[f] = f === keepFlag;
+      }
+    }
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(copy));
+  });
 }
 
 export async function resetThresholds(): Promise<UnifiedThresholds> {
@@ -109,7 +141,7 @@ export function applyThresholds(
 
 // UI labels for FilterSettingsScreen
 export const THRESHOLD_LABELS = {
-  kmValue:      'Lei/km minim',
+  kmValue:      'Profit/km minim (net)',
   minValue:     'Lei/min minim',
   hourValue:    'Lei/oră minim',
   yellowZone:   'Zonă galbenă',
@@ -136,7 +168,7 @@ export const THRESHOLD_ICONS = {
 } as const;
 
 export const THRESHOLD_HINTS: Record<string, string> = {
-  kmValue:      'Curse cu profit/km sub această valoare = REFUZ',
+  kmValue:      'Profit NET per km total (pickup+cursă, minus costuri). Ex: 0.80 = minim 0.80 lei profit real pe fiecare km parcurs',
   minValue:     'Curse cu profit/min sub această valoare = REFUZ',
   hourValue:    'Curse cu profit/oră sub această valoare = REFUZ',
   yellowZone:   'Procentul deasupra minimului = verdict galben (marginal)',

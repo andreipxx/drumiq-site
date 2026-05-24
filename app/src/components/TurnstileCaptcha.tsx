@@ -58,7 +58,7 @@ export default function TurnstileCaptcha({ onToken, onError }: Props) {
         style={s.webview}
         scrollEnabled={false}
         javaScriptEnabled
-        originWhitelist={['*']}
+        originWhitelist={['https://drumiq.ro', 'https://challenges.cloudflare.com']}
         onMessage={handleMessage}
       />
     </View>

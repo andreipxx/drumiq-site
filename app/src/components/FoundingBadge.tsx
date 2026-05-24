@@ -1,16 +1,29 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const FOUNDING_KEY = '@drumiq_founding_member';
+const FOUNDING_KEY_LEGACY = '@drumiq_founding_member';
+const FOUNDING_KEY = 'drumiq_founding_member';
 
 export async function isFoundingMember(): Promise<boolean> {
-  const v = await AsyncStorage.getItem(FOUNDING_KEY);
-  return v === 'true';
+  // Try SecureStore first (new location)
+  const secure = await SecureStore.getItemAsync(FOUNDING_KEY);
+  if (secure !== null) return secure === 'true';
+  // Migrate from AsyncStorage if present
+  const legacy = await AsyncStorage.getItem(FOUNDING_KEY_LEGACY);
+  if (legacy !== null) {
+    await SecureStore.setItemAsync(FOUNDING_KEY, legacy);
+    await AsyncStorage.removeItem(FOUNDING_KEY_LEGACY);
+    return legacy === 'true';
+  }
+  return false;
 }
 
 export async function setFoundingMember(value: boolean): Promise<void> {
-  await AsyncStorage.setItem(FOUNDING_KEY, value ? 'true' : 'false');
+  await SecureStore.setItemAsync(FOUNDING_KEY, value ? 'true' : 'false');
+  // Clean up legacy key if it still exists
+  await AsyncStorage.removeItem(FOUNDING_KEY_LEGACY).catch(() => {});
 }
 
 export function FoundingBadge({ compact }: { compact?: boolean }) {
