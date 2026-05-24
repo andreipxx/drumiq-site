@@ -15,7 +15,7 @@ import { getAdaptiveConsumption } from './extendedSettings';
 import { getStatsForPeriod } from './tracker';
 import { getRoute } from './routesApi';
 import { loadThresholds } from './filterEngine';
-import { addRide, updateRide, generateRideId, detectLifecycleEvent, autoCompleteStaleRides } from './tracker';
+import { addRide, updateRide, getRide, generateRideId, detectLifecycleEvent, autoCompleteStaleRides } from './tracker';
 import { trackPackageSeen } from './platformDetector';
 import { VERDICT_DISPLAY } from '../types';
 import { logDpEvent } from './dpDebug';
@@ -43,6 +43,7 @@ export async function setOverlayModePro(m: OverlayMode): Promise<void> {
 let lastShownKey = '';
 let lastLoggedScreen = '';
 let lastOfferRideId: string | null = null;  // tracks current offer for lifecycle updates
+let acceptedRideId: string | null = null;   // tracks the accepted ride separately (survives new offers during trip)
 let lastLifecycle: string = '';             // dedupes lifecycle events
 let lastShownAt = 0;
 let stickyTimer: ReturnType<typeof setTimeout> | null = null;
@@ -53,6 +54,8 @@ let offerGen = 0;                        // BUG3: invalidates stale handlers on 
 let lastOfferGross: number | null = null; // BUG3: tracks current offer's gross for dedup
 let lastOfferPickup: number | null = null; // BUG3: tracks pickup for same-price different-offer detection
 let lastOfferApiResolved = false;                // BUG3-v2: skip fallback re-render after API success
+let postTripSyncId: string | null = null;         // post-trip sync: ride ID to update with final earnings/tips
+let postTripSyncExpiry = 0;                       // post-trip sync: stop watching after 60s
 let lastTripDestination: string | null = null;   // Bug6: destination change tracking
 let destChangeShown = false;                     // Bug6: dedup destination change alert
 let destChangeCandidate: string | null = null;   // Bug6: consecutive-capture confirmation
@@ -152,6 +155,8 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
   lastOfferPickup = null;
   lastOfferApiResolved = false;
   offerGen = 0;
+  postTripSyncId = null;
+  postTripSyncExpiry = 0;
   lastTripDestination = null;
   destChangeShown = false;
   destChangeCandidate = null;
@@ -195,19 +200,50 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
       const lifecycle = detectLifecycleEvent(cap.text);
       if (lifecycle !== 'unknown' && lifecycle !== lastLifecycle) {
         lastLifecycle = lifecycle;
-        if (lastOfferRideId) {
-          if (lifecycle === 'accepted') {
-            await updateRide(lastOfferRideId, { accepted: true });
-            logDpEvent('TRACKER_ACCEPT', lastOfferRideId.slice(-8));
-          } else if (lifecycle === 'completed') {
-            await updateRide(lastOfferRideId, { completed: true, completedAt: Date.now() });
-            logDpEvent('TRACKER_DONE', lastOfferRideId.slice(-8));
-            lastOfferRideId = null; // reset for next offer
-          }
+        if (lifecycle === 'accepted' && lastOfferRideId) {
+          await updateRide(lastOfferRideId, { accepted: true });
+          acceptedRideId = lastOfferRideId;
+          logDpEvent('TRACKER_ACCEPT', lastOfferRideId.slice(-8));
+        } else if (lifecycle === 'completed' && acceptedRideId) {
+          await updateRide(acceptedRideId, { completed: true, completedAt: Date.now() });
+          logDpEvent('TRACKER_DONE', acceptedRideId.slice(-8));
+          postTripSyncId = acceptedRideId;
+          postTripSyncExpiry = Date.now() + 60000;
+          acceptedRideId = null;
         }
       }
     } catch (e: any) {
       logDpEvent('LIFECYCLE_ERR', String(e?.message || e).slice(0, 60));
+    }
+
+    // === POST-TRIP SYNC: capture final earnings + tips after ride completion ===
+    if (postTripSyncId && Date.now() < postTripSyncExpiry) {
+      if (parsed.screen === 'post_trip_confirm' || parsed.screen === 'post_trip_rate') {
+        try {
+          const patch: Record<string, any> = {};
+          if (parsed.finalEarnings != null) {
+            patch.finalEarnings = parsed.finalEarnings;
+            patch.grossEarnings = parsed.finalEarnings;
+            patch.netEarnings = parsed.finalEarnings;
+          }
+          if (parsed.tipAmount != null && parsed.tipAmount > 0) {
+            patch.tipAmount = parsed.tipAmount;
+          }
+          if (Object.keys(patch).length > 0) {
+            await updateRide(postTripSyncId, patch);
+            logDpEvent('POST_TRIP_SYNC', { id: postTripSyncId.slice(-8), ...patch });
+          }
+        } catch (e: any) {
+          logDpEvent('POST_TRIP_ERR', String(e?.message || e).slice(0, 60));
+        }
+      }
+      if (parsed.screen === 'home_idle' || parsed.screen === 'map_idle' || parsed.screen === 'ride_offer') {
+        postTripSyncId = null;
+        postTripSyncExpiry = 0;
+      }
+    } else if (postTripSyncId) {
+      postTripSyncId = null;
+      postTripSyncExpiry = 0;
     }
 
     if (parsed.screen === 'ride_offer') {
@@ -302,7 +338,7 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
             tripKm: a1.tripKmEstimate,
             durationMin: a1.totalMinutes,
             grossEarnings: parsed.grossNet || 0,
-            netEarnings: a1.netAfterTax,
+            netEarnings: a1.boltNet,
             paymentMethod: parsed.paymentMethod || 'card',
             passengerRating: parsed.passengerRating ?? null,
             profitPerKm: a1.profitPerKm,
@@ -353,7 +389,7 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
                     profitPerKm: a2.profitPerKm,
                     profitNet: a2.profit,
                     verdict: a2.verdict,
-                    netEarnings: a2.netAfterTax,
+                    netEarnings: a2.boltNet,
                   });
                   logDpEvent('TRACKER_UPD', { km: route.distanceKm, ppkm: a2.profitPerKm, src: route.source });
                 }
@@ -437,6 +473,9 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
             if (controllerGen !== timerGen) { stickyTimer = null; return; }
             lastShownKey = '';
             lastShownAt = 0;
+            lastOfferGross = null;
+            lastOfferPickup = null;
+            lastOfferApiResolved = false;
             try { Overlay.hide(); } catch {}
             stickyTimer = null;
           }, remaining);

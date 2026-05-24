@@ -1,15 +1,14 @@
-import { TAX_RATE, EXTERNAL_RIDE } from '../constants/config';
+import { EXTERNAL_RIDE } from '../constants/config';
 import type { ProfitVerdict, UnifiedThresholds } from '../types';
 import type { ParsedBoltRide } from './boltParser';
-import { totalCostPerKm, fuelCostPerKm, type FuelSettings } from './userSettings';
+import { totalCostPerKm, type FuelSettings } from './userSettings';
 import { applyThresholds } from './filterEngine';
-import type { AdaptiveConsumption, TaxSettings } from './extendedSettings';
+import type { AdaptiveConsumption } from './extendedSettings';
 import { getConsumptionForDistance } from './extendedSettings';
-import type { WorkModeConfig } from './workMode';
-import { getFixedCostPerHour } from './workMode';
 
 export interface ProfitAnalysis {
-  netAfterTax: number;
+  /** Bolt NET price (already after Bolt commission, as displayed in offer) */
+  boltNet: number;
   totalKm: number;
   totalMinutes: number;
   pickupKm: number;
@@ -19,11 +18,10 @@ export interface ProfitAnalysis {
   profitPerKm: number;
   profitPerMin: number;
   profitPerHour: number;
-  fixedCostForRide: number;
-  boltCommissionAmount: number;
+  grossPerKm: number;
   verdict: ProfitVerdict;
   isExternalRide: boolean;
-  confidence: 'high' | 'low';
+  confidence: 'high' | 'medium' | 'low';
   proOverride?: 'pickup_too_far' | 'rating_too_low' | 'has_stops' | null;
   overrideThreshold?: number;
   shortRideFlag: boolean;
@@ -41,8 +39,6 @@ export interface AnalyzeOptions {
   tripKmFromApi?: number;
   tripMinFromApi?: number;
   adaptive?: AdaptiveConsumption;
-  tax?: TaxSettings;
-  workMode?: WorkModeConfig;
 }
 
 export function analyzeRide(parsed: ParsedBoltRide, opts: AnalyzeOptions): ProfitAnalysis | null {
@@ -61,32 +57,35 @@ export function analyzeRide(parsed: ParsedBoltRide, opts: AnalyzeOptions): Profi
     : Math.round(tripKmEstimate * 2);
   const totalMinutes = pickupMin + tripMin;
 
-  const effectiveTaxRate = opts.tax ? opts.tax.taxRate / 100 : 0;
-  const boltCommission = opts.tax ? opts.tax.boltCommission / 100 : 0;
-  const grossAfterBolt = parsed.grossNet * (1 - boltCommission);
-  const netAfterTax = grossAfterBolt * (1 - effectiveTaxRate);
+  // Bolt displays NET price (already after Bolt commission). No tax deduction —
+  // driver wants "bani in mana dupa cursa" (money in hand minus driving costs).
+  const boltNet = parsed.grossNet;
 
   let costPerKm: number;
-  if (opts.adaptive?.enabled && opts.fuel.type !== 'electric') {
+  if (opts.adaptive?.enabled) {
     const adaptiveConsumption = getConsumptionForDistance(
-      tripKmEstimate, opts.adaptive, opts.fuel.consumption
+      opts.adaptive, opts.fuel.consumption
     );
-    costPerKm = (adaptiveConsumption / 100) * opts.fuel.pricePerUnit + opts.fuel.wearPerKm;
+    const overrides: Partial<typeof opts.fuel> = { consumption: adaptiveConsumption };
+    if (opts.adaptive.manualKwh != null) {
+      if (opts.fuel.type === 'electric') overrides.consumption = opts.adaptive.manualKwh;
+      if (opts.fuel.type === 'hybrid_phev') overrides.consumptionKwh = opts.adaptive.manualKwh;
+    }
+    costPerKm = totalCostPerKm({ ...opts.fuel, ...overrides });
   } else {
     costPerKm = totalCostPerKm(opts.fuel);
   }
   const vehicleCost = totalKm * costPerKm;
 
-  const fixedCostPerHour = opts.workMode ? getFixedCostPerHour(opts.workMode) : 0;
-  const fixedCostForRide = fixedCostPerHour * (totalMinutes / 60);
-
-  let profit = netAfterTax - vehicleCost - fixedCostForRide;
+  let profit = boltNet - vehicleCost;
   const isExternalRide = pickupKm >= EXTERNAL_RIDE.PICKUP_KM_THRESHOLD;
   if (isExternalRide) profit *= EXTERNAL_RIDE.MULTIPLIER;
 
   const profitPerKm = totalKm > 0 ? profit / totalKm : 0;
   const profitPerMin = totalMinutes > 0 ? profit / totalMinutes : 0;
   const profitPerHour = totalMinutes > 0 ? (profit / totalMinutes) * 60 : 0;
+  // HIGH-5 FIX: use totalKm (same denominator as profitPerKm) for consistency
+  const grossPerKm = totalKm > 0 ? parsed.grossNet / totalKm : 0;
 
   // Sanity check: tripKm absurd (ex: "Marcator pe harta" → 343km)
   const sanityError = tripKmEstimate > SANITY_MAX_TRIP_KM;
@@ -107,12 +106,16 @@ export function analyzeRide(parsed: ParsedBoltRide, opts: AnalyzeOptions): Profi
     overrideThreshold = result.overrideLimit;
   }
 
+  if (parsed.surgeMultiplier && parsed.surgeMultiplier > 1 && verdict === 'stop' && !proOverride) {
+    verdict = 'think';
+  }
+
   if (sanityError) {
-    verdict = 'stop';
+    verdict = 'think';
   }
 
   return {
-    netAfterTax: r2(netAfterTax),
+    boltNet: r2(boltNet),
     totalKm: r2(totalKm),
     totalMinutes: Math.round(totalMinutes),
     pickupKm: r2(pickupKm),
@@ -122,14 +125,13 @@ export function analyzeRide(parsed: ParsedBoltRide, opts: AnalyzeOptions): Profi
     profitPerKm: r2(profitPerKm),
     profitPerMin: r2(profitPerMin),
     profitPerHour: r2(profitPerHour),
-    fixedCostForRide: r2(fixedCostForRide),
-    boltCommissionAmount: r2(parsed.grossNet * boltCommission),
+    grossPerKm: r2(grossPerKm),
     verdict,
     isExternalRide,
-    confidence: opts.tripKmFromApi != null ? 'high' : (parsed.pickupKm != null ? 'high' : 'low'),
+    confidence: opts.tripKmFromApi != null ? 'high' : (parsed.pickupKm != null ? 'medium' : 'low'),
     proOverride,
     overrideThreshold,
-    shortRideFlag: pickupKm >= tripKmEstimate,
+    shortRideFlag: pickupKm >= 3.0 && pickupKm >= tripKmEstimate,
     sanityError,
   };
 }

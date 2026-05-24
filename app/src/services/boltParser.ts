@@ -32,6 +32,10 @@ export interface ParsedBoltRide {
   destinationAddress?: string;
   /** Has multi-stop ride */
   hasStops?: boolean;
+  /** Tip/bacsis amount (parsed from post-trip screens) */
+  tipAmount?: number;
+  /** Final confirmed earnings (from post_trip_confirm / post_trip_rate) */
+  finalEarnings?: number;
   /** Raw text for debugging */
   raw?: string;
 }
@@ -50,8 +54,10 @@ export function parseBoltRide(text: string): ParsedBoltRide {
       return parseInTrip(text, result);
     case 'post_trip_confirm':
       return parsePostTripConfirm(text, result);
+    case 'post_trip_rate':
+      return parsePostTripRate(text, result);
     default:
-      // home_idle, map_idle, post_trip_rate, unknown — no data extraction
+      // home_idle, map_idle, unknown — no data extraction
       return result;
   }
 }
@@ -72,7 +78,7 @@ function parseRideOffer(text: string, r: ParsedBoltRide): ParsedBoltRide {
     r.pickupKm  = parseFloat(pickupMatch[2].replace(',', '.'));
   }
 
-  const ratingMatch = text.match(/([A-ZĂÂÎȘȚ][a-zăâîșț]+)\s*[•·]\s*(\d(?:[.,]\d)?)\s*★/);
+  const ratingMatch = text.match(/([A-ZĂÂÎȘȚ][a-zăâîșț]+(?:[ -][A-ZĂÂÎȘȚa-zăâîșț]+)*)\s*[•·]\s*(\d(?:[.,]\d)?)\s*★/);
   if (ratingMatch) {
     r.passengerName     = ratingMatch[1];
     r.passengerRating   = parseFloat(ratingMatch[2].replace(',', '.'));
@@ -85,7 +91,7 @@ function parseRideOffer(text: string, r: ParsedBoltRide): ParsedBoltRide {
   const surgeMatch = text.match(/Cerere mare\s+(\d+(?:[.,]\d+)?)x/i);
   if (surgeMatch) r.surgeMultiplier = parseFloat(surgeMatch[1].replace(',', '.'));
 
-  if (/\d+\s*oprire/i.test(text)) r.hasStops = true;
+  if (/\d+\s*oprir[ei]/i.test(text)) r.hasStops = true;
 
   // Addresses — lines between "X min • Y km" pickup line and "Acceptă"
   // Positional extraction is more robust than keyword whitelist (catches streets
@@ -97,6 +103,8 @@ function parseRideOffer(text: string, r: ParsedBoltRide): ParsedBoltRide {
   // When "Acceptă" missing from accessibility tree (newer Bolt), cap window to 7 lines after pickup
   const addrEnd   = acceptIdx >= 0 ? acceptIdx
     : (pickupLineIdx >= 0 ? Math.min(pickupLineIdx + 8, lines.length) : lines.length);
+  // LOW-8: This regex filters out known non-address lines from the Bolt UI accessibility tree.
+  // It needs updating whenever Bolt changes their screen text/labels.
   const NON_ADDR  = /^(Refuz|Respingerea|Cerere\s|Numerar|Card\b|lei\s*\(|Refuzul|rata\s*de|\d+\s*oprire|Accepta|★|\d+[.,]\d+\s*lei|Hart[aă]|[Îî]n afara|Loca[tț]ie|Bolt\b)/i;
   const addrCandidates = lines
     .slice(addrStart, addrEnd)
@@ -112,7 +120,9 @@ function parseInTrip(text: string, r: ParsedBoltRide): ParsedBoltRide {
   const priceMatch = text.match(/(\d+[.,]\d+)\s*lei\s*[·•]\s*Net,?\s*cu\s*TVA/i);
   if (priceMatch) r.grossNet = parseFloat(priceMatch[1].replace(',', '.'));
 
-  const ratingLine = text.match(/^(\d(?:[.,]\d)?)\s*$/m);
+  // HIGH-3 FIX: restrict to valid Bolt rating range (1.0-5.0) to avoid matching
+  // any isolated digit (e.g. stop counts, minute values)
+  const ratingLine = text.match(/^([1-5][.,]\d)\s*$/m);
   if (ratingLine) r.passengerRating = parseFloat(ratingLine[1].replace(',', '.'));
 
   // Time to pickup remaining: "<1 min" or "X min" (only on in_trip_to_pickup)
@@ -121,12 +131,44 @@ function parseInTrip(text: string, r: ParsedBoltRide): ParsedBoltRide {
     if (minMatch) r.pickupMin = minMatch[1] === '<1' ? 0 : parseInt(minMatch[1], 10);
   }
 
+  // Destination extraction for active trip (detect address changes)
+  if (r.screen === 'in_trip_active') {
+    const lines = text.split('\n').map((l) => l.trim());
+    const SKIP = /^(Finalizează|Începe|Am ajuns|Sună|lei|Net|Evaluează|Bolt|Refuz|\d+[.,]\d+\s*lei|Hartă|Locație|<1|\d+\s*min$)/i;
+    const addrCandidates = lines.filter((l) => l.length >= 5 && l.length < 100 && !SKIP.test(l));
+    if (addrCandidates.length > 0) {
+      r.destinationAddress = addrCandidates[addrCandidates.length - 1];
+    }
+  }
+
   return r;
 }
 
 function parsePostTripConfirm(text: string, r: ParsedBoltRide): ParsedBoltRide {
   // "Confirmă tariful\n28,12 lei\nPlata prin aplicație..."
   const priceMatch = text.match(/Confirmă tariful\s*\n\s*(\d+[.,]\d+)\s*lei/);
-  if (priceMatch) r.grossNet = parseFloat(priceMatch[1].replace(',', '.'));
+  if (priceMatch) {
+    r.grossNet = parseFloat(priceMatch[1].replace(',', '.'));
+    r.finalEarnings = r.grossNet;
+  }
+  const tipMatch = text.match(/[Bb]ac[sș]i[sș]\s*[:\-]?\s*(\d+[.,]?\d*)\s*lei/i)
+    || text.match(/[Pp]ropin[aă]\s*[:\-]?\s*(\d+[.,]?\d*)\s*lei/i)
+    || text.match(/(\d+[.,]\d+)\s*lei\s*[Bb]ac[sș]i[sș]/i);
+  if (tipMatch) r.tipAmount = parseFloat(tipMatch[1].replace(',', '.'));
+  return r;
+}
+
+function parsePostTripRate(text: string, r: ParsedBoltRide): ParsedBoltRide {
+  // "Evaluează pasagerul\n★★★★★\nCâștigurile tale\n28,12 lei..."
+  const earningsMatch = text.match(/[Cc]â[sș]tigurile tale\s*\n\s*(\d+[.,]\d+)\s*lei/i)
+    || text.match(/[Aa]i câ[sș]tigat\s*\n?\s*(\d+[.,]\d+)\s*lei/i);
+  if (earningsMatch) {
+    r.finalEarnings = parseFloat(earningsMatch[1].replace(',', '.'));
+    r.grossNet = r.finalEarnings;
+  }
+  const tipMatch = text.match(/[Bb]ac[sș]i[sș]\s*[:\-]?\s*(\d+[.,]?\d*)\s*lei/i)
+    || text.match(/[Pp]ropin[aă]\s*[:\-]?\s*(\d+[.,]?\d*)\s*lei/i)
+    || text.match(/(\d+[.,]\d+)\s*lei\s*[Bb]ac[sș]i[sș]/i);
+  if (tipMatch) r.tipAmount = parseFloat(tipMatch[1].replace(',', '.'));
   return r;
 }

@@ -11,11 +11,12 @@ const CACHE_KEY = '@dp_routes_cache_v1';
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 // Boot diagnostic: log API key presence so user can verify in AccessibilityTestScreen
+// SEC-M3: Do not log any part of the API key — only log length and validity
 (() => {
   try {
     const len = API_KEY.length;
     const ok = len >= 30;
-    logDpEvent('ROUTE_BOOT', { keyLen: len, valid: ok, prefix: API_KEY.slice(0, 4) });
+    logDpEvent('ROUTE_BOOT', { keyLen: len, valid: ok });
   } catch {}
 })();
 
@@ -31,8 +32,10 @@ interface CacheEntry {
   fetchedAt: number;
 }
 
+const DIACRITICS_RE = /[̀-ͯ]/g;
 function cacheKey(origin: string, destination: string): string {
-  return `${origin.trim().toLowerCase()}__${destination.trim().toLowerCase()}`;
+  const norm = (s: string) => s.trim().toLowerCase().normalize('NFD').replace(DIACRITICS_RE, '');
+  return `${norm(origin)}__${norm(destination)}`;
 }
 
 async function loadCache(): Promise<Record<string, CacheEntry>> {
@@ -73,7 +76,14 @@ async function _getRouteOnce(origin: string, destination: string): Promise<Route
     if (native?.getRoute) {
       logDpEvent('ROUTE_NATIVE', 'start');
       const r = await native.getRoute(origin, destination, API_KEY);
+      if (r?.error) {
+        logDpEvent('ROUTE_NATIVE_HTTP', r.error);
+      }
       if (r && r.distanceKm > 0) {
+        if (r.distanceKm > 150) {
+          logDpEvent('ROUTE_SANITY', { km: r.distanceKm, origin: origin.slice(0, 30), dest: destination.slice(0, 30), via: 'native' });
+          return null;
+        }
         const result: RouteResult = {
           distanceKm: r.distanceKm,
           durationMin: r.durationMin,
@@ -85,7 +95,6 @@ async function _getRouteOnce(origin: string, destination: string): Promise<Route
         return result;
       }
       logDpEvent('ROUTE_NULL', 'native_empty');
-      return null;
     }
   } catch (e: any) {
     logDpEvent('ROUTE_NATIVE_ERR', String(e?.message || e).slice(0, 80));
@@ -129,10 +138,21 @@ async function _getRouteOnce(origin: string, destination: string): Promise<Route
 
     const distanceM = route.distanceMeters ?? 0;
     const durStr = String(route.duration ?? '0s');
-    const durSec = parseInt(durStr.replace(/[^0-9]/g, ''), 10) || 0;
+    let durSec: number;
+    if (/^\d+s$/.test(durStr)) {
+      durSec = parseInt(durStr.replace('s', ''), 10);
+    } else {
+      logDpEvent('ROUTE_DUR_FMT', { raw: durStr.slice(0, 20) });
+      durSec = parseInt(durStr.replace(/[^0-9]/g, ''), 10) || 0;
+    }
 
+    const distanceKm = Math.round((distanceM / 1000) * 10) / 10;
+    if (distanceKm > 150) {
+      logDpEvent('ROUTE_SANITY', { km: distanceKm, origin: origin.slice(0, 30), dest: destination.slice(0, 30), via: 'jsfetch' });
+      return null;
+    }
     const result: RouteResult = {
-      distanceKm: Math.round((distanceM / 1000) * 10) / 10,
+      distanceKm,
       durationMin: Math.round(durSec / 60),
       source: 'api',
     };

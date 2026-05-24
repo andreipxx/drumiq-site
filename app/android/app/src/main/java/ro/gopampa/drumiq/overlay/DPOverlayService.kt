@@ -26,7 +26,7 @@ class DPOverlayService : Service() {
         const val ACTION_HIDE   = "ro.gopampa.drumiq.OVERLAY_HIDE"
         const val ACTION_UPDATE = "ro.gopampa.drumiq.OVERLAY_UPDATE"
         const val EXTRA_MODE    = "mode"        // "simple" or "full"
-        const val EXTRA_VERDICT = "verdict"     // critic|decide|bun|premium
+        const val EXTRA_VERDICT = "verdict"     // stop|think|go
         const val EXTRA_LABEL   = "label"
         const val EXTRA_PICKUP  = "pickup"
         const val EXTRA_TRIP    = "trip"
@@ -38,13 +38,12 @@ class DPOverlayService : Service() {
         const val EXTRA_NET      = "net"         // profit net estimat în buzunar
         const val EXTRA_SHORT_RIDE = "shortRide" // pickup >= tripKm warning
         const val EXTRA_DAILY    = "dailyProgress" // "earned/goal lei" or ""
-        const val EXTRA_DEAD_KM   = "deadKm"       // pickup km = unpaid distance
         const val EXTRA_SANITY    = "sanityError"   // tripKm > 50 = suspect
 
-        private const val PREFS = "dp_overlay_prefs"
-        private const val KEY_X = "pos_x"
-        private const val KEY_Y = "pos_y"
-        private const val AUTO_HIDE_MS = 30_000L
+        private const val AUTO_HIDE_MS = 45_000L
+        private const val PREFS = "dp_overlay_pos"
+        private const val KEY_X = "overlay_x"
+        private const val KEY_Y = "overlay_y"
     }
 
     private var wm: WindowManager? = null
@@ -96,8 +95,9 @@ class DPOverlayService : Service() {
         else
             @Suppress("DEPRECATION") WindowManager.LayoutParams.TYPE_PHONE
 
-        val defaultX = (16 * dm.density).toInt()
-        val defaultY = (screenH * 0.35).toInt()
+        val sp = getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val savedX = sp.getInt(KEY_X, 0)
+        val savedY = sp.getInt(KEY_Y, (screenH * 0.22).toInt())
 
         params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -108,25 +108,23 @@ class DPOverlayService : Service() {
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
-            val sp = getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            val cardW = (220 * dm.density).toInt()
-            x = sp.getInt(KEY_X, defaultX).coerceIn(0, screenW - cardW)
-            y = sp.getInt(KEY_Y, defaultY).coerceIn(0, screenH - (100 * dm.density).toInt())
+            x = savedX
+            y = savedY
         }
-
-        attachDrag(view!!)
         try {
             wm?.addView(view, params)
+            attachDragListener(view!!)
         } catch (e: Exception) {
             Log.e(TAG, "addView failed: ${e.message}")
             view = null
         }
     }
 
-    private fun attachDrag(root: View) {
+    private fun attachDragListener(root: View) {
         var initX = 0; var initY = 0
         var touchX = 0f; var touchY = 0f
         var dragging = false
+        val touchSlop = (8 * resources.displayMetrics.density).toInt()
 
         root.setOnTouchListener { _, ev ->
             when (ev.action) {
@@ -141,25 +139,21 @@ class DPOverlayService : Service() {
                 MotionEvent.ACTION_MOVE -> {
                     val dx = (ev.rawX - touchX).toInt()
                     val dy = (ev.rawY - touchY).toInt()
-                    if (kotlin.math.abs(dx) > 8 || kotlin.math.abs(dy) > 8) dragging = true
-                    params?.x = initX + dx
-                    params?.y = initY + dy
-                    try { wm?.updateViewLayout(view, params) } catch (_: Exception) {}
+                    if (kotlin.math.abs(dx) > touchSlop || kotlin.math.abs(dy) > touchSlop) {
+                        dragging = true
+                    }
+                    if (dragging) {
+                        params?.x = initX + dx
+                        params?.y = initY + dy
+                        try { wm?.updateViewLayout(view, params) } catch (_: Exception) {}
+                    }
                     true
                 }
                 MotionEvent.ACTION_UP -> {
                     if (dragging) {
-                        val px = params?.x ?: 0
-                        val py = params?.y ?: 0
-                        val safePt = ensureNotInRefuzaZone(px, py)
-                        if (safePt.first != px || safePt.second != py) {
-                            params?.x = safePt.first
-                            params?.y = safePt.second
-                            try { wm?.updateViewLayout(view, params) } catch (_: Exception) {}
-                        }
                         getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
                             .putInt(KEY_X, params?.x ?: 0)
-                            .putInt(KEY_Y, params?.y ?: 0)
+                            .putInt(KEY_Y, params?.y ?: (screenH * 0.22).toInt())
                             .apply()
                     }
                     true
@@ -231,13 +225,19 @@ class DPOverlayService : Service() {
             }
         }
 
-        // === Profit/km for simple mode ===
+        // === Bani in buzunar — hero position (both modes) ===
+        v.findViewById<TextView>(R.id.dp_net)?.apply {
+            text = intent.getStringExtra(EXTRA_NET) ?: "—"
+            setTextColor(color)
+        }
+
+        // === Profit/km (detail row in full, subtitle in simple) ===
         v.findViewById<TextView>(R.id.dp_profitkm)?.apply {
             text = intent.getStringExtra(EXTRA_PROFITKM) ?: "—"
             setTextColor(color)
         }
 
-        // === Profit/min (full mode) ===
+        // === Profit/min (full mode detail row) ===
         v.findViewById<TextView>(R.id.dp_profitmin)?.apply {
             text = intent.getStringExtra(EXTRA_PROFITMIN) ?: "—"
             setTextColor(color)
@@ -249,10 +249,6 @@ class DPOverlayService : Service() {
             v.findViewById<TextView>(R.id.dp_trip)?.text     = intent.getStringExtra(EXTRA_TRIP) ?: "—"
             v.findViewById<TextView>(R.id.dp_duration)?.text = intent.getStringExtra(EXTRA_DURATION) ?: "—"
             v.findViewById<TextView>(R.id.dp_gross)?.text    = intent.getStringExtra(EXTRA_GROSS) ?: "—"
-            v.findViewById<TextView>(R.id.dp_net)?.apply {
-                text = intent.getStringExtra(EXTRA_NET) ?: "—"
-                setTextColor(color)
-            }
             val shortRide = intent.getBooleanExtra(EXTRA_SHORT_RIDE, false)
             val sanityError = intent.getBooleanExtra(EXTRA_SANITY, false)
             v.findViewById<TextView>(R.id.dp_short_ride_warn)?.apply {
@@ -265,11 +261,6 @@ class DPOverlayService : Service() {
                     text = "⚠ pickup lung"
                     setTextColor(0xFFFFB800.toInt())
                 }
-            }
-            // Dead km (pickup = unpaid distance)
-            v.findViewById<TextView>(R.id.dp_dead_km)?.apply {
-                val deadStr = intent.getStringExtra(EXTRA_DEAD_KM) ?: ""
-                text = if (deadStr.isNotEmpty()) "$deadStr km" else "—"
             }
             v.findViewById<TextView>(R.id.dp_source)?.apply {
                 val src = intent.getStringExtra(EXTRA_SOURCE) ?: "fallback"
@@ -295,16 +286,6 @@ class DPOverlayService : Service() {
     private fun removeView() {
         try { view?.let { wm?.removeView(it) } } catch (_: Exception) {}
         view = null
-    }
-
-    private fun ensureNotInRefuzaZone(x: Int, y: Int): Pair<Int, Int> {
-        val dp = resources.displayMetrics.density
-        val refuzaZoneRight = screenW - (200 * dp).toInt()
-        val refuzaZoneBottom = (130 * dp).toInt()
-        if (x > refuzaZoneRight && y < refuzaZoneBottom) {
-            return Pair(refuzaZoneRight - (20 * dp).toInt(), y)
-        }
-        return Pair(x, y)
     }
 
     private fun hasOverlayPermission(): Boolean {

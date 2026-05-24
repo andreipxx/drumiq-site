@@ -1,13 +1,15 @@
-﻿// DRUMIQ v1.0.0 — Home Screen
+﻿// DRUMIQ v1.0.0 — Home Screen (UI Pro v1 dark fintech theme)
 // Shows: greeting + plan badge + daily goal + today's stats + last verdicts + overlay demo button
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, ActivityIndicator, AppState } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { getLicenseState } from '../services/licenseManager';
 import { getStatsForPeriod, getRidesForPeriod } from '../services/tracker';
 import { getDailyGoal } from '../services/userSettings';
+import { getProfile } from '../services/auth';
 import { VERDICT_DISPLAY } from '../types';
+import { TRIAL } from '../constants/config';
 import type { PlanTier, Ride, TrackerStats } from '../types';
 import BetaDisclaimer from '../components/BetaDisclaimer';
 import { isFoundingMember, FoundingBadge } from '../components/FoundingBadge';
@@ -28,17 +30,40 @@ export default function HomeScreen({ onOpenOverlayDemo, onOpenTracker }: Props) 
   const [refreshing, setRefreshing] = useState(false);
   const [dailyGoal, setDailyGoalVal] = useState<number>(0);
   const [isFounding, setIsFounding] = useState(false);
+  const [driverName, setDriverName] = useState<string>('ȘOFER');
+  const [initialLoading, setInitialLoading] = useState(true);
+
+  // Fetch profile name once (not in the 30s loop)
+  useEffect(() => {
+    (async () => {
+      try {
+        const profile = await getProfile();
+        if (profile?.name?.trim()) {
+          setDriverName(profile.name.trim().split(/\s+/)[0].toUpperCase());
+        }
+      } catch {}
+    })();
+  }, []);
 
   const refresh = useCallback(async () => {
     try {
       const lic = await getLicenseState();
       if (lic.license) {
         setPlan(lic.license.plan);
-        setPlanKey(lic.license.key);
+        // Show activation date in compact format (e.g., "din 21.05.26")
+        if (lic.license.activatedAt) {
+          const d = new Date(lic.license.activatedAt);
+          const dd = String(d.getDate()).padStart(2, '0');
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const yy = String(d.getFullYear()).slice(-2);
+          setPlanKey(`din ${dd}.${mm}.${yy}`);
+        } else {
+          setPlanKey('ACTIV');
+        }
         if (lic.license.expiresAt) {
           const days = Math.max(0, Math.ceil((lic.license.expiresAt - Date.now()) / 86400000));
           setPlanExpire(`${days} zile rămase`);
-          const total = lic.license.plan === 'trial' ? 86400000 : 30 * 86400000;
+          const total = lic.license.plan === 'trial' ? TRIAL.DAYS * 86400000 : 30 * 86400000;
           const elapsed = Date.now() - lic.license.activatedAt;
           setProgressPct(Math.max(0, Math.min(100, ((total - elapsed) / total) * 100)));
         } else {
@@ -55,14 +80,32 @@ export default function HomeScreen({ onOpenOverlayDemo, onOpenTracker }: Props) 
       setRecent(todayRides.slice(0, 5));
       setDailyGoalVal(goal);
       setIsFounding(await isFoundingMember());
-    } catch {}
+    } catch {} finally {
+      setInitialLoading(false);
+    }
   }, []);
 
-  useEffect(() => { refresh(); const i = setInterval(refresh, 30000); return () => clearInterval(i); }, [refresh]);
+  useEffect(() => { refresh(); const i = setInterval(() => { if (AppState.currentState === 'active') refresh(); }, 30000); return () => clearInterval(i); }, [refresh]);
 
   const onRefresh = async () => { setRefreshing(true); await refresh(); setRefreshing(false); };
 
-  const planColor = plan === 'pro' ? colors.go : plan === 'simplu' ? colors.go : colors.think;
+  const planColor = plan === 'trial' || !plan ? colors.think : colors.go;
+
+  // Time-of-day greeting (computed at render, no state needed)
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'BUNĂ DIMINEAȚA' : hour < 18 ? 'BUNĂ ZIUA' : 'BUNĂ SEARA';
+
+  // Daily goal progress percentage
+  const goalPct = dailyGoal > 0 ? Math.min(100, ((stats?.earningsLei ?? 0) / dailyGoal) * 100) : 0;
+  const goalReached = (stats?.earningsLei ?? 0) >= dailyGoal;
+
+  if (initialLoading) {
+    return (
+      <View style={[s.root, { backgroundColor: colors.bg, justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={colors.accent} />
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -75,13 +118,13 @@ export default function HomeScreen({ onOpenOverlayDemo, onOpenTracker }: Props) 
       {/* Greeting */}
       <View style={s.header}>
         <View style={{ flex: 1 }}>
-          <Text style={[s.greetingLabel, { color: colors.textMuted }]}>BUNĂ ZIUA</Text>
+          <Text style={[s.greetingLabel, { color: colors.textMuted }]}>{greeting}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Text style={[s.greetingName, { color: colors.text }]}>ANDREI</Text>
+            <Text style={[s.greetingName, { color: colors.text }]}>{driverName}</Text>
             {isFounding && <FoundingBadge compact />}
           </View>
         </View>
-        <View style={[s.bell, { borderColor: colors.accent, shadowColor: colors.accent }]}>
+        <View style={[s.bell, { borderColor: colors.border, opacity: 0.4 }]}>
           <Text style={{ fontSize: 16 }}>🔔</Text>
         </View>
       </View>
@@ -101,47 +144,45 @@ export default function HomeScreen({ onOpenOverlayDemo, onOpenTracker }: Props) 
         <View style={[s.progressFill, { width: `${progressPct}%`, backgroundColor: planColor, shadowColor: planColor }]} />
       </View>
 
-      {/* Daily Goal */}
+      {/* Daily Goal — prominent card with hero number */}
       {dailyGoal > 0 && (
         <View style={[s.goalCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <View style={s.goalHeader}>
-            <Text style={[s.goalIcon]}>&#127919;</Text>
+            <Text style={[s.goalIcon]}>🎯</Text>
             <Text style={[s.goalLabel, { color: colors.textMuted }]}>TARGET AZI</Text>
-            <Text style={[s.goalValue, { color: colors.text }]}>
-              {stats?.earningsLei.toFixed(0) ?? 0} / {dailyGoal}
-              <Text style={[s.goalUnit, { color: colors.textMuted }]}> RON</Text>
+          </View>
+          <View style={s.goalHero}>
+            <Text style={[s.goalHeroValue, { color: goalReached ? colors.go : colors.text }]}>
+              {(stats?.earningsLei ?? 0).toFixed(0)}
             </Text>
+            <View style={s.goalHeroSub}>
+              <Text style={[s.goalHeroDivider, { color: colors.textDim }]}>/</Text>
+              <Text style={[s.goalHeroTarget, { color: colors.textMuted }]}>{dailyGoal}</Text>
+              <Text style={[s.goalHeroUnit, { color: colors.textDim }]}> RON</Text>
+            </View>
           </View>
           <View style={[s.goalBarBg, { backgroundColor: colors.surfaceAlt }]}>
             <View style={[
               s.goalBarFill,
               {
-                width: `${Math.min(100, ((stats?.earningsLei ?? 0) / dailyGoal) * 100)}%`,
-                backgroundColor: (stats?.earningsLei ?? 0) >= dailyGoal ? colors.go : colors.accent,
-                shadowColor: (stats?.earningsLei ?? 0) >= dailyGoal ? colors.go : colors.accent,
+                width: `${goalPct}%`,
+                backgroundColor: goalReached ? colors.go : colors.accent,
+                shadowColor: goalReached ? colors.go : colors.accent,
               },
             ]} />
           </View>
-          <Text style={[s.goalSub, { color: colors.textDim }]}>
-            {(stats?.earningsLei ?? 0) >= dailyGoal
-              ? 'Target atins!'
-              : `Mai ai ${(dailyGoal - (stats?.earningsLei ?? 0)).toFixed(0)} RON`}
-          </Text>
-        </View>
-      )}
-
-      {/* Acceptance rate warning */}
-      {stats && stats.offersCount > 0 && (() => {
-        const acceptRate = Math.round((stats.ridesCount / stats.offersCount) * 100);
-        if (acceptRate < 75) return (
-          <View style={[s.warningCard, { backgroundColor: acceptRate < 70 ? '#FF336620' : '#FFB80020', borderColor: acceptRate < 70 ? '#FF3366' : '#FFB800' }]}>
-            <Text style={[s.warningTxt, { color: acceptRate < 70 ? '#FF3366' : '#FFB800' }]}>
-              {acceptRate < 70 ? '🚨' : '⚠️'} Rata acceptare: {acceptRate}% {acceptRate < 70 ? '— SUB PRAG BLOCARE 70%!' : '— aproape de prag 70%'}
+          <View style={s.goalFooter}>
+            <Text style={[s.goalPct, { color: goalReached ? colors.go : colors.accent }]}>
+              {goalPct.toFixed(0)}%
+            </Text>
+            <Text style={[s.goalSub, { color: colors.textDim }]}>
+              {goalReached
+                ? '✓ Target atins!'
+                : `Mai ai ${(dailyGoal - (stats?.earningsLei ?? 0)).toFixed(0)} RON`}
             </Text>
           </View>
-        );
-        return null;
-      })()}
+        </View>
+      )}
 
       {/* Stats today */}
       <Text style={[s.sectionLabel, { color: colors.textMuted }]}>STATISTICI · AZI</Text>
@@ -152,7 +193,10 @@ export default function HomeScreen({ onOpenOverlayDemo, onOpenTracker }: Props) 
         </View>
         <View style={[s.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={[s.statLbl, { color: colors.textMuted }]}>📈 PROFIT NET</Text>
-          <Text style={[s.statVal, { color: colors.go }]}>{stats?.earningsLei.toFixed(0) ?? 0}<Text style={[s.statUnit, { color: colors.textMuted }]}> RON</Text></Text>
+          <Text style={[s.statVal, { color: colors.go }]}>
+            {(stats?.earningsLei ?? 0).toFixed(0)}
+            <Text style={[s.statUnit, { color: colors.textMuted }]}> RON</Text>
+          </Text>
         </View>
         <View style={[s.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={[s.statLbl, { color: colors.textMuted }]}>✅ FINALIZATE</Text>
@@ -160,17 +204,19 @@ export default function HomeScreen({ onOpenOverlayDemo, onOpenTracker }: Props) 
         </View>
         <View style={[s.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={[s.statLbl, { color: colors.textMuted }]}>💰 LEI/KM</Text>
-          <Text style={[s.statVal, { color: colors.think }]}>{stats?.avgPpkm.toFixed(2) ?? '0.00'}</Text>
+          <Text style={[s.statVal, { color: colors.think }]}>{(stats?.avgPpkm ?? 0).toFixed(2)}</Text>
         </View>
       </View>
 
-      {/* CTA */}
+      {/* CTA — prominent with icon left + arrow right */}
       <TouchableOpacity
-        style={[s.ctaBtn, { backgroundColor: colors.surface, borderColor: colors.accent }]}
+        style={[s.ctaBtn, { backgroundColor: colors.surface, borderColor: colors.accent, shadowColor: colors.accent }]}
         onPress={onOpenOverlayDemo}
         activeOpacity={0.7}
       >
-        <Text style={[s.ctaTxt, { color: colors.accent }]}>✨  VEZI OVERLAY-UL ÎN ACȚIUNE</Text>
+        <Text style={s.ctaIcon}>✨</Text>
+        <Text style={[s.ctaTxt, { color: colors.accent }]}>VEZI OVERLAY-UL ÎN ACȚIUNE</Text>
+        <Text style={[s.ctaArrow, { color: colors.accent }]}>→</Text>
       </TouchableOpacity>
 
       {/* Recent rides */}
@@ -191,11 +237,14 @@ export default function HomeScreen({ onOpenOverlayDemo, onOpenTracker }: Props) 
             <View key={r.id} style={[s.rideCard, { backgroundColor: colors.surface, borderColor: colors.border, borderLeftColor: v.color }]}>
               <View style={s.rideTop}>
                 <Text style={[s.rideTime, { color: colors.textMuted }]}>{formatTime(r.timestamp)}</Text>
-                <Text style={[s.ridePrice, { color: colors.text }]}>{r.grossEarnings.toFixed(2)} lei</Text>
+                <Text style={[s.rideVerdict, { color: v.color }]}>{v.symbol}</Text>
+              </View>
+              <View style={s.rideMiddle}>
+                <Text style={[s.ridePrice, { color: colors.text }]}>{(r.grossEarnings ?? 0).toFixed(2)}<Text style={[s.ridePriceUnit, { color: colors.textMuted }]}> lei</Text></Text>
+                <Text style={[s.rideProfitKm, { color: v.color }]}>{(r.profitPerKm ?? 0).toFixed(2)} <Text style={[s.rideProfitUnit, { color: colors.textDim }]}>lei/km</Text></Text>
               </View>
               <View style={s.rideBottom}>
-                <Text style={[s.rideMeta, { color: colors.textMuted }]}>{(r.pickupKm ?? 0).toFixed(1)} + {(r.tripKm ?? 0).toFixed(1)} km · {r.paymentMethod}</Text>
-                <Text style={[s.rideVerdict, { color: v.color }]}>{v.symbol} {(r.profitPerKm ?? 0).toFixed(2)}</Text>
+                <Text style={[s.rideMeta, { color: colors.textDim }]}>{(r.pickupKm ?? 0).toFixed(1)} + {(r.tripKm ?? 0).toFixed(1)} km · {r.paymentMethod}</Text>
               </View>
             </View>
           );
@@ -213,53 +262,72 @@ function formatTime(ts: number): string {
 const s = StyleSheet.create({
   root: { flex: 1 },
   content: { padding: 16, paddingBottom: 40 },
-  header: { flexDirection: 'row', alignItems: 'flex-end', marginBottom: 12 },
-  greetingLabel: { fontSize: 9, letterSpacing: 3, fontWeight: '700' },
-  greetingName: { fontSize: 24, fontWeight: '900', letterSpacing: 1 },
-  bell: { width: 36, height: 36, borderRadius: 18, borderWidth: 1, alignItems: 'center', justifyContent: 'center', shadowOpacity: 0.4, shadowRadius: 8, elevation: 4 },
 
-  planBadge: { flexDirection: 'row', padding: 14, borderRadius: 12, borderWidth: 1, marginBottom: 6, shadowOpacity: 0.3, shadowRadius: 12, elevation: 6 },
-  planLabel: { fontSize: 9, letterSpacing: 2, fontWeight: '700' },
-  planValue: { fontSize: 22, fontWeight: '900', letterSpacing: 1 },
+  // Greeting
+  header: { flexDirection: 'row', alignItems: 'flex-end', marginBottom: 16 },
+  greetingLabel: { fontSize: 9, letterSpacing: 3, fontWeight: '700', marginBottom: 2 },
+  greetingName: { fontSize: 26, fontWeight: '900', letterSpacing: 1 },
+  bell: { width: 38, height: 38, borderRadius: 19, borderWidth: 1, alignItems: 'center', justifyContent: 'center', shadowOpacity: 0.5, shadowRadius: 10, elevation: 5 },
+
+  // Plan badge
+  planBadge: { flexDirection: 'row', padding: 16, borderRadius: 14, borderWidth: 1, marginBottom: 6, shadowOpacity: 0.4, shadowRadius: 16, shadowOffset: { width: 0, height: 4 }, elevation: 8 },
+  planLabel: { fontSize: 9, letterSpacing: 2.5, fontWeight: '700' },
+  planValue: { fontSize: 24, fontWeight: '900', letterSpacing: 1, fontFamily: 'monospace' },
   planExpire: { fontSize: 11, fontFamily: 'monospace' },
   planKey: { fontSize: 9, fontFamily: 'monospace', marginTop: 2 },
 
-  progress: { height: 4, borderRadius: 2, overflow: 'hidden', marginBottom: 16 },
+  // Progress bar
+  progress: { height: 4, borderRadius: 2, overflow: 'hidden', marginBottom: 20 },
   progressFill: { height: '100%', shadowOpacity: 0.6, shadowRadius: 4 },
 
-  goalCard: { borderWidth: 1, borderRadius: 12, padding: 14, marginBottom: 16 },
-  goalHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
-  goalIcon: { fontSize: 16 },
-  goalLabel: { fontSize: 9, letterSpacing: 2, fontWeight: '700' },
-  goalValue: { marginLeft: 'auto', fontSize: 16, fontWeight: '900', fontFamily: 'monospace' },
-  goalUnit: { fontSize: 10, fontWeight: '500' },
-  goalBarBg: { height: 8, borderRadius: 4, overflow: 'hidden', marginBottom: 6 },
-  goalBarFill: { height: '100%', borderRadius: 4, shadowOpacity: 0.6, shadowRadius: 6, elevation: 4 },
-  goalSub: { fontSize: 10, fontFamily: 'monospace', textAlign: 'right' },
+  // Daily goal — hero card
+  goalCard: { borderWidth: 1, borderRadius: 16, padding: 20, marginBottom: 16 },
+  goalHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 },
+  goalIcon: { fontSize: 18 },
+  goalLabel: { fontSize: 10, letterSpacing: 2.5, fontWeight: '900' },
+  goalHero: { alignItems: 'center', marginBottom: 16 },
+  goalHeroValue: { fontSize: 48, fontWeight: '900', fontFamily: 'monospace', lineHeight: 52 },
+  goalHeroSub: { flexDirection: 'row', alignItems: 'baseline', marginTop: 2 },
+  goalHeroDivider: { fontSize: 20, fontFamily: 'monospace', fontWeight: '300' },
+  goalHeroTarget: { fontSize: 20, fontFamily: 'monospace', fontWeight: '700' },
+  goalHeroUnit: { fontSize: 11, fontWeight: '500', letterSpacing: 1 },
+  goalBarBg: { height: 10, borderRadius: 5, overflow: 'hidden', marginBottom: 10 },
+  goalBarFill: { height: '100%', borderRadius: 5, shadowOpacity: 0.7, shadowRadius: 8, elevation: 6 },
+  goalFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  goalPct: { fontSize: 13, fontWeight: '900', fontFamily: 'monospace' },
+  goalSub: { fontSize: 11, fontFamily: 'monospace' },
 
+  // Section labels
   sectionLabel: { fontSize: 10, letterSpacing: 2.5, fontWeight: '900', marginBottom: 10, marginTop: 8 },
-  sectionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 16, marginBottom: 8 },
+  sectionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 20, marginBottom: 10 },
   linkBtn: { fontSize: 10, fontWeight: '700', letterSpacing: 1 },
 
-  statGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
-  statCard: { width: '48.5%', borderWidth: 1, borderRadius: 10, padding: 12 },
-  statLbl: { fontSize: 8, letterSpacing: 2, fontWeight: '700', marginBottom: 4 },
-  statVal: { fontSize: 22, fontWeight: '700', fontFamily: 'monospace' },
-  statUnit: { fontSize: 11, fontWeight: '500' },
+  // Stats grid
+  statGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 16 },
+  statCard: { flexBasis: '47%', flexGrow: 1, borderWidth: 1, borderRadius: 14, padding: 14 },
+  statLbl: { fontSize: 9, letterSpacing: 2, fontWeight: '700', marginBottom: 6 },
+  statVal: { fontSize: 26, fontWeight: '900', fontFamily: 'monospace' },
+  statUnit: { fontSize: 12, fontWeight: '500' },
 
-  ctaBtn: { padding: 14, borderRadius: 8, borderWidth: 1, alignItems: 'center', marginBottom: 8 },
-  ctaTxt: { fontSize: 13, fontWeight: '700', letterSpacing: 1.2 },
+  // CTA button
+  ctaBtn: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 14, borderWidth: 1.5, marginBottom: 8, shadowOpacity: 0.3, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 6 },
+  ctaIcon: { fontSize: 18, marginRight: 10 },
+  ctaTxt: { flex: 1, fontSize: 13, fontWeight: '900', letterSpacing: 1.5 },
+  ctaArrow: { fontSize: 20, fontWeight: '700' },
 
-  warningCard: { padding: 10, borderRadius: 8, borderWidth: 1, marginBottom: 12 },
-  warningTxt: { fontSize: 11, fontWeight: '700', textAlign: 'center' },
+  // Empty card
+  emptyCard: { padding: 24, borderRadius: 14, borderWidth: 1, alignItems: 'center' },
 
-  emptyCard: { padding: 20, borderRadius: 10, borderWidth: 1, alignItems: 'center' },
-
-  rideCard: { padding: 10, borderRadius: 8, borderWidth: 1, borderLeftWidth: 3, marginBottom: 6 },
-  rideTop: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
-  rideTime: { fontSize: 10, fontFamily: 'monospace' },
-  ridePrice: { fontSize: 14, fontWeight: '700', fontFamily: 'monospace' },
+  // Ride verdict cards
+  rideCard: { padding: 14, borderRadius: 14, borderWidth: 1, borderLeftWidth: 3, marginBottom: 8 },
+  rideTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
+  rideTime: { fontSize: 10, fontFamily: 'monospace', letterSpacing: 1 },
+  rideMiddle: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 },
+  ridePrice: { fontSize: 20, fontWeight: '900', fontFamily: 'monospace' },
+  ridePriceUnit: { fontSize: 11, fontWeight: '500' },
+  rideProfitKm: { fontSize: 16, fontWeight: '900', fontFamily: 'monospace' },
+  rideProfitUnit: { fontSize: 10, fontWeight: '500' },
   rideBottom: { flexDirection: 'row', justifyContent: 'space-between' },
   rideMeta: { fontSize: 10, fontFamily: 'monospace' },
-  rideVerdict: { fontSize: 11, fontWeight: '700' },
+  rideVerdict: { fontSize: 14, fontWeight: '900' },
 });

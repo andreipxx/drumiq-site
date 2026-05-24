@@ -1,6 +1,6 @@
 ﻿// DRUMIQ v1.0.0 — type definitions
 
-export type PlanTier = 'trial' | 'simplu' | 'pro';
+export type PlanTier = 'trial' | 'pro' | 'root';
 
 // v2: simplificat la 3 verdicte (was: critic/decide/bun/premium → stop/think/go)
 export type ProfitVerdict = 'stop' | 'think' | 'go';
@@ -19,7 +19,7 @@ export interface Ride {
   grossEarnings: number;
   netEarnings: number;
   paymentMethod: PaymentMethod;
-  passengerRating: number;
+  passengerRating: number | null;
   profitPerKm: number;
   profitNet: number;
   verdict: ProfitVerdict;
@@ -29,6 +29,8 @@ export interface Ride {
   accepted: boolean;     // detected from "Cererea a fost acceptată" / "Acceptă" tap
   completed: boolean;    // detected from "Finalizează cursa" → "1 cursă finalizată"
   completedAt?: number;
+  tipAmount?: number;
+  finalEarnings?: number;
 }
 
 // === License ===
@@ -57,7 +59,7 @@ export interface UnifiedThresholds {
 
 export const DEFAULT_THRESHOLDS: UnifiedThresholds = {
   kmEnabled: true,
-  kmValue: 2.0,
+  kmValue: 0.80,
   minEnabled: false,
   minValue: 0.50,
   hourEnabled: false,
@@ -97,11 +99,3 @@ export interface TrackerStats {
   avgPpmin: number;
 }
 
-// === Plan info for UI ===
-export interface PlanInfo {
-  id: PlanTier;
-  name: string;
-  pricePerMonth: number;  // 0 for trial
-  filters: number;        // 1 / 2 / 4
-  features: string[];
-}
