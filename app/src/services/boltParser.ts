@@ -134,7 +134,7 @@ function parseInTrip(text: string, r: ParsedBoltRide): ParsedBoltRide {
   // Destination extraction for active trip (detect address changes)
   if (r.screen === 'in_trip_active') {
     const lines = text.split('\n').map((l) => l.trim());
-    const SKIP = /^(Finalizează|Începe|Am ajuns|Sună|lei|Net|Evaluează|Bolt|Refuz|\d+[.,]\d+\s*lei|Hartă|Locație|<1|\d+\s*min$)/i;
+    const SKIP = /^(Finalizează|Începe|Am ajuns|Sună|lei|Net|Evaluează|Bolt|Refuz|\d+[.,]\d+\s*lei|Hartă|Locație|<1|\d+\s*min$|Recentreaz)/i;
     const addrCandidates = lines.filter((l) => l.length >= 5 && l.length < 100 && !SKIP.test(l));
     if (addrCandidates.length > 0) {
       r.destinationAddress = addrCandidates[addrCandidates.length - 1];

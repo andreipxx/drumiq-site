@@ -14,7 +14,7 @@ interface Props {
   glowing?: boolean;    // antenna pulse
 }
 
-export default function AppMascot({ size = 140, color = '#00FF88', glowing = true }: Props) {
+export default function AppMascot({ size = 140, color = '#06b6d4', glowing = true }: Props) {
   const pulse = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {

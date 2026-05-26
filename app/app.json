@@ -17,6 +17,9 @@
     "owner": "andreipxx",
     "updates": {
       "url": "https://u.expo.dev/d005a96a-a41c-4cc2-b6ed-af2eb0dca575"
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

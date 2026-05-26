@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DRUMIQ v2.2 — Full overlay hybrid (PRO)
+     Row 1: symbol + profit/km. Then 2 columns, values only, no labels.
+     Colors set dynamically by DPOverlayService. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/dp_card_bg"
+    android:elevation="14dp">
+
+    <!-- Top color bar -->
+    <View
+        android:id="@+id/dp_border"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="#00FF88" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="170dp"
+        android:maxWidth="200dp"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <!-- Row 1: Symbol + profit/km -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="6dp">
+
+            <FrameLayout
+                android:id="@+id/dp_symbol_wrap"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:minWidth="30dp"
+                android:background="@drawable/dp_circle_bg"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp">
+                <TextView
+                    android:id="@+id/dp_symbol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="$ +0.0"
+                    android:textColor="#000000"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-black"
+                    android:maxLines="1" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/dp_profit_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="NET / BRUT /KM"
+                    android:textColor="#7A8A7C"
+                    android:textSize="8sp"
+                    android:letterSpacing="0.1"
+                    android:fontFamily="sans-serif-medium" />
+                <TextView
+                    android:id="@+id/dp_profitkm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—"
+                    android:textColor="#00FF88"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:fontFamily="monospace"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#1E2A1F"
+            android:layout_marginBottom="6dp" />
+
+        <!-- Row 2: pickup | trip (2 columns, no labels) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="4dp">
+            <TextView
+                android:id="@+id/dp_pickup"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="—"
+                android:textColor="#E8FFE8"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:maxLines="1"
+                android:ellipsize="end" />
+            <TextView
+                android:id="@+id/dp_trip"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="—"
+                android:textColor="#E8FFE8"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:gravity="end"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <!-- Row 3: gross | duration (2 columns, no labels) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="4dp">
+            <TextView
+                android:id="@+id/dp_gross"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="—"
+                android:textColor="#E8FFE8"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace"
+                android:maxLines="1"
+                android:ellipsize="end" />
+            <TextView
+                android:id="@+id/dp_duration"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="—"
+                android:textColor="#E8FFE8"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:gravity="end"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <!-- Row 4: net profit | profit/min (2 columns) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="4dp">
+            <TextView
+                android:id="@+id/dp_net"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="—"
+                android:textColor="#00FF88"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace"
+                android:maxLines="1"
+                android:ellipsize="end" />
+            <TextView
+                android:id="@+id/dp_profitmin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="—"
+                android:textColor="#00FF88"
+                android:textSize="10sp"
+                android:fontFamily="monospace"
+                android:gravity="end"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <!-- Row 5: dead km + short ride warning (hidden by default) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="4dp">
+            <TextView
+                android:id="@+id/dp_dead_km"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="—"
+                android:textColor="#F59E0B"
+                android:textSize="9sp"
+                android:fontFamily="monospace"
+                android:maxLines="1" />
+            <TextView
+                android:id="@+id/dp_short_ride_warn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⚠ pickup lung"
+                android:textColor="#FFB800"
+                android:textSize="9sp"
+                android:fontFamily="monospace"
+                android:maxLines="1"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#1E2A1F"
+            android:layout_marginBottom="4dp" />
+
+        <!-- Row 6: Source | Daily (inline) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/dp_source"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="~ estimat"
+                android:textColor="#7A8A7C"
+                android:textSize="9sp"
+                android:fontFamily="monospace"
+                android:maxLines="1" />
+            <TextView
+                android:id="@+id/dp_daily"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text=""
+                android:textColor="#FFB800"
+                android:textSize="9sp"
+                android:fontFamily="monospace"
+                android:textStyle="bold"
+                android:gravity="end"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:visibility="gone" />
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

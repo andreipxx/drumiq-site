@@ -131,7 +131,7 @@ export function analyzeRide(parsed: ParsedBoltRide, opts: AnalyzeOptions): Profi
     confidence: opts.tripKmFromApi != null ? 'high' : (parsed.pickupKm != null ? 'medium' : 'low'),
     proOverride,
     overrideThreshold,
-    shortRideFlag: pickupKm >= 3.0 && pickupKm >= tripKmEstimate,
+    shortRideFlag: pickupKm >= tripKmEstimate && tripKmEstimate > 0,
     sanityError,
   };
 }

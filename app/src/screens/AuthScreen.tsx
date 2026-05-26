@@ -4,12 +4,14 @@ import {
   SafeAreaView, KeyboardAvoidingView, Platform, ScrollView,
   Alert, ActivityIndicator,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
 import { signUp, signIn, signInWithGoogle } from '../services/auth';
 import { supabase } from '../services/supabase';
 import AppMascot from '../components/AppMascot';
 import TurnstileCaptcha from '../components/TurnstileCaptcha';
 import { APP_VERSION } from '../constants/config';
+import { FONT, SIZE, RADIUS } from '../constants/typography';
 
 interface Props {
   onAuthenticated: () => void;
@@ -20,7 +22,7 @@ type Mode = 'login' | 'register';
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function AuthScreen({ onAuthenticated }: Props) {
-  const { colors } = useTheme();
+  const { colors, fontsLoaded: ff } = useTheme();
   const [mode, setMode] = useState<Mode>('login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -143,6 +145,13 @@ export default function AuthScreen({ onAuthenticated }: Props) {
 
   return (
     <SafeAreaView style={[s.root, { backgroundColor: colors.bg }]}>
+      {/* Aurora blobs */}
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <View style={{ position:'absolute', top:-80, left:-60, width:260, height:260, borderRadius:300, backgroundColor:colors.aurora1 }} />
+        <View style={{ position:'absolute', top:120, right:-80, width:220, height:220, borderRadius:300, backgroundColor:colors.aurora2 }} />
+        <View style={{ position:'absolute', bottom:100, left:40, width:180, height:180, borderRadius:300, backgroundColor:colors.aurora3 }} />
+      </View>
+
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -153,24 +162,24 @@ export default function AuthScreen({ onAuthenticated }: Props) {
         >
           {/* Mascot + Brand */}
           <View style={s.mascotWrap}>
-            <AppMascot size={90} color={colors.accent} glowing />
+            <AppMascot size={90} color={colors.cyan} glowing />
           </View>
-          <Text style={[s.brand, { color: colors.accent }]}>DRUMIQ</Text>
-          <Text style={[s.tagline, { color: colors.textMuted }]}>
+          <Text style={[s.brand, { color: colors.cyan, fontFamily: ff ? FONT.displayXB : FONT.system }]}>DRUMIQ</Text>
+          <Text style={[s.tagline, { color: colors.textMuted, fontFamily: ff ? FONT.mono : FONT.systemMono }]}>
             ROMANIA · RIDESHARE INTEL
           </Text>
 
           {/* Title */}
-          <Text style={[s.title, { color: colors.text }]}>
+          <Text style={[s.title, { color: colors.text, fontFamily: ff ? FONT.display : FONT.system }]}>
             {mode === 'login' ? 'Autentificare' : 'Cont nou'}
           </Text>
 
-          {/* Google button */}
+          {/* Google button — glassmorphism card */}
           <TouchableOpacity
             onPress={handleGoogle}
             disabled={loading}
             activeOpacity={0.7}
-            style={[s.socialBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+            style={[s.socialBtn, { backgroundColor: colors.bgCard, borderColor: colors.border }]}
           >
             <Text style={s.googleG}>G</Text>
             <Text style={[s.socialTxt, { color: colors.text }]}>Google</Text>
@@ -179,50 +188,50 @@ export default function AuthScreen({ onAuthenticated }: Props) {
           {/* Separator */}
           <View style={s.separatorRow}>
             <View style={[s.separatorLine, { backgroundColor: colors.border }]} />
-            <Text style={[s.separatorTxt, { color: colors.textDim }]}>sau</Text>
+            <Text style={[s.separatorTxt, { color: colors.textFaint }]}>sau</Text>
             <View style={[s.separatorLine, { backgroundColor: colors.border }]} />
           </View>
 
           {/* Form */}
           {mode === 'register' && (
             <>
-              <Text style={[s.label, { color: colors.text }]}>Nume</Text>
+              <Text style={[s.label, { color: colors.text, fontFamily: ff ? FONT.bodySB : FONT.system }]}>Nume</Text>
               <TextInput
                 value={name}
                 onChangeText={setName}
                 placeholder="ex: Andrei"
-                placeholderTextColor={colors.textDim}
+                placeholderTextColor={colors.textFaint}
                 autoCapitalize="words"
                 autoCorrect={false}
                 maxLength={50}
-                style={[s.input, { color: colors.text, backgroundColor: colors.surface, borderColor: colors.border }]}
-                selectionColor={colors.accent}
+                style={[s.input, { color: colors.text, backgroundColor: colors.bgCard, borderColor: colors.border }]}
+                selectionColor={colors.cyan}
               />
             </>
           )}
 
           <View style={s.labelRow}>
-            <Text style={[s.label, { color: colors.text }]}>Email</Text>
+            <Text style={[s.label, { color: colors.text, fontFamily: ff ? FONT.bodySB : FONT.system }]}>Email</Text>
           </View>
           <TextInput
             value={email}
             onChangeText={setEmail}
             placeholder="email@exemplu.ro"
-            placeholderTextColor={colors.textDim}
+            placeholderTextColor={colors.textFaint}
             autoCapitalize="none"
             autoCorrect={false}
             autoComplete="email"
             keyboardType="email-address"
             maxLength={100}
-            style={[s.input, { color: colors.text, backgroundColor: colors.surface, borderColor: colors.border }]}
-            selectionColor={colors.accent}
+            style={[s.input, { color: colors.text, backgroundColor: colors.bgCard, borderColor: colors.border }]}
+            selectionColor={colors.cyan}
           />
 
           <View style={s.labelRow}>
-            <Text style={[s.label, { color: colors.text }]}>Parola</Text>
+            <Text style={[s.label, { color: colors.text, fontFamily: ff ? FONT.bodySB : FONT.system }]}>Parola</Text>
             {mode === 'login' && (
               <TouchableOpacity onPress={handleForgotPassword} activeOpacity={0.7}>
-                <Text style={[s.forgotLink, { color: colors.accent }]}>Ai uitat parola?</Text>
+                <Text style={[s.forgotLink, { color: colors.cyan }]}>Ai uitat parola?</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -231,14 +240,14 @@ export default function AuthScreen({ onAuthenticated }: Props) {
               value={password}
               onChangeText={setPassword}
               placeholder={mode === 'register' ? 'minim 8 caractere, 1 majuscula, 1 cifra' : 'minim 6 caractere'}
-              placeholderTextColor={colors.textDim}
+              placeholderTextColor={colors.textFaint}
               secureTextEntry={!showPassword}
               autoCapitalize="none"
               autoCorrect={false}
               autoComplete="password"
               maxLength={100}
-              style={[s.input, { color: colors.text, backgroundColor: colors.surface, borderColor: colors.border }]}
-              selectionColor={colors.accent}
+              style={[s.input, { color: colors.text, backgroundColor: colors.bgCard, borderColor: colors.border }]}
+              selectionColor={colors.cyan}
             />
             <TouchableOpacity
               style={s.eyeBtn}
@@ -253,18 +262,18 @@ export default function AuthScreen({ onAuthenticated }: Props) {
 
           {mode === 'register' && (
             <>
-              <Text style={[s.label, { color: colors.text, marginTop: 16 }]}>Confirma parola</Text>
+              <Text style={[s.label, { color: colors.text, fontFamily: ff ? FONT.bodySB : FONT.system, marginTop: 16 }]}>Confirma parola</Text>
               <TextInput
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 placeholder="repeta parola"
-                placeholderTextColor={colors.textDim}
+                placeholderTextColor={colors.textFaint}
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
                 autoCorrect={false}
                 maxLength={100}
-                style={[s.input, { color: colors.text, backgroundColor: colors.surface, borderColor: colors.border }]}
-                selectionColor={colors.accent}
+                style={[s.input, { color: colors.text, backgroundColor: colors.bgCard, borderColor: colors.border }]}
+                selectionColor={colors.cyan}
               />
             </>
           )}
@@ -290,27 +299,38 @@ export default function AuthScreen({ onAuthenticated }: Props) {
             </View>
           )}
 
-          {/* Submit */}
-          <TouchableOpacity
-            onPress={handleSubmit}
-            disabled={!canSubmit}
-            activeOpacity={0.85}
-            style={[
-              s.submitBtn,
-              {
-                backgroundColor: canSubmit ? colors.accent : colors.surfaceAlt,
-                opacity: canSubmit ? 1 : 0.5,
-              },
-            ]}
-          >
-            {loading ? (
-              <ActivityIndicator color="#000" />
-            ) : (
-              <Text style={[s.submitTxt, { color: canSubmit ? '#000' : colors.textDim }]}>
+          {/* Submit — gradient button */}
+          {canSubmit ? (
+            <TouchableOpacity
+              onPress={handleSubmit}
+              activeOpacity={0.85}
+            >
+              <LinearGradient colors={colors.gradButton} start={{x:0,y:0}} end={{x:1,y:0}} style={[s.submitBtn, { borderRadius: RADIUS.md }]}>
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={[s.submitTxt, { color: '#fff' }]}>
+                    {mode === 'login' ? 'Intra' : 'Creaza cont'}
+                  </Text>
+                )}
+              </LinearGradient>
+            </TouchableOpacity>
+          ) : (
+            <View
+              style={[
+                s.submitBtn,
+                {
+                  backgroundColor: colors.bgCardStrong,
+                  opacity: 0.5,
+                  borderRadius: RADIUS.md,
+                },
+              ]}
+            >
+              <Text style={[s.submitTxt, { color: colors.textFaint }]}>
                 {mode === 'login' ? 'Intra' : 'Creaza cont'}
               </Text>
-            )}
-          </TouchableOpacity>
+            </View>
+          )}
 
           {/* Switch mode link */}
           <View style={s.switchRow}>
@@ -321,14 +341,14 @@ export default function AuthScreen({ onAuthenticated }: Props) {
               onPress={() => switchMode(mode === 'login' ? 'register' : 'login')}
               activeOpacity={0.7}
             >
-              <Text style={[s.switchLink, { color: colors.accent }]}>
+              <Text style={[s.switchLink, { color: colors.cyan }]}>
                 {mode === 'login' ? 'Inregistreaza-te' : 'Autentifica-te'}
               </Text>
             </TouchableOpacity>
           </View>
 
           {/* Footer */}
-          <Text style={[s.version, { color: colors.textDim }]}>
+          <Text style={[s.version, { color: colors.textFaint, fontFamily: ff ? FONT.mono : FONT.systemMono }]}>
             v{APP_VERSION} · GO PAMPA S.R.L.
           </Text>
         </ScrollView>
@@ -344,13 +364,13 @@ const s = StyleSheet.create({
   mascotWrap: { alignItems: 'center', marginBottom: 8 },
 
   brand: {
-    fontSize: 28,
+    fontSize: SIZE['2xl'],
     fontWeight: '800',
     textAlign: 'center',
     letterSpacing: 1.5,
   },
   tagline: {
-    fontSize: 10,
+    fontSize: SIZE.sm,
     fontWeight: '600',
     letterSpacing: 3,
     textAlign: 'center',
@@ -359,7 +379,7 @@ const s = StyleSheet.create({
   },
 
   title: {
-    fontSize: 22,
+    fontSize: SIZE.xl,
     fontWeight: '700',
     marginBottom: 20,
   },
@@ -369,7 +389,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 14,
-    borderRadius: 8,
+    borderRadius: RADIUS.md,
     borderWidth: 1,
   },
   googleG: {
@@ -394,7 +414,7 @@ const s = StyleSheet.create({
   },
   separatorTxt: {
     marginHorizontal: 16,
-    fontSize: 13,
+    fontSize: SIZE.base,
     fontWeight: '500',
   },
 
@@ -410,7 +430,7 @@ const s = StyleSheet.create({
     marginTop: 16,
   },
   forgotLink: {
-    fontSize: 13,
+    fontSize: SIZE.base,
     fontWeight: '500',
     marginTop: 16,
   },
@@ -418,9 +438,9 @@ const s = StyleSheet.create({
   input: {
     paddingVertical: 14,
     paddingHorizontal: 14,
-    fontSize: 16,
+    fontSize: SIZE.lg,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: RADIUS.md,
   },
 
   eyeBtn: {
@@ -439,35 +459,34 @@ const s = StyleSheet.create({
     alignItems: 'center',
   },
   captchaLabel: {
-    fontSize: 13,
+    fontSize: SIZE.base,
     fontWeight: '500',
     marginBottom: 8,
   },
   captchaOk: {
-    fontSize: 13,
+    fontSize: SIZE.base,
     fontWeight: '600',
     marginTop: 4,
   },
 
   errorBox: {
     padding: 12,
-    borderRadius: 8,
+    borderRadius: RADIUS.md,
     marginTop: 16,
   },
   errorTxt: {
-    fontSize: 13,
+    fontSize: SIZE.base,
     fontWeight: '600',
     textAlign: 'center',
   },
 
   submitBtn: {
     paddingVertical: 16,
-    borderRadius: 8,
     alignItems: 'center',
     marginTop: 20,
   },
   submitTxt: {
-    fontSize: 16,
+    fontSize: SIZE.lg,
     fontWeight: '700',
   },
 

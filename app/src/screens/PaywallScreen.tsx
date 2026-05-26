@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
 import type { ExpirationReason } from '../services/licenseManager';
 import { TRIAL } from '../constants/config';
+import { FONT, SIZE, RADIUS } from '../constants/typography';
 
 interface Props {
   reason: ExpirationReason;
@@ -19,25 +21,38 @@ const REASON_TEXT: Record<ExpirationReason, { title: string; body: string }> = {
 };
 
 export default function PaywallScreen({ reason, ridesUsed, onActivateNew }: Props) {
-  const { colors } = useTheme();
+  const { colors, fontsLoaded } = useTheme();
   const t = REASON_TEXT[reason] || REASON_TEXT.no_license;
 
   return (
     <SafeAreaView style={[s.container, { backgroundColor: colors.bg }]}>
-      <View style={[s.banner, { backgroundColor: colors.stop + '20', borderColor: colors.stop }]}>
-        <Text style={[s.title, { color: colors.stop }]}>{t.title}</Text>
-        <Text style={[s.body, { color: colors.text }]}>{t.body}</Text>
+      {/* Aurora blobs */}
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <View style={{ position:'absolute', top:-80, left:-60, width:260, height:260, borderRadius:300, backgroundColor:colors.aurora1 }} />
+        <View style={{ position:'absolute', top:120, right:-80, width:220, height:220, borderRadius:300, backgroundColor:colors.aurora2 }} />
+        <View style={{ position:'absolute', bottom:100, left:40, width:180, height:180, borderRadius:300, backgroundColor:colors.aurora3 }} />
+      </View>
+
+      <View style={[s.banner, { backgroundColor: colors.bgCard, borderColor: colors.stop, borderWidth: 2 }]}>
+        <Text style={[s.title, { color: colors.stop, fontFamily: fontsLoaded ? FONT.display : FONT.system }]}>{t.title}</Text>
+        <Text style={[s.body, { color: colors.text, fontFamily: fontsLoaded ? FONT.body : FONT.system }]}>{t.body}</Text>
         {reason === 'rides_expired' && ridesUsed != null && (
-          <Text style={[s.stats, { color: colors.textMuted }]}>Curse efectuate: {ridesUsed}/{TRIAL.RIDES}</Text>
+          <Text style={[s.stats, { color: colors.textMuted, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>Curse efectuate: {ridesUsed}/{TRIAL.RIDES}</Text>
         )}
       </View>
 
-      <TouchableOpacity onPress={onActivateNew} activeOpacity={0.7}
-        style={[s.cta, { backgroundColor: colors.accent }]}>
-        <Text style={s.ctaText}>Activează cod nou</Text>
+      <TouchableOpacity onPress={onActivateNew} activeOpacity={0.7}>
+        <LinearGradient
+          colors={colors.gradButton}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[s.cta, { borderRadius: RADIUS.md }]}
+        >
+          <Text style={[s.ctaText, { fontFamily: fontsLoaded ? FONT.display : FONT.system }]}>Activează cod nou</Text>
+        </LinearGradient>
       </TouchableOpacity>
 
-      <Text style={[s.support, { color: colors.textDim }]}>
+      <Text style={[s.support, { color: colors.textFaint, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>
         Pentru asistență contactează GO PAMPA S.R.L., Baia Mare.
       </Text>
     </SafeAreaView>
@@ -46,11 +61,11 @@ export default function PaywallScreen({ reason, ridesUsed, onActivateNew }: Prop
 
 const s = StyleSheet.create({
   container: { flex: 1, padding: 24, justifyContent: 'center' },
-  banner:    { borderWidth: 2, borderRadius: 16, padding: 24, marginBottom: 28 },
+  banner:    { borderRadius: RADIUS.lg, padding: 24, marginBottom: 28 },
   title:     { fontSize: 24, fontWeight: '700', marginBottom: 12, textAlign: 'center' },
   body:      { fontSize: 15, lineHeight: 22, textAlign: 'center' },
   stats:     { fontSize: 14, textAlign: 'center', marginTop: 14, fontWeight: '600' },
-  cta:       { paddingVertical: 18, borderRadius: 12, alignItems: 'center' },
+  cta:       { paddingVertical: 18, alignItems: 'center' },
   ctaText:   { color: '#fff', fontSize: 17, fontWeight: '700' },
   support:   { fontSize: 12, textAlign: 'center', marginTop: 24, lineHeight: 18 },
 });

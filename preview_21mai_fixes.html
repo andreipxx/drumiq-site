@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>DrumIQ Preview — 21 Mai 2026 Fixes</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'Segoe UI', sans-serif; background: #0A0F0A; color: #E8F5E9; min-height: 100vh; }
+
+  .phone { max-width: 400px; margin: 0 auto; min-height: 100vh; position: relative; overflow-x: hidden; }
+
+  /* Nav tabs */
+  .nav { display: flex; position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 400px; background: #0D120D; border-top: 1px solid #1A2E1A; z-index: 100; }
+  .nav-btn { flex: 1; padding: 10px 4px; text-align: center; cursor: pointer; border: none; background: none; color: #5A7A5A; font-size: 9px; font-weight: 700; letter-spacing: 1px; transition: color 0.2s; }
+  .nav-btn.active { color: #00E676; }
+  .nav-btn:hover { color: #00E676; }
+  .nav-icon { font-size: 18px; display: block; margin-bottom: 2px; }
+
+  /* Screens */
+  .screen { display: none; padding: 16px; padding-bottom: 80px; }
+  .screen.active { display: block; }
+
+  /* Common */
+  .title { font-size: 22px; font-weight: 900; letter-spacing: 1px; margin-top: 8px; }
+  .title .accent { color: #00E676; }
+  .sub { font-size: 10px; font-family: monospace; letter-spacing: 1px; color: #5A7A5A; margin-top: 2px; margin-bottom: 14px; }
+
+  .card { background: #111A11; border: 1px solid #1A2E1A; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+  .card-label { font-size: 10px; letter-spacing: 2.5px; font-weight: 900; color: #5A7A5A; margin-bottom: 8px; }
+
+  .row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+  .row-lbl { font-size: 11px; color: #7A9A7A; }
+  .row-val { font-size: 12px; font-weight: 700; font-family: monospace; }
+  .divider { height: 1px; background: #1E2A1F; margin: 4px 0; }
+
+  .btn { padding: 14px; border-radius: 8px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 700; letter-spacing: 1px; border: none; width: 100%; margin-top: 8px; transition: opacity 0.2s; }
+  .btn:hover { opacity: 0.85; }
+  .btn-accent { background: #00E676; color: #000; }
+  .btn-danger { background: none; border: 1px solid #FF5252; color: #FF5252; }
+  .btn-secondary { background: none; border: 1px solid #1A2E1A; color: #E8F5E9; }
+
+  input[type="text"], input[type="number"] { background: #0A0F0A; border: 1px solid #1A2E1A; color: #E8F5E9; padding: 8px; border-radius: 6px; font-family: monospace; font-size: 13px; font-weight: 700; text-align: center; width: 100px; }
+  input:focus { outline: none; border-color: #00E676; }
+
+  .go { color: #00E676; }
+  .think { color: #FFD600; }
+  .stop { color: #FF5252; }
+
+  /* Profil specific */
+  .avatar-card { padding: 24px; border-radius: 12px; border: 1px solid #00E67644; text-align: center; margin-bottom: 16px; background: #111A11; box-shadow: 0 0 20px #00E67622; }
+  .avatar { width: 72px; height: 72px; border-radius: 50%; border: 2px solid #00E676; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 32px; font-weight: 900; color: #00E676; box-shadow: 0 0 16px #00E67644; }
+  .avatar-name { font-size: 22px; font-weight: 900; letter-spacing: 1px; }
+  .avatar-email { font-size: 9px; font-family: monospace; letter-spacing: 2px; color: #5A7A5A; margin-top: 4px; }
+  .plan-pill { display: inline-block; padding: 4px 12px; border: 1px solid #00E676; border-radius: 12px; font-size: 10px; font-weight: 900; letter-spacing: 2px; color: #00E676; margin-top: 10px; }
+
+  /* Fuel type radio */
+  .fuel-options { margin-bottom: 16px; }
+  .fuel-opt { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; cursor: pointer; border-bottom: 1px solid #1A2E1A; transition: background 0.15s; }
+  .fuel-opt:last-child { border-bottom: none; }
+  .fuel-opt:hover { background: #1A2E1A44; }
+  .fuel-opt-label { font-size: 15px; font-weight: 500; }
+  .radio { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #1A2E1A; display: flex; align-items: center; justify-content: center; }
+  .radio.selected { border-color: #00E676; background: #00E676; }
+  .radio-dot { width: 8px; height: 8px; border-radius: 50%; background: #fff; display: none; }
+  .radio.selected .radio-dot { display: block; }
+
+  /* Fuel fields */
+  .field-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; }
+  .field-label { font-size: 14px; font-weight: 500; }
+  .field-right { display: flex; align-items: center; gap: 8px; }
+  .field-suffix { font-size: 11px; color: #5A7A5A; min-width: 70px; }
+  .field-input { width: 80px; }
+  .cost-hint { font-size: 12px; color: #5A7A5A; padding: 12px 4px; font-style: italic; line-height: 17px; }
+
+  /* Tracker */
+  .hero-card { background: #162016; border: 1px solid #00E67644; border-radius: 16px; padding: 24px 20px; margin-bottom: 16px; box-shadow: 0 0 20px #00E67622; position: relative; }
+  .hero-badge { position: absolute; top: 16px; right: 16px; padding: 4px 10px; border-radius: 8px; background: #00E6761A; border: 1px solid #00E67644; font-size: 10px; font-weight: 800; letter-spacing: 1px; color: #00E676; }
+  .hero-label { font-size: 10px; letter-spacing: 3px; font-weight: 700; color: #5A7A5A; margin-bottom: 4px; }
+  .hero-amount { font-size: 48px; font-weight: 900; font-family: monospace; color: #00E676; line-height: 52px; }
+  .hero-unit { font-size: 18px; font-weight: 500; color: #5A7A5A; }
+  .hero-sub { font-size: 11px; font-family: monospace; color: #3A5A3A; margin-top: 6px; }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+  .tab { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #1A2E1A; text-align: center; cursor: pointer; font-size: 10px; font-weight: 700; letter-spacing: 1px; color: #5A7A5A; transition: all 0.2s; }
+  .tab.active { background: #00E676; border-color: #00E676; color: #000; }
+  .tab:hover { border-color: #00E676; }
+
+  .stat-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .stat-card { width: calc(50% - 4px); border: 1px solid #1A2E1A; border-radius: 10px; padding: 12px; background: #111A11; }
+  .stat-lbl { font-size: 8px; letter-spacing: 2px; font-weight: 700; color: #5A7A5A; margin-bottom: 4px; }
+  .stat-val { font-size: 22px; font-weight: 700; font-family: monospace; }
+  .stat-unit { font-size: 11px; font-weight: 500; color: #5A7A5A; }
+
+  /* Chart */
+  .chart-card { border: 1px solid #1A2E1A; border-radius: 12px; padding: 16px; background: #111A11; margin-bottom: 12px; }
+  .chart-bars { display: flex; align-items: flex-end; gap: 6px; height: 100px; margin-bottom: 8px; }
+  .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; cursor: pointer; transition: transform 0.15s; }
+  .chart-bar-wrap:hover { transform: scale(1.05); }
+  .chart-bar-value { font-size: 8px; font-family: monospace; font-weight: 700; color: #5A7A5A; margin-bottom: 2px; }
+  .chart-bar { width: 100%; border-radius: 4px 4px 0 0; min-height: 4px; transition: all 0.3s; }
+  .chart-bar.selected { box-shadow: 0 0 12px #00E67666; }
+  .chart-bar-day { font-size: 9px; font-weight: 700; margin-top: 6px; color: #3A5A3A; letter-spacing: 0.5px; }
+  .chart-bar-dot { width: 5px; height: 5px; border-radius: 50%; background: #00E676; margin-top: 3px; display: none; }
+  .chart-bar-wrap.selected .chart-bar-dot { display: block; }
+  .chart-bar-wrap.selected .chart-bar-day { color: #00E676; font-weight: 900; }
+  .chart-bar-wrap.selected .chart-bar-value { color: #00E676; }
+  .chart-avg { display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px dashed #1A2E1A; }
+  .chart-avg-lbl { font-size: 9px; font-family: monospace; color: #3A5A3A; }
+  .chart-avg-val { font-size: 11px; font-family: monospace; font-weight: 700; color: #FFD600; }
+
+  /* Day detail panel */
+  .day-panel { border: 1px solid #00E67644; border-radius: 12px; padding: 14px; margin-top: 12px; margin-bottom: 8px; background: #111A11; animation: slideIn 0.25s ease; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .day-title { font-size: 14px; font-weight: 900; font-family: monospace; letter-spacing: 0.5px; }
+  .day-close { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; color: #00E676; cursor: pointer; }
+  .day-close:hover { text-decoration: underline; }
+  .day-stats { display: flex; justify-content: space-around; }
+  .day-stat { text-align: center; }
+  .day-stat-val { font-size: 20px; font-weight: 900; font-family: monospace; }
+  .day-stat-lbl { font-size: 8px; letter-spacing: 1.5px; font-weight: 700; color: #5A7A5A; margin-top: 2px; }
+
+  /* Ride card */
+  .ride { padding: 10px; border-radius: 8px; border: 1px solid #1A2E1A; border-left: 3px solid #00E676; margin-bottom: 6px; background: #111A11; }
+  .ride-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .ride-time { font-size: 10px; font-family: monospace; color: #5A7A5A; }
+  .ride-price { font-size: 14px; font-weight: 700; font-family: monospace; }
+  .ride-addr { font-size: 9px; font-family: monospace; color: #5A7A5A; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ride-bottom { display: flex; justify-content: space-between; align-items: center; }
+  .ride-meta { font-size: 9px; font-family: monospace; color: #5A7A5A; }
+  .ride-verdict { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+  .ride-verdict.go { color: #00E676; background: #00E67622; }
+  .ride-verdict.think { color: #FFD600; background: #FFD60022; }
+  .ride-verdict.stop { color: #FF5252; background: #FF525222; }
+
+  /* Status indicator */
+  .status-badge { font-size: 14px; position: fixed; top: 8px; right: 8px; z-index: 200; background: #00E67622; padding: 4px 8px; border-radius: 8px; border: 1px solid #00E67644; }
+
+  /* Toast notification */
+  .toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #00E676; color: #000; padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 14px; z-index: 300; display: none; animation: toastAnim 1.5s ease forwards; box-shadow: 0 4px 20px #00E67644; }
+  @keyframes toastAnim { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 15% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 85% { opacity: 1; } 100% { opacity: 0; } }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="status-badge">DrumIQ v1.0.1</div>
+  <div id="toast" class="toast"></div>
+
+  <!-- ===================== PROFIL SCREEN ===================== -->
+  <div id="screen-profil" class="screen active">
+    <div class="title">PROFIL<span class="accent"> ȘOFER</span></div>
+    <div class="sub">date locale · pe acest dispozitiv</div>
+
+    <div class="avatar-card">
+      <div class="avatar">A</div>
+      <div class="avatar-name">ANDREI PAMPA</div>
+      <div class="avatar-email">andreypnic@gmail.com</div>
+      <div class="plan-pill">PRO</div>
+    </div>
+
+    <div class="card-label">VEHICUL</div>
+    <div class="card">
+      <div class="row">
+        <span class="row-lbl">Plăcuță</span>
+        <input type="text" value="MM66VLY" id="plate-input" maxlength="10" style="text-transform: uppercase;">
+      </div>
+      <div class="divider"></div>
+      <div class="row">
+        <span class="row-lbl">Model</span>
+        <input type="text" value="Geely stary em-i" id="model-input" style="width: 160px; text-align: right;">
+      </div>
+      <div class="divider"></div>
+      <div class="row">
+        <span class="row-lbl">Carburant</span>
+        <span class="row-val" id="profil-fuel-type">Plug-in Hybrid (PHEV)</span>
+      </div>
+      <div class="divider"></div>
+      <div class="row">
+        <span class="row-lbl">Cost total/km</span>
+        <span class="row-val go" id="profil-cost-km">0.63 RON</span>
+      </div>
+    </div>
+
+    <div class="card-label">OBIECTIV ZILNIC</div>
+    <div class="card">
+      <div class="row">
+        <span class="row-lbl">Target</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="number" value="500" id="goal-input" style="width:80px;">
+          <span class="row-lbl">lei/zi</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-label">PLATFORME · auto-detect</div>
+    <div class="card">
+      <div class="row">
+        <div><span style="font-size:11px;">🚗 Bolt Driver</span><br><span style="font-size:9px;font-family:monospace;color:#3A5A3A;">ultimă detecție: 2 min</span></div>
+        <span style="padding:3px 10px;border:1px solid #00E676;border-radius:12px;font-size:9px;font-weight:700;color:#00E676;letter-spacing:1.5px;">ACTIV</span>
+      </div>
+      <div class="divider"></div>
+      <div class="row">
+        <div><span style="font-size:11px;">🚙 Uber Driver</span><br><span style="font-size:9px;font-family:monospace;color:#3A5A3A;">ultimă detecție: 25 min</span></div>
+        <span style="padding:3px 10px;border:1px solid #00E676;border-radius:12px;font-size:9px;font-weight:700;color:#00E676;letter-spacing:1.5px;">ACTIV</span>
+      </div>
+    </div>
+
+    <button class="btn btn-danger" onclick="showToast('Logout...')">SCHIMBĂ COD / LOGOUT</button>
+  </div>
+
+  <!-- ===================== TRACKER SCREEN ===================== -->
+  <div id="screen-tracker" class="screen">
+    <div class="title">TRACKER<span class="accent"> CÂȘTIGURI</span></div>
+    <div class="sub">auto-detectate la accept Bolt</div>
+
+    <div class="hero-card">
+      <div class="hero-badge" id="tracker-badge">SAPT</div>
+      <div class="hero-label">CÂȘTIGURI NETE</div>
+      <div style="display:flex;align-items:flex-end;">
+        <span class="hero-amount" id="tracker-total">161</span>
+        <span class="hero-unit"> lei</span>
+      </div>
+      <div class="hero-sub" id="tracker-sub">14 curse finalizate din 34 oferte</div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab" data-period="today" onclick="switchPeriod('today')">AZI</div>
+      <div class="tab active" data-period="week" onclick="switchPeriod('week')">SAPTAMANAL</div>
+      <div class="tab" data-period="total" onclick="switchPeriod('total')">TOTAL</div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;background:#FF525211;border:1px solid #FF525240;margin-bottom:12px;">
+      <span style="font-size:11px;font-weight:800;font-family:monospace;padding:3px 8px;border-radius:6px;background:#FF525222;color:#FF5252;">41%</span>
+      <span style="font-size:9px;color:#7A9A7A;">Rata acceptare - Atenție, sub 70%</span>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-lbl">FINALIZATE / OFERTE</div><div class="stat-val">14<span class="stat-unit"> / 34</span></div></div>
+      <div class="stat-card"><div class="stat-lbl">DISTANTA TOTALA</div><div class="stat-val">402<span class="stat-unit"> km</span></div></div>
+      <div class="stat-card"><div class="stat-lbl">MEDIE LEI/KM</div><div class="stat-val go">0.40</div></div>
+      <div class="stat-card"><div class="stat-lbl">MEDIE LEI/MIN</div><div class="stat-val think">0.39</div></div>
+    </div>
+
+    <div class="card-label">CÂȘTIGURI 7 ZILE — click pe o zi!</div>
+    <div class="chart-card">
+      <div class="chart-bars" id="chart-bars"></div>
+      <div class="chart-avg">
+        <span class="chart-avg-lbl">Medie saptamana</span>
+        <span class="chart-avg-val">23 lei/zi</span>
+      </div>
+    </div>
+
+    <div id="day-detail"></div>
+    <div id="ride-list"></div>
+  </div>
+
+  <!-- ===================== FUEL SCREEN ===================== -->
+  <div id="screen-fuel" class="screen">
+    <div style="padding-top:12px;margin-bottom:8px;">
+      <span style="font-size:17px;color:#00E676;cursor:pointer;" onclick="switchScreen('setari')">‹ Back</span>
+    </div>
+    <div class="title" style="font-size:28px;margin-bottom:20px;">Carburant</div>
+
+    <div class="card-label">TIP CARBURANT</div>
+    <div class="card fuel-options" id="fuel-options"></div>
+
+    <div id="fuel-fields-label" class="card-label">VALORI PLUG-IN HYBRID (PHEV)</div>
+    <div class="card" id="fuel-fields"></div>
+    <div class="cost-hint" id="cost-hint"></div>
+
+    <button class="btn btn-accent" onclick="saveFuel()">Salvează</button>
+  </div>
+
+  <!-- ===================== SETARI SCREEN ===================== -->
+  <div id="screen-setari" class="screen">
+    <div class="title">SETĂRI<span class="accent"> APP</span></div>
+    <div class="sub">configurare DrumIQ</div>
+
+    <div class="card" style="cursor:pointer;" onclick="switchScreen('fuel')">
+      <div class="row">
+        <span class="row-lbl">⛽ Carburant</span>
+        <span class="row-val" id="setari-fuel-type" style="color:#00E676;">Plug-in Hybrid (PHEV) →</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <span class="row-lbl">🎯 Filtre Curse</span>
+        <span class="row-val" style="color:#5A7A5A;">PRO →</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <span class="row-lbl">🔧 Accessibility Test</span>
+        <span class="row-val" style="color:#5A7A5A;">Debug →</span>
+      </div>
+    </div>
+
+    <button class="btn btn-danger" style="margin-top:24px;" onclick="showToast('Toate datele au fost sterse.')">STERGE TOATE DATELE</button>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav">
+    <button class="nav-btn" onclick="switchScreen('profil')"><span class="nav-icon">🏠</span>ACASĂ</button>
+    <button class="nav-btn" onclick="switchScreen('tracker')"><span class="nav-icon">📊</span>TRACKER</button>
+    <button class="nav-btn" onclick="switchScreen('setari')"><span class="nav-icon">⚙️</span>SETĂRI</button>
+    <button class="nav-btn active" onclick="switchScreen('profil')"><span class="nav-icon">👤</span>PROFIL</button>
+  </div>
+</div>
+
+<script>
+// ===================== STATE =====================
+const FUEL_TYPES = [
+  { type: 'benzina',     label: 'Benzină',     unit: 'RON/L',   cUnit: 'L/100km' },
+  { type: 'diesel',      label: 'Diesel',      unit: 'RON/L',   cUnit: 'L/100km' },
+  { type: 'electric',    label: 'Electric',    unit: 'RON/kWh', cUnit: 'kWh/100km' },
+  { type: 'benzina_gpl', label: 'Benzină+GPL', unit: 'RON/L',   cUnit: 'L/100km' },
+  { type: 'hybrid_hev',  label: 'Hybrid (HEV)',  unit: 'RON/L',   cUnit: 'L/100km' },
+  { type: 'hybrid_phev', label: 'Plug-in Hybrid (PHEV)', unit: 'RON/L', cUnit: 'L/100km' },
+];
+
+const DEFAULTS = {
+  benzina:      { consumption: 8.0, pricePerUnit: 7.50, wearPerKm: 0.35 },
+  diesel:       { consumption: 6.0, pricePerUnit: 7.80, wearPerKm: 0.35 },
+  electric:     { consumption: 17.0, pricePerUnit: 1.50, wearPerKm: 0.35 },
+  benzina_gpl:  { consumption: 7.0, pricePerUnit: 7.50, consumptionGpl: 7.0, pricePerUnitGpl: 3.50, wearPerKm: 0.35 },
+  hybrid_hev:   { consumption: 4.5, pricePerUnit: 7.50, wearPerKm: 0.35 },
+  hybrid_phev:  { consumption: 5.0, pricePerUnit: 7.50, consumptionKwh: 18.0, pricePerKwh: 1.20, electricRatio: 0.60, wearPerKm: 0.35 },
+};
+
+let fuel = { type: 'hybrid_phev', consumption: 5, pricePerUnit: 7.5, consumptionKwh: 18, pricePerKwh: 1.2, electricRatio: 0.6, wearPerKm: 0.35 };
+
+const CHART_DATA = [
+  { label: 'JO', earnings: 0,   date: '15.05' },
+  { label: 'VI', earnings: 0,   date: '16.05' },
+  { label: 'SA', earnings: 0,   date: '17.05' },
+  { label: 'DU', earnings: 0,   date: '18.05' },
+  { label: 'LU', earnings: 0,   date: '19.05' },
+  { label: 'MA', earnings: 130, date: '20.05', rides: [
+    { time: '23:20', price: 9.75, from: 'Str. Petru Rareș 17', to: 'lămâiței 9K', km: 3.5, min: 7, verdict: 'go', ppkm: 1.39 },
+    { time: '23:29', price: 17.92, from: 'Str. Victoriei 156 D', to: 'Str. Victoriei 31', km: 3.8, min: 6, verdict: 'go', ppkm: 2.33 },
+    { time: '23:57', price: 9.75, from: 'Str. A. Odobescu 2', to: 'Str. Valea Roșie 114', km: 2.3, min: 5, verdict: 'go', ppkm: 1.79 },
+    { time: '00:10', price: 10.72, from: 'Str. Victoriei 9', to: 'Recentrează', km: 2.6, min: 6, verdict: 'go', ppkm: 1.69 },
+    { time: '00:17', price: 9.75, from: 'TĂTARU IACOB', to: 'Str. Mărășești 12', km: 1.9, min: 4, verdict: 'go', ppkm: 2.37 },
+    { time: '00:31', price: 11.55, from: 'Kaufland', to: 'Str. V. Alecsandri 74', km: 4.0, min: 8, verdict: 'go', ppkm: 1.41 },
+    { time: '00:44', price: 10.57, from: 'Str. Podul Viilor 2', to: 'Str. Vlad Țepeș 7', km: 4.5, min: 10, verdict: 'go', ppkm: 1.08 },
+    { time: '00:54', price: 9.75, from: 'Bl. Traian 17', to: 'Baia Mare Value Centre', km: 1.9, min: 3, verdict: 'go', ppkm: 2.62 },
+    { time: '01:44', price: 24.75, from: 'Str. G. Coșbuc 9', to: 'Str. Lunci', km: 9.2, min: 13, verdict: 'go', ppkm: 1.71 },
+    { time: '01:50', price: 9.75, from: 'DN1C 15', to: 'Bl. Republicii 52', km: 1.6, min: 2, verdict: 'go', ppkm: 2.11 },
+  ]},
+  { label: 'MI', earnings: 30,  date: '21.05', isToday: true, rides: [
+    { time: '02:10', price: 15.67, from: 'Hotel Europa', to: 'Str. Brândușelor 49', km: 6.2, min: 9, verdict: 'go', ppkm: 1.37 },
+    { time: '02:17', price: 28.42, from: 'Fast Food Speedy', to: 'Lăpușel', km: 8.9, min: 12, verdict: 'go', ppkm: 2.03 },
+  ]},
+];
+
+let selectedDay = null;
+
+// ===================== FUEL COST CALC =====================
+function calcFuelCost(f) {
+  if (f.type === 'benzina_gpl') {
+    const pp = (f.consumption / 100) * f.pricePerUnit * 0.20;
+    const gp = ((f.consumptionGpl || f.consumption) / 100) * (f.pricePerUnitGpl || f.pricePerUnit * 0.5) * 0.80;
+    return pp + gp;
+  }
+  if (f.type === 'hybrid_phev') {
+    const r = f.electricRatio || 0.6;
+    const bp = (1 - r) * (f.consumption / 100) * f.pricePerUnit;
+    const ep = r * ((f.consumptionKwh || 18) / 100) * (f.pricePerKwh || 1.2);
+    return bp + ep;
+  }
+  return (f.consumption / 100) * f.pricePerUnit;
+}
+
+function totalCost(f) { return calcFuelCost(f) + f.wearPerKm; }
+
+function updateProfilFromFuel() {
+  const meta = FUEL_TYPES.find(ft => ft.type === fuel.type);
+  document.getElementById('profil-fuel-type').textContent = meta ? meta.label : fuel.type;
+  document.getElementById('profil-cost-km').textContent = totalCost(fuel).toFixed(2) + ' RON';
+  document.getElementById('setari-fuel-type').textContent = (meta ? meta.label : fuel.type) + ' →';
+}
+
+// ===================== SCREEN SWITCHING =====================
+function switchScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (name === 'fuel') renderFuelScreen();
+  if (name === 'tracker') renderChart();
+}
+
+// ===================== TOAST =====================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  t.style.animation = 'none';
+  t.offsetHeight;
+  t.style.animation = 'toastAnim 1.5s ease forwards';
+  setTimeout(() => { t.style.display = 'none'; }, 1600);
+}
+
+// ===================== FUEL SCREEN =====================
+function renderFuelScreen() {
+  const opts = document.getElementById('fuel-options');
+  opts.innerHTML = FUEL_TYPES.map(f => `
+    <div class="fuel-opt" onclick="selectFuelType('${f.type}')">
+      <span class="fuel-opt-label">${f.label}</span>
+      <div class="radio ${fuel.type === f.type ? 'selected' : ''}"><div class="radio-dot"></div></div>
+    </div>
+  `).join('');
+  renderFuelFields();
+}
+
+function selectFuelType(type) {
+  const def = DEFAULTS[type];
+  fuel = { type, ...def };
+  renderFuelScreen();
+}
+
+function renderFuelFields() {
+  const meta = FUEL_TYPES.find(f => f.type === fuel.type);
+  document.getElementById('fuel-fields-label').textContent = 'VALORI ' + meta.label.toUpperCase();
+
+  let html = `
+    <div class="field-row"><span class="field-label">Consum</span><div class="field-right"><input type="number" class="field-input" value="${fuel.consumption}" step="0.1" onchange="fuel.consumption=parseFloat(this.value);updateCostHint()"><span class="field-suffix">${meta.cUnit}</span></div></div>
+    <div class="divider"></div>
+    <div class="field-row"><span class="field-label">Preț</span><div class="field-right"><input type="number" class="field-input" value="${fuel.pricePerUnit}" step="0.1" onchange="fuel.pricePerUnit=parseFloat(this.value);updateCostHint()"><span class="field-suffix">${meta.unit}</span></div></div>
+  `;
+
+  if (fuel.type === 'benzina_gpl') {
+    html += `
+      <div class="divider"></div>
+      <div class="field-row"><span class="field-label">Consum GPL</span><div class="field-right"><input type="number" class="field-input" value="${fuel.consumptionGpl||0}" step="0.1" onchange="fuel.consumptionGpl=parseFloat(this.value);updateCostHint()"><span class="field-suffix">L/100km</span></div></div>
+      <div class="divider"></div>
+      <div class="field-row"><span class="field-label">Preț GPL</span><div class="field-right"><input type="number" class="field-input" value="${fuel.pricePerUnitGpl||0}" step="0.1" onchange="fuel.pricePerUnitGpl=parseFloat(this.value);updateCostHint()"><span class="field-suffix">RON/L</span></div></div>
+    `;
+  }
+  if (fuel.type === 'hybrid_phev') {
+    html += `
+      <div class="divider"></div>
+      <div class="field-row"><span class="field-label">Consum electric</span><div class="field-right"><input type="number" class="field-input" value="${fuel.consumptionKwh||18}" step="0.1" onchange="fuel.consumptionKwh=parseFloat(this.value);updateCostHint()"><span class="field-suffix">kWh/100km</span></div></div>
+      <div class="divider"></div>
+      <div class="field-row"><span class="field-label">Preț kWh</span><div class="field-right"><input type="number" class="field-input" value="${fuel.pricePerKwh||1.2}" step="0.1" onchange="fuel.pricePerKwh=parseFloat(this.value);updateCostHint()"><span class="field-suffix">RON/kWh</span></div></div>
+      <div class="divider"></div>
+      <div class="field-row"><span class="field-label">Procent electric</span><div class="field-right"><input type="number" class="field-input" value="${fuel.electricRatio||0.6}" step="0.05" min="0" max="1" onchange="fuel.electricRatio=parseFloat(this.value);updateCostHint()"><span class="field-suffix">(0-1)</span></div></div>
+    `;
+  }
+
+  html += `
+    <div class="divider"></div>
+    <div class="field-row"><span class="field-label">Uzură</span><div class="field-right"><input type="number" class="field-input" value="${fuel.wearPerKm}" step="0.01" onchange="fuel.wearPerKm=parseFloat(this.value);updateCostHint()"><span class="field-suffix">RON/km</span></div></div>
+  `;
+
+  document.getElementById('fuel-fields').innerHTML = html;
+  updateCostHint();
+}
+
+function updateCostHint() {
+  const cost = totalCost(fuel).toFixed(2);
+  let extra = '';
+  if (fuel.type === 'hybrid_phev') {
+    const r = fuel.electricRatio || 0.6;
+    extra = `\n(${Math.round(r*100)}% electric + ${Math.round((1-r)*100)}% benzină)`;
+  }
+  if (fuel.type === 'benzina_gpl') extra = '\n(estimat la 80% GPL + 20% benzină)';
+  document.getElementById('cost-hint').textContent = 'Cost total estimat: ' + cost + ' RON/km' + extra;
+}
+
+function saveFuel() {
+  updateProfilFromFuel();
+  showToast('✓ Carburant salvat — Profil actualizat!');
+  setTimeout(() => switchScreen('profil'), 800);
+}
+
+// ===================== TRACKER CHART =====================
+function renderChart() {
+  const max = Math.max(...CHART_DATA.map(d => d.earnings), 1);
+  const bars = document.getElementById('chart-bars');
+  bars.innerHTML = CHART_DATA.map((d, i) => {
+    const h = Math.max(4, (d.earnings / max) * 100);
+    const isSel = selectedDay === i;
+    const isToday = d.isToday;
+    const highlight = isSel || isToday;
+    const barColor = isSel ? '#00E676' : isToday ? '#00E676' : '#1A4A2A';
+    return `
+      <div class="chart-bar-wrap ${isSel ? 'selected' : ''}" onclick="selectDay(${i})">
+        ${d.earnings > 0 ? `<div class="chart-bar-value">${Math.round(d.earnings)}</div>` : '<div class="chart-bar-value" style="color:transparent">0</div>'}
+        <div class="chart-bar ${isSel ? 'selected' : ''}" style="height:${h}%;background:${barColor};${highlight ? 'box-shadow:0 0 12px '+barColor+'66;' : ''}"></div>
+        <div class="chart-bar-day">${d.label}</div>
+        <div class="chart-bar-dot"></div>
+      </div>
+    `;
+  }).join('');
+  renderDayDetail();
+  renderRideList();
+}
+
+function selectDay(i) {
+  if (selectedDay === i) { selectedDay = null; } else { selectedDay = i; }
+  renderChart();
+}
+
+function renderDayDetail() {
+  const el = document.getElementById('day-detail');
+  if (selectedDay === null) { el.innerHTML = ''; return; }
+  const d = CHART_DATA[selectedDay];
+  const rides = d.rides || [];
+  const ridesCount = rides.length;
+  const totalKm = rides.reduce((s, r) => s + r.km, 0);
+  const avgPpkm = totalKm > 0 ? (d.earnings / totalKm).toFixed(2) : '0.00';
+
+  let ridesHtml = '';
+  if (rides.length === 0) {
+    ridesHtml = '<div style="text-align:center;padding:16px;color:#5A7A5A;font-size:12px;">Nicio cursă finalizată în această zi.</div>';
+  } else {
+    ridesHtml = rides.map(r => `
+      <div class="ride" style="border-left-color:${r.verdict === 'go' ? '#00E676' : r.verdict === 'think' ? '#FFD600' : '#FF5252'}">
+        <div class="ride-top"><span class="ride-time">${r.time}</span><span class="ride-price">${r.price.toFixed(2)} lei</span></div>
+        <div class="ride-addr">${r.from} → ${r.to}</div>
+        <div class="ride-bottom">
+          <span class="ride-meta">${r.km}km · ${r.min}min · ✓ Google</span>
+          <span class="ride-verdict ${r.verdict}">${r.verdict === 'go' ? '$ ' : r.verdict === 'think' ? '? ' : '✗ '}${r.ppkm.toFixed(2)}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  el.innerHTML = `
+    <div class="day-panel">
+      <div class="day-header">
+        <div class="day-title">${d.date}.2026 · ${d.label}</div>
+        <div class="day-close" onclick="selectedDay=null;renderChart();">INCHIDE</div>
+      </div>
+      <div class="day-stats">
+        <div class="day-stat"><div class="day-stat-val go">${Math.round(d.earnings)}</div><div class="day-stat-lbl">lei</div></div>
+        <div class="day-stat"><div class="day-stat-val">${ridesCount}</div><div class="day-stat-lbl">curse</div></div>
+        <div class="day-stat"><div class="day-stat-val">${Math.round(totalKm)}</div><div class="day-stat-lbl">km</div></div>
+        <div class="day-stat"><div class="day-stat-val think">${avgPpkm}</div><div class="day-stat-lbl">lei/km</div></div>
+      </div>
+    </div>
+    ${ridesHtml}
+  `;
+}
+
+function renderRideList() {
+  const el = document.getElementById('ride-list');
+  if (selectedDay !== null) { el.innerHTML = ''; return; }
+  el.innerHTML = `
+    <div class="card-label" style="margin-top:16px;">CURSE INDIVIDUALE</div>
+    <div style="text-align:center;padding:16px;color:#5A7A5A;font-size:12px;background:#111A11;border:1px solid #1A2E1A;border-radius:10px;">
+      Selectează o zi din chart pentru a vedea cursele.
+    </div>
+  `;
+}
+
+function switchPeriod(p) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab[data-period="${p}"]`).classList.add('active');
+  const badge = document.getElementById('tracker-badge');
+  badge.textContent = p === 'today' ? 'AZI' : p === 'week' ? 'SAPT' : 'TOTAL';
+  selectedDay = null;
+  renderChart();
+}
+
+// ===================== INIT =====================
+updateProfilFromFuel();
+switchScreen('profil');
+</script>
+
+</body>
+</html>

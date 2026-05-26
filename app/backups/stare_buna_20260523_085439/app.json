@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "DRUMIQ",
+    "slug": "drumiq",
+    "version": "1.0.0",
+    "newArchEnabled": true,
+    "runtimeVersion": "1.0.0",
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d005a96a-a41c-4cc2-b6ed-af2eb0dca575"
+      }
+    },
+    "owner": "andreipxx",
+    "updates": {
+      "url": "https://u.expo.dev/d005a96a-a41c-4cc2-b6ed-af2eb0dca575"
+    }
+  }
+}

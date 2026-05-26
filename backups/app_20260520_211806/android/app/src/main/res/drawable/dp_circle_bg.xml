@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Circle background — stroke + fill set dynamically per verdict -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#E60A140A" />
+    <stroke
+        android:width="2.5dp"
+        android:color="#333333" />
+</shape>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <!-- Background gradient -->
+    <radialGradient id="bg" cx="50%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#0F2418"/>
+      <stop offset="60%" stop-color="#0A0E0B"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </radialGradient>
+
+    <!-- Body gradient -->
+    <linearGradient id="body" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1A2A1D"/>
+      <stop offset="100%" stop-color="#0A0E0B"/>
+    </linearGradient>
+
+    <!-- Visor gradient -->
+    <linearGradient id="visor" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00FF88"/>
+      <stop offset="50%" stop-color="#00FF88" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#00CC6A"/>
+    </linearGradient>
+
+    <!-- Eye glow -->
+    <radialGradient id="eyeGlow">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="40%" stop-color="#00FF88"/>
+      <stop offset="100%" stop-color="#00FF88" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Gold chain gradient -->
+    <linearGradient id="gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFE066"/>
+      <stop offset="50%" stop-color="#FFC940"/>
+      <stop offset="100%" stop-color="#B8860B"/>
+    </linearGradient>
+
+    <!-- Flame gradient -->
+    <linearGradient id="flame" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#FF3366"/>
+      <stop offset="50%" stop-color="#FF8800"/>
+      <stop offset="100%" stop-color="#FFCC00"/>
+    </linearGradient>
+
+    <!-- Glow filter -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="strongGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="20" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect x="0" y="0" width="1024" height="1024" rx="220" ry="220" fill="url(#bg)"/>
+
+  <!-- Inner border (brand accent) -->
+  <rect x="40" y="40" width="944" height="944" rx="190" ry="190" fill="none" stroke="#00FF88" stroke-width="3" opacity="0.4"/>
+
+  <!-- LEFT FLAMES -->
+  <g opacity="0.85" filter="url(#glow)">
+    <path d="M 90 700 Q 60 600 100 530 Q 130 580 120 640 Q 150 590 170 580 Q 165 660 130 720 Q 110 760 90 700 Z" fill="url(#flame)"/>
+    <path d="M 110 720 Q 100 660 125 615 Q 140 660 130 700 Q 120 720 110 720 Z" fill="#FFCC00" opacity="0.9"/>
+  </g>
+
+  <!-- RIGHT FLAMES -->
+  <g opacity="0.85" filter="url(#glow)">
+    <path d="M 935 660 Q 970 580 925 510 Q 905 570 915 620 Q 880 580 855 580 Q 870 660 905 715 Q 925 750 935 660 Z" fill="url(#flame)"/>
+    <path d="M 915 700 Q 925 650 905 605 Q 890 650 900 690 Q 905 705 915 700 Z" fill="#FFCC00" opacity="0.9"/>
+  </g>
+
+  <!-- Money bills (left top) -->
+  <g transform="translate(140 280) rotate(-15)" opacity="0.9">
+    <rect x="0" y="0" width="90" height="55" rx="4" fill="#2D8659" stroke="#1B5E3A" stroke-width="2"/>
+    <circle cx="45" cy="27" r="14" fill="none" stroke="#FFE066" stroke-width="2"/>
+    <text x="45" y="33" text-anchor="middle" fill="#FFE066" font-family="sans-serif" font-size="16" font-weight="900">$</text>
+  </g>
+
+  <!-- Money bills (right top) -->
+  <g transform="translate(740 240) rotate(20)" opacity="0.9">
+    <rect x="0" y="0" width="100" height="60" rx="4" fill="#2D8659" stroke="#1B5E3A" stroke-width="2"/>
+    <circle cx="50" cy="30" r="16" fill="none" stroke="#FFE066" stroke-width="2"/>
+    <text x="50" y="37" text-anchor="middle" fill="#FFE066" font-family="sans-serif" font-size="20" font-weight="900">$</text>
+  </g>
+
+  <!-- Stars / sparkles -->
+  <g fill="#00FF88" opacity="0.7">
+    <circle cx="200" cy="180" r="4"/>
+    <circle cx="850" cy="200" r="3"/>
+    <circle cx="300" cy="800" r="3"/>
+    <circle cx="780" cy="820" r="4"/>
+  </g>
+
+  <!-- ROBOT BODY (centered) -->
+  <g transform="translate(512 530)">
+
+    <!-- Backwards cap (black) -->
+    <path d="M -180 -250 Q -180 -290 -140 -300 L 200 -300 Q 230 -300 230 -270 L 230 -210 Q 230 -200 220 -200 L -180 -200 Z"
+          fill="#1A1A1A" stroke="#00FF88" stroke-width="4" opacity="0.95"/>
+
+    <!-- Cap brim (sticking right) -->
+    <path d="M 200 -300 L 280 -290 Q 295 -290 295 -275 L 295 -230 Q 295 -215 280 -215 L 220 -210 Z"
+          fill="#1A1A1A" stroke="#00FF88" stroke-width="3"/>
+
+    <!-- Cap stitching dots -->
+    <g fill="#FFFFFF" opacity="0.6">
+      <circle cx="-100" cy="-265" r="3"/>
+      <circle cx="-50" cy="-265" r="3"/>
+      <circle cx="0" cy="-265" r="3"/>
+      <circle cx="50" cy="-265" r="3"/>
+      <circle cx="100" cy="-265" r="3"/>
+      <circle cx="150" cy="-265" r="3"/>
+    </g>
+
+    <!-- HEAD (rounded square, dark green) -->
+    <rect x="-150" y="-200" width="300" height="240" rx="30" ry="30"
+          fill="url(#body)" stroke="#00FF88" stroke-width="4" filter="url(#glow)"/>
+
+    <!-- VISOR (white panel with eyes) -->
+    <rect x="-130" y="-160" width="260" height="170" rx="18" ry="18" fill="#F5F5F5"/>
+
+    <!-- Eyes (green dollar signs in black goggles) -->
+    <circle cx="-60" cy="-80" r="58" fill="#000000"/>
+    <circle cx="60" cy="-80" r="58" fill="#000000"/>
+
+    <!-- Green dollar sign in left eye -->
+    <text x="-60" y="-58" text-anchor="middle" fill="#00FF88" font-family="sans-serif" font-size="80" font-weight="900" filter="url(#glow)">$</text>
+    <text x="60" y="-58" text-anchor="middle" fill="#00FF88" font-family="sans-serif" font-size="80" font-weight="900" filter="url(#glow)">$</text>
+
+    <!-- Mouth (smiling) -->
+    <path d="M -50 30 Q 0 70 50 30" stroke="#FFFFFF" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M -30 50 Q 0 75 30 50 L 30 35 L -30 35 Z" fill="#CC1A4D" opacity="0.9"/>
+
+    <!-- NECK / shoulder -->
+    <rect x="-90" y="40" width="180" height="20" fill="#0A0E0B" stroke="#00FF88" stroke-width="2"/>
+
+    <!-- BODY (chest) -->
+    <path d="M -160 60 L -180 220 Q -180 260 -140 260 L 200 260 Q 240 260 240 220 L 220 60 Z"
+          fill="url(#body)" stroke="#00FF88" stroke-width="4"/>
+
+    <!-- GOLD CHAIN (around neck) -->
+    <g filter="url(#glow)">
+      <!-- Chain links going around -->
+      <path d="M -130 60 Q -120 100 -80 110 Q -40 120 0 130 Q 40 140 80 130 Q 120 120 160 100 Q 175 80 175 65"
+            stroke="url(#gold)" stroke-width="14" fill="none" stroke-linecap="round" opacity="0.95"/>
+
+      <!-- Chain dollar pendant -->
+      <rect x="-30" y="135" width="60" height="50" rx="6" fill="url(#gold)" stroke="#8B6F0B" stroke-width="2"/>
+      <text x="0" y="172" text-anchor="middle" fill="#8B6F0B" font-family="sans-serif" font-size="36" font-weight="900">$</text>
+    </g>
+
+    <!-- RIGHT FIST (raised, ready) -->
+    <g transform="translate(220 110) rotate(-15)">
+      <!-- Forearm -->
+      <rect x="-30" y="0" width="70" height="100" rx="12" fill="url(#body)" stroke="#00FF88" stroke-width="3"/>
+      <!-- Fist -->
+      <circle cx="5" cy="120" r="50" fill="url(#body)" stroke="#00FF88" stroke-width="4"/>
+      <!-- Knuckle highlights -->
+      <g fill="#00FF88" opacity="0.6">
+        <circle cx="-15" cy="105" r="4"/>
+        <circle cx="0" cy="100" r="4"/>
+        <circle cx="15" cy="105" r="4"/>
+      </g>
+    </g>
+
+  </g>
+
+  <!-- BOTTOM TEXT BAR -->
+  <rect x="0" y="850" width="1024" height="174" fill="#0A0E0B" stroke="#00FF88" stroke-width="3" stroke-opacity="0.5"/>
+
+  <!-- DRIVER POWER text -->
+  <text x="512" y="965" text-anchor="middle"
+        fill="#FFFFFF"
+        font-family="sans-serif"
+        font-size="100"
+        font-weight="900"
+        letter-spacing="6"
+        filter="url(#glow)">DRIVER<tspan fill="#00FF88">POWER</tspan></text>
+
+</svg>

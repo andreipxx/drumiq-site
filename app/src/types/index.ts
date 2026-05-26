@@ -81,9 +81,9 @@ export interface VerdictDisplay {
 }
 
 export const VERDICT_DISPLAY: Record<ProfitVerdict, VerdictDisplay> = {
-  stop:  { symbol: 'X', emoji: '🔴', color: '#FF3366', glowColor: '#FF336666', label: 'Refuză' },
-  think: { symbol: '?', emoji: '🟡', color: '#FFB800', glowColor: '#FFB80066', label: 'Gândește' },
-  go:    { symbol: '$', emoji: '🟢', color: '#00FF88', glowColor: '#00FF8866', label: 'Go' },
+  stop:  { symbol: 'X', emoji: '🔴', color: '#ef4444', glowColor: '#ef444466', label: 'Refuză' },
+  think: { symbol: '?', emoji: '🟡', color: '#f59e0b', glowColor: '#f59e0b66', label: 'Gândește' },
+  go:    { symbol: '$', emoji: '🟢', color: '#10b981', glowColor: '#10b98166', label: 'Go' },
 };
 
 // === Tracker ===

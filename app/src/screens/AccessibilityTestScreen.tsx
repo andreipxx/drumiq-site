@@ -5,6 +5,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { FONT, SIZE, RADIUS } from '../constants/typography';
 import { Accessibility, type AccessibilityCapture } from '../native/accessibility';
 import { parseBoltRide } from '../services/boltParser';
 import { analyzeRide } from '../services/profitCalculator';
@@ -20,7 +22,7 @@ import { clearAllRides } from '../services/tracker';
 interface Props { onBack: () => void; }
 
 export default function AccessibilityTestScreen({ onBack }: Props) {
-  const { colors } = useTheme();
+  const { colors, fontsLoaded } = useTheme();
   const insets = useSafeAreaInsets();
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const [capture, setCapture] = useState<AccessibilityCapture | null>(null);
@@ -97,38 +99,50 @@ export default function AccessibilityTestScreen({ onBack }: Props) {
 
   const available = Accessibility.isAvailable();
 
+  const monoFont = fontsLoaded ? FONT.mono : FONT.systemMono;
+  const monoBoldFont = fontsLoaded ? FONT.monoBold : FONT.systemMono;
+
   return (
     <SafeAreaView style={[s.container, { backgroundColor: colors.bg }]}>
+      {/* Aurora blobs */}
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <View style={{ position:'absolute', top:-80, left:-60, width:260, height:260, borderRadius:300, backgroundColor:colors.aurora1 }} />
+        <View style={{ position:'absolute', top:120, right:-80, width:220, height:220, borderRadius:300, backgroundColor:colors.aurora2 }} />
+        <View style={{ position:'absolute', bottom:100, left:40, width:180, height:180, borderRadius:300, backgroundColor:colors.aurora3 }} />
+      </View>
+
       <TouchableOpacity onPress={onBack} style={[s.backBtn, { paddingTop: insets.top + 8 }]} activeOpacity={0.6}>
-        <Text style={[s.backText, { color: colors.accent }]}>‹ Back</Text>
+        <Text style={[s.backText, { color: colors.cyan }]}>{'‹ Back'}</Text>
       </TouchableOpacity>
 
       <ScrollView contentContainerStyle={s.scroll}>
-        <Text style={[s.title, { color: colors.text }]}>Accessibility Test</Text>
+        <Text style={[s.title, { color: colors.text, fontFamily: fontsLoaded ? FONT.display : FONT.system }]}>Accessibility Test</Text>
 
         {licInfo && (
-          <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[s.cardLabel, { color: colors.textDim }]}>PLAN ACTIV</Text>
-            <Row label="Plan" value={licInfo.plan.toUpperCase()} colors={colors} valueColor={colors.accent} />
+          <View style={[s.card, { backgroundColor: colors.bgCard, borderColor: colors.border }]}>
+            <Text style={[s.cardLabel, { color: colors.textFaint, fontFamily: monoFont }]}>PLAN ACTIV</Text>
+            <Row label="Plan" value={licInfo.plan.toUpperCase()} colors={colors} valueColor={colors.cyan} monoFont={monoBoldFont} />
             {licInfo.ridesRemaining != null && (
-              <Row label="Curse rămase" value={`${licInfo.ridesRemaining} (folosite ${licInfo.ridesUsed})`} colors={colors} />
+              <Row label="Curse rămase" value={`${licInfo.ridesRemaining} (folosite ${licInfo.ridesUsed})`} colors={colors} monoFont={monoBoldFont} />
             )}
             {licInfo.expiresAt != null && (
-              <Row label="Expiră" value={new Date(licInfo.expiresAt).toLocaleString('ro-RO')} colors={colors} />
+              <Row label="Expiră" value={new Date(licInfo.expiresAt).toLocaleString('ro-RO')} colors={colors} monoFont={monoBoldFont} />
             )}
           </View>
         )}
 
-        <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={[s.cardLabel, { color: colors.textDim }]}>STATUS</Text>
-          <Row label="Platform" value={Platform.OS} colors={colors} />
-          <Row label="Native module" value={available ? 'detected ✓' : 'missing ✗'} colors={colors} valueColor={available ? colors.go : colors.stop} />
-          <Row label="Service enabled" value={enabled === null ? '...' : enabled ? 'YES ✓' : 'NO'} colors={colors} valueColor={enabled ? colors.go : colors.stop} />
+        <View style={[s.card, { backgroundColor: colors.bgCard, borderColor: colors.border }]}>
+          <Text style={[s.cardLabel, { color: colors.textFaint, fontFamily: monoFont }]}>STATUS</Text>
+          <Row label="Platform" value={Platform.OS} colors={colors} monoFont={monoBoldFont} />
+          <Row label="Native module" value={available ? 'detected ✓' : 'missing ✗'} colors={colors} valueColor={available ? colors.go : colors.stop} monoFont={monoBoldFont} />
+          <Row label="Service enabled" value={enabled === null ? '...' : enabled ? 'YES ✓' : 'NO'} colors={colors} valueColor={enabled ? colors.go : colors.stop} monoFont={monoBoldFont} />
         </View>
 
         {!enabled && available && (
-          <TouchableOpacity onPress={handleOpenSettings} style={[s.btn, { backgroundColor: colors.accent }]} activeOpacity={0.7}>
-            <Text style={s.btnText}>Deschide Settings Accessibility</Text>
+          <TouchableOpacity onPress={handleOpenSettings} activeOpacity={0.7} style={{ marginTop: 20 }}>
+            <LinearGradient colors={colors.gradButton} start={{x:0,y:0}} end={{x:1,y:0}} style={[s.btn, { borderRadius: RADIUS.md }]}>
+              <Text style={s.btnText}>Deschide Settings Accessibility</Text>
+            </LinearGradient>
           </TouchableOpacity>
         )}
 
@@ -138,11 +152,19 @@ export default function AccessibilityTestScreen({ onBack }: Props) {
 
         <TouchableOpacity
           onPress={handleFullExport}
-          style={[s.btn, { backgroundColor: exporting ? colors.border : '#00CC66', marginTop: 16 }]}
           activeOpacity={0.7}
           disabled={exporting}
+          style={{ marginTop: 16 }}
         >
-          <Text style={s.btnText}>{exporting ? 'Se exporta...' : 'EXPORT TOT (JSON)'}</Text>
+          {exporting ? (
+            <View style={[s.btn, { backgroundColor: colors.border, borderRadius: RADIUS.md }]}>
+              <Text style={s.btnText}>Se exporta...</Text>
+            </View>
+          ) : (
+            <LinearGradient colors={colors.gradSuccess} start={{x:0,y:0}} end={{x:1,y:0}} style={[s.btn, { borderRadius: RADIUS.md }]}>
+              <Text style={s.btnText}>EXPORT TOT (JSON)</Text>
+            </LinearGradient>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -165,64 +187,64 @@ export default function AccessibilityTestScreen({ onBack }: Props) {
         </TouchableOpacity>
 
         {analysis && parsed?.screen === 'ride_offer' && (
-          <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors[analysis.verdict], borderWidth: 2, marginTop: 20 }]}>
-            <Text style={[s.cardLabel, { color: colors.textDim }]}>ANALIZĂ PROFIT (preview)</Text>
+          <View style={[s.card, { backgroundColor: colors.bgCard, borderColor: colors[analysis.verdict], borderWidth: 2, marginTop: 20 }]}>
+            <Text style={[s.cardLabel, { color: colors.textFaint, fontFamily: monoFont }]}>ANALIZĂ PROFIT (preview)</Text>
             <Text style={[s.verdictBig, { color: colors[analysis.verdict] }]}>
               {VERDICT_DISPLAY[analysis.verdict].emoji} {VERDICT_DISPLAY[analysis.verdict].label}
             </Text>
-            <Row label="Profit/km" value={`${analysis.profitPerKm.toFixed(2)} RON/km`} colors={colors} valueColor={colors[analysis.verdict]} />
-            <Row label="Profit total" value={`${analysis.profit.toFixed(2)} RON`} colors={colors} />
-            <Row label="Bolt NET" value={`${analysis.boltNet.toFixed(2)} RON`} colors={colors} />
-            <Row label="Cost mașină" value={`${analysis.vehicleCost.toFixed(2)} RON`} colors={colors} />
-            <Row label="Total km est." value={`${analysis.totalKm.toFixed(1)} km`} colors={colors} />
-            {analysis.isExternalRide && <Row label="Tip cursă" value="EXTERNĂ (+25%)" colors={colors} valueColor={colors.accent} />}
+            <Row label="Profit/km" value={`${analysis.profitPerKm.toFixed(2)} RON/km`} colors={colors} valueColor={colors[analysis.verdict]} monoFont={monoBoldFont} />
+            <Row label="Profit total" value={`${analysis.profit.toFixed(2)} RON`} colors={colors} monoFont={monoBoldFont} />
+            <Row label="Bolt NET" value={`${analysis.boltNet.toFixed(2)} RON`} colors={colors} monoFont={monoBoldFont} />
+            <Row label="Cost mașină" value={`${analysis.vehicleCost.toFixed(2)} RON`} colors={colors} monoFont={monoBoldFont} />
+            <Row label="Total km est." value={`${analysis.totalKm.toFixed(1)} km`} colors={colors} monoFont={monoBoldFont} />
+            {analysis.isExternalRide && <Row label="Tip cursă" value="EXTERNĂ (+25%)" colors={colors} valueColor={colors.cyan} monoFont={monoBoldFont} />}
             {analysis.confidence === 'low' && (
-              <Text style={[s.warn, { color: colors.decide }]}>⚠ Date parțiale — pickup km lipsesc, am estimat 1.0 km</Text>
+              <Text style={[s.warn, { color: colors.think }]}>⚠ Date parțiale — pickup km lipsesc, am estimat 1.0 km</Text>
             )}
           </View>
         )}
 
         {parsed && (
-          <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border, marginTop: 20 }]}>
-            <Text style={[s.cardLabel, { color: colors.textDim }]}>DATE PARSATE</Text>
-            <Row label="Ecran detectat" value={parsed.screen} colors={colors} valueColor={colors.accent} />
-            <Row label="Preț NET" value={parsed.grossNet != null ? `${parsed.grossNet} lei` : '—'} colors={colors} />
-            <Row label="Pickup km" value={parsed.pickupKm != null ? `${parsed.pickupKm} km` : '—'} colors={colors} />
-            <Row label="Pickup min" value={parsed.pickupMin != null ? `${parsed.pickupMin} min` : '—'} colors={colors} />
-            <Row label="Pasager" value={parsed.passengerName ?? '—'} colors={colors} />
-            <Row label="Rating pasager" value={parsed.passengerRating != null ? `${parsed.passengerRating} ★` : '—'} colors={colors} />
-            <Row label="Surge" value={parsed.surgeMultiplier != null ? `${parsed.surgeMultiplier}x` : '—'} colors={colors} />
-            <Row label="Plata" value={parsed.paymentMethod ?? '—'} colors={colors} />
-            <Row label="În afara razei" value={parsed.outsideRange ? 'DA' : 'NU'} colors={colors} />
-            {parsed.pickupAddress && <Row label="Pickup" value={parsed.pickupAddress} colors={colors} />}
-            {parsed.destinationAddress && <Row label="Destinație" value={parsed.destinationAddress} colors={colors} />}
+          <View style={[s.card, { backgroundColor: colors.bgCard, borderColor: colors.border, marginTop: 20 }]}>
+            <Text style={[s.cardLabel, { color: colors.textFaint, fontFamily: monoFont }]}>DATE PARSATE</Text>
+            <Row label="Ecran detectat" value={parsed.screen} colors={colors} valueColor={colors.cyan} monoFont={monoBoldFont} />
+            <Row label="Preț NET" value={parsed.grossNet != null ? `${parsed.grossNet} lei` : '—'} colors={colors} monoFont={monoBoldFont} />
+            <Row label="Pickup km" value={parsed.pickupKm != null ? `${parsed.pickupKm} km` : '—'} colors={colors} monoFont={monoBoldFont} />
+            <Row label="Pickup min" value={parsed.pickupMin != null ? `${parsed.pickupMin} min` : '—'} colors={colors} monoFont={monoBoldFont} />
+            <Row label="Pasager" value={parsed.passengerName ?? '—'} colors={colors} monoFont={monoBoldFont} />
+            <Row label="Rating pasager" value={parsed.passengerRating != null ? `${parsed.passengerRating} ★` : '—'} colors={colors} monoFont={monoBoldFont} />
+            <Row label="Surge" value={parsed.surgeMultiplier != null ? `${parsed.surgeMultiplier}x` : '—'} colors={colors} monoFont={monoBoldFont} />
+            <Row label="Plata" value={parsed.paymentMethod ?? '—'} colors={colors} monoFont={monoBoldFont} />
+            <Row label="În afara razei" value={parsed.outsideRange ? 'DA' : 'NU'} colors={colors} monoFont={monoBoldFont} />
+            {parsed.pickupAddress && <Row label="Pickup" value={parsed.pickupAddress} colors={colors} monoFont={monoBoldFont} />}
+            {parsed.destinationAddress && <Row label="Destinație" value={parsed.destinationAddress} colors={colors} monoFont={monoBoldFont} />}
           </View>
         )}
 
-        <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border, marginTop: 20 }]}>
-          <Text style={[s.cardLabel, { color: colors.textDim }]}>ULTIMA CAPTURĂ (polling 2s)</Text>
+        <View style={[s.card, { backgroundColor: colors.bgCard, borderColor: colors.border, marginTop: 20 }]}>
+          <Text style={[s.cardLabel, { color: colors.textFaint, fontFamily: monoFont }]}>ULTIMA CAPTURĂ (polling 2s)</Text>
           {capture && capture.timestamp > 0 ? (
             <>
-              <Row label="Package" value={capture.package} colors={colors} />
-              <Row label="Timestamp" value={new Date(capture.timestamp).toLocaleTimeString()} colors={colors} />
+              <Row label="Package" value={capture.package} colors={colors} monoFont={monoBoldFont} />
+              <Row label="Timestamp" value={new Date(capture.timestamp).toLocaleTimeString()} colors={colors} monoFont={monoBoldFont} />
               <View style={[s.captureBox, { borderColor: colors.border }]}>
-                <Text style={[s.captureText, { color: colors.text }]} selectable>{capture.text}</Text>
+                <Text style={[s.captureText, { color: colors.text, fontFamily: monoFont }]} selectable>{capture.text}</Text>
               </View>
             </>
           ) : (
-            <Text style={[s.hint, { color: colors.textDim }]}>Deschide Bolt Driver / Waze. Polling activ la 2s.</Text>
+            <Text style={[s.hint, { color: colors.textFaint }]}>Deschide Bolt Driver / Waze. Polling activ la 2s.</Text>
           )}
         </View>
 
-        <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={[s.cardLabel, { color: colors.textDim }]}>
+        <View style={[s.card, { backgroundColor: colors.bgCard, borderColor: colors.border }]}>
+          <Text style={[s.cardLabel, { color: colors.textFaint, fontFamily: monoFont }]}>
             {'DEBUG LIVE (' + (debugStats?.total ?? debugEvents.length) + ' total, sesiune: ' + (debugStats?.curSession ?? 0) + ')'}
           </Text>
           {debugEvents.length === 0 ? (
-            <Text style={[s.hint, { color: colors.textDim }]}>Nicio activitate. Deschide Bolt si asteapta o oferta.</Text>
+            <Text style={[s.hint, { color: colors.textFaint }]}>Nicio activitate. Deschide Bolt si asteapta o oferta.</Text>
           ) : (
             debugEvents.slice(0, 25).map((e, i) => (
-              <Text key={i} style={[s.captureText, { color: colors.text, fontSize: 11, paddingVertical: 1 }]}>{e}</Text>
+              <Text key={i} style={[s.captureText, { color: colors.text, fontSize: 11, paddingVertical: 1, fontFamily: monoFont }]}>{e}</Text>
             ))
           )}
         </View>
@@ -232,11 +254,11 @@ export default function AccessibilityTestScreen({ onBack }: Props) {
   );
 }
 
-function Row({ label, value, colors, valueColor }: any) {
+function Row({ label, value, colors, valueColor, monoFont }: any) {
   return (
     <View style={s.row}>
       <Text style={[s.rowLabel, { color: colors.textMuted }]}>{label}</Text>
-      <Text style={[s.rowValue, { color: valueColor || colors.text }]} numberOfLines={2}>{value}</Text>
+      <Text style={[s.rowValue, { color: valueColor || colors.text, fontFamily: monoFont }]} numberOfLines={2}>{value}</Text>
     </View>
   );
 }
@@ -246,19 +268,19 @@ const s = StyleSheet.create({
   backBtn:          { paddingHorizontal: 16, paddingBottom: 8 },
   backText:         { fontSize: 17 },
   scroll:           { padding: 16, paddingBottom: 60 },
-  title:            { fontSize: 28, fontWeight: '700', marginBottom: 20 },
-  card:             { borderWidth: StyleSheet.hairlineWidth, borderRadius: 12, padding: 16, marginTop: 12 },
-  cardLabel:        { fontSize: 12, letterSpacing: 0.5, marginBottom: 8 },
+  title:            { fontSize: SIZE['2xl'], fontWeight: '700', marginBottom: 20 },
+  card:             { borderWidth: StyleSheet.hairlineWidth, borderRadius: RADIUS.md, padding: 16, marginTop: 12 },
+  cardLabel:        { fontSize: SIZE.sm, letterSpacing: 0.5, marginBottom: 8 },
   row:              { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, gap: 12 },
-  rowLabel:         { fontSize: 14, flexShrink: 0 },
-  rowValue:         { fontSize: 14, fontWeight: '600', flex: 1, textAlign: 'right' },
-  verdictBig:       { fontSize: 22, fontWeight: '800', textAlign: 'center', paddingVertical: 12 },
-  warn:             { fontSize: 12, marginTop: 8, fontStyle: 'italic' },
-  btn:              { marginTop: 20, paddingVertical: 16, borderRadius: 10, alignItems: 'center' },
-  btnText:          { color: '#fff', fontSize: 16, fontWeight: '700' },
-  btnSecondary:     { marginTop: 10, paddingVertical: 14, borderRadius: 10, alignItems: 'center', borderWidth: StyleSheet.hairlineWidth },
+  rowLabel:         { fontSize: SIZE.base, flexShrink: 0 },
+  rowValue:         { fontSize: SIZE.base, fontWeight: '600', flex: 1, textAlign: 'right' },
+  verdictBig:       { fontSize: SIZE.xl, fontWeight: '800', textAlign: 'center', paddingVertical: 12 },
+  warn:             { fontSize: SIZE.sm, marginTop: 8, fontStyle: 'italic' },
+  btn:              { paddingVertical: 16, alignItems: 'center' },
+  btnText:          { color: '#fff', fontSize: SIZE.lg, fontWeight: '700' },
+  btnSecondary:     { marginTop: 10, paddingVertical: 14, borderRadius: RADIUS.md, alignItems: 'center', borderWidth: StyleSheet.hairlineWidth },
   btnSecondaryText: { fontSize: 15, fontWeight: '500' },
-  captureBox:       { marginTop: 10, padding: 12, borderWidth: StyleSheet.hairlineWidth, borderRadius: 8, maxHeight: 250 },
-  captureText:      { fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', fontSize: 12, lineHeight: 18 },
-  hint:             { fontSize: 13, lineHeight: 20, marginTop: 8, fontStyle: 'italic' },
+  captureBox:       { marginTop: 10, padding: 12, borderWidth: StyleSheet.hairlineWidth, borderRadius: RADIUS.sm, maxHeight: 250 },
+  captureText:      { fontSize: 12, lineHeight: 18 },
+  hint:             { fontSize: SIZE.base, lineHeight: 20, marginTop: 8, fontStyle: 'italic' },
 });

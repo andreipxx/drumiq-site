@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DrumIQ Overlay Preview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    gap: 40px;
+    min-height: 100vh;
+  }
+  h1 { color: #fff; font-size: 22px; letter-spacing: 1px; }
+  .row {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .column { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .tag {
+    color: #7A8A7C;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  /* === OVERLAY CARD === */
+  .overlay {
+    min-width: 170px;
+    max-width: 200px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  }
+  .overlay.go   { background: rgba(10,14,11,0.92); border: 2px solid #00FF88; }
+  .overlay.think { background: rgba(26,21,8,0.92); border: 2px solid #FFB800; }
+  .overlay.stop  { background: rgba(26,8,8,0.92);  border: 2px solid #FF3366; }
+
+  .top-bar { height: 4px; width: 100%; }
+  .go .top-bar   { background: #00FF88; }
+  .think .top-bar { background: #FFB800; }
+  .stop .top-bar  { background: #FF3366; }
+
+  .content { padding: 10px; }
+
+  /* === VERDICT ROW === */
+  .verdict-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    border-radius: 14px;
+    padding: 0 6px;
+    font-family: 'Consolas', monospace;
+    font-size: 12px;
+    font-weight: 900;
+    color: #000;
+    white-space: nowrap;
+  }
+  .go .circle   { background: #00FF88; }
+  .think .circle { background: #FFB800; }
+  .stop .circle  { background: #FF3366; }
+
+  .profit-area { flex: 1; }
+  .profit-label {
+    color: #7A8A7C;
+    font-size: 8px;
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+  .profit-value {
+    font-family: 'Consolas', monospace;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .go .profit-value   { color: #00FF88; }
+  .think .profit-value { color: #FFB800; }
+  .stop .profit-value  { color: #FF3366; }
+
+  /* === DIVIDER === */
+  .divider {
+    height: 1px;
+    background: #1E2A1F;
+    margin-bottom: 6px;
+  }
+
+  /* === DATA ROWS (full only) === */
+  .data-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    font-family: 'Consolas', monospace;
+    font-size: 11px;
+  }
+  .data-row .left { color: #E8FFE8; }
+  .data-row .right { color: #E8FFE8; text-align: right; }
+  .data-row.highlight .left,
+  .data-row.highlight .right { font-weight: 700; }
+  .go .data-row.net .left,
+  .go .data-row.net .right { color: #00FF88; font-weight: 700; }
+  .think .data-row.net .left,
+  .think .data-row.net .right { color: #FFB800; font-weight: 700; }
+  .stop .data-row.net .left,
+  .stop .data-row.net .right { color: #FF3366; font-weight: 700; }
+
+  .data-row.warn .left { color: #F59E0B; font-size: 9px; }
+  .data-row.warn .right { color: #FFB800; font-size: 9px; }
+
+  /* === FOOTER === */
+  .footer-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Consolas', monospace;
+    font-size: 9px;
+  }
+  .footer-row .source { color: #7A8A7C; }
+  .footer-row .daily { color: #FFB800; font-weight: 700; }
+
+  /* SIMPLE specific */
+  .simple .profit-value { font-size: 13px; }
+</style>
+</head>
+<body>
+
+<h1>DRUMIQ — Overlay Preview</h1>
+
+<!-- ==================== SIMPLU ==================== -->
+<div class="tag">▼ OVERLAY SIMPLU (FREE)</div>
+<div class="row">
+
+  <!-- GO -->
+  <div class="column">
+    <div class="overlay simple go">
+      <div class="top-bar"></div>
+      <div class="content">
+        <div class="verdict-row">
+          <span class="circle">$ +5.2</span>
+          <div class="profit-area">
+            <div class="profit-value">0.66 / 2.1 lei/km</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span class="tag">GO</span>
+  </div>
+
+  <!-- THINK -->
+  <div class="column">
+    <div class="overlay simple think">
+      <div class="top-bar"></div>
+      <div class="content">
+        <div class="verdict-row">
+          <span class="circle">? +0.8</span>
+          <div class="profit-area">
+            <div class="profit-value">0.22 / 1.4 lei/km</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span class="tag">THINK</span>
+  </div>
+
+  <!-- STOP -->
+  <div class="column">
+    <div class="overlay simple stop">
+      <div class="top-bar"></div>
+      <div class="content">
+        <div class="verdict-row">
+          <span class="circle">✗ -3.1</span>
+          <div class="profit-area">
+            <div class="profit-value">-0.41 / 0.9 lei/km</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span class="tag">STOP</span>
+  </div>
+
+</div>
+
+<!-- ==================== DETALIAT ==================== -->
+<div class="tag" style="margin-top:20px">▼ OVERLAY DETALIAT (PRO)</div>
+<div class="row">
+
+  <!-- GO FULL -->
+  <div class="column">
+    <div class="overlay go">
+      <div class="top-bar"></div>
+      <div class="content">
+        <div class="verdict-row">
+          <span class="circle">$ +15.2</span>
+          <div class="profit-area">
+            <div class="profit-label">NET / BRUT /KM</div>
+            <div class="profit-value">1.82 / 3.5 lei/km</div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="data-row">
+          <span class="left">1.2 km / 3 min</span>
+          <span class="right">8.3 km / 12 min</span>
+        </div>
+        <div class="data-row highlight">
+          <span class="left">28.50 lei</span>
+          <span class="right">15 min</span>
+        </div>
+        <div class="data-row net">
+          <span class="left">+15.20 lei</span>
+          <span class="right">1.01 RON/min</span>
+        </div>
+        <div class="data-row warn">
+          <span class="left">1.2 km</span>
+          <span class="right"></span>
+        </div>
+        <div class="divider"></div>
+        <div class="footer-row">
+          <span class="source">✓ Google trafic</span>
+          <span class="daily">★ 180/250 lei</span>
+        </div>
+      </div>
+    </div>
+    <span class="tag">GO</span>
+  </div>
+
+  <!-- THINK FULL -->
+  <div class="column">
+    <div class="overlay think">
+      <div class="top-bar"></div>
+      <div class="content">
+        <div class="verdict-row">
+          <span class="circle">? +2.3</span>
+          <div class="profit-area">
+            <div class="profit-label">NET / BRUT /KM</div>
+            <div class="profit-value">0.38 / 1.8 lei/km</div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="data-row">
+          <span class="left">2.1 km / 5 min</span>
+          <span class="right">~3 km</span>
+        </div>
+        <div class="data-row highlight">
+          <span class="left">12.80 lei</span>
+          <span class="right">11 min</span>
+        </div>
+        <div class="data-row net">
+          <span class="left">+2.34 lei</span>
+          <span class="right">0.21 RON/min</span>
+        </div>
+        <div class="data-row warn">
+          <span class="left">2.1 km</span>
+          <span class="right"></span>
+        </div>
+        <div class="divider"></div>
+        <div class="footer-row">
+          <span class="source">~ estimat</span>
+          <span class="daily"></span>
+        </div>
+      </div>
+    </div>
+    <span class="tag">THINK</span>
+  </div>
+
+  <!-- STOP FULL -->
+  <div class="column">
+    <div class="overlay stop">
+      <div class="top-bar"></div>
+      <div class="content">
+        <div class="verdict-row">
+          <span class="circle">✗ -5.2</span>
+          <div class="profit-area">
+            <div class="profit-label">NET / BRUT /KM</div>
+            <div class="profit-value">-0.65 / 0.9 lei/km</div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="data-row">
+          <span class="left">4.8 km / 9 min</span>
+          <span class="right">~2 km</span>
+        </div>
+        <div class="data-row highlight">
+          <span class="left">6.30 lei</span>
+          <span class="right">14 min</span>
+        </div>
+        <div class="data-row net">
+          <span class="left">-5.20 lei</span>
+          <span class="right">-0.37 RON/min</span>
+        </div>
+        <div class="data-row warn">
+          <span class="left">4.8 km</span>
+          <span class="right">⚠ pickup lung</span>
+        </div>
+        <div class="divider"></div>
+        <div class="footer-row">
+          <span class="source">~ estimat</span>
+          <span class="daily"></span>
+        </div>
+      </div>
+    </div>
+    <span class="tag">STOP</span>
+  </div>
+
+</div>
+
+<p style="color:#7A8A7C; font-size:11px; margin-top:30px;">
+  Dimensiune reala pe telefon: min 170dp / max 200dp &bull; Cercul se extinde automat pt text
+</p>
+
+</body>
+</html>

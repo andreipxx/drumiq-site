@@ -1,15 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
+import { FONT } from '../constants/typography';
 import type { ProfitVerdict } from '../types';
 import { VERDICT_DISPLAY } from '../types';
 import type { ProfitAnalysis } from '../services/profitCalculator';
-
-const VERDICT_BG: Record<ProfitVerdict, string> = {
-  go: '#00FF7F10',
-  think: '#FFB80010',
-  stop: '#FF336610',
-};
 
 const VERDICT_LABEL: Record<ProfitVerdict, string> = {
   go: 'Cursă profitabilă',
@@ -25,9 +20,16 @@ interface Props {
 }
 
 export default function VerdictCard({ analysis, grossEarnings, rideType, onDetails }: Props) {
-  const { colors } = useTheme();
+  const { colors, fontsLoaded } = useTheme();
   const v = analysis.verdict;
   const display = VERDICT_DISPLAY[v];
+
+  const VERDICT_BG: Record<ProfitVerdict, string> = {
+    go: colors.goBg,
+    think: colors.thinkBg,
+    stop: colors.stopBg,
+  };
+
   const bgColor = VERDICT_BG[v];
   const borderColor = display.color + '40';
 
@@ -50,28 +52,28 @@ export default function VerdictCard({ analysis, grossEarnings, rideType, onDetai
       </View>
 
       <View style={s.statsGrid}>
-        <StatCell label="Profit" value={`${analysis.profit.toFixed(2)} lei`} color={display.color} />
-        <StatCell label="Lei/km" value={analysis.profitPerKm.toFixed(2)} color={display.color} />
-        <StatCell label="Lei/oră" value={analysis.profitPerHour.toFixed(2)} color={display.color} />
-        <StatCell label="Km total" value={analysis.totalKm.toFixed(1)} color={colors.textMuted} />
-        <StatCell label="Timp" value={`${analysis.totalMinutes} min`} color={colors.textMuted} />
-        <StatCell label="Cost vehicul" value={`${analysis.vehicleCost.toFixed(2)} lei`} color={colors.textMuted} />
+        <StatCell label="Profit" value={`${analysis.profit.toFixed(2)} lei`} color={display.color} colors={colors} fontsLoaded={fontsLoaded} />
+        <StatCell label="Lei/km" value={analysis.profitPerKm.toFixed(2)} color={display.color} colors={colors} fontsLoaded={fontsLoaded} />
+        <StatCell label="Lei/oră" value={analysis.profitPerHour.toFixed(2)} color={display.color} colors={colors} fontsLoaded={fontsLoaded} />
+        <StatCell label="Km total" value={analysis.totalKm.toFixed(1)} color={colors.textMuted} colors={colors} fontsLoaded={fontsLoaded} />
+        <StatCell label="Timp" value={`${analysis.totalMinutes} min`} color={colors.textMuted} colors={colors} fontsLoaded={fontsLoaded} />
+        <StatCell label="Cost vehicul" value={`${analysis.vehicleCost.toFixed(2)} lei`} color={colors.textMuted} colors={colors} fontsLoaded={fontsLoaded} />
       </View>
 
       {onDetails && (
         <TouchableOpacity onPress={onDetails} activeOpacity={0.6} style={s.detailsLink}>
-          <Text style={[s.detailsText, { color: colors.accent }]}>{'Detalii costuri ›'}</Text>
+          <Text style={[s.detailsText, { color: colors.cyan }]}>{'Detalii costuri ›'}</Text>
         </TouchableOpacity>
       )}
     </View>
   );
 }
 
-function StatCell({ label, value, color }: { label: string; value: string; color: string }) {
+function StatCell({ label, value, color, colors, fontsLoaded }: { label: string; value: string; color: string; colors: any; fontsLoaded: boolean }) {
   return (
     <View style={s.statCell}>
-      <Text style={[s.statValue, { color }]}>{value}</Text>
-      <Text style={s.statLabel}>{label}</Text>
+      <Text style={[s.statValue, { color, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>{value}</Text>
+      <Text style={[s.statLabel, { color: colors.textMuted }]}>{label}</Text>
     </View>
   );
 }
@@ -99,8 +101,8 @@ const s = StyleSheet.create({
   statCell: {
     width: '31%', alignItems: 'center', paddingVertical: 8,
   },
-  statValue: { fontSize: 14, fontWeight: '700', fontFamily: 'monospace' },
-  statLabel: { fontSize: 10, color: '#888', marginTop: 2 },
+  statValue: { fontSize: 14, fontWeight: '700' },
+  statLabel: { fontSize: 10, marginTop: 2 },
   detailsLink: { alignItems: 'center', marginTop: 12 },
   detailsText: { fontSize: 13, fontWeight: '600' },
 });

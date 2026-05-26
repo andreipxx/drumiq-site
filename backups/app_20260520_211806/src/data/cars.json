@@ -1,0 +1,4920 @@
+[
+  {
+    "brand": "Alfa Romeo",
+    "model": "159",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Alfa Romeo",
+    "model": "Giulietta",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Alfa Romeo",
+    "model": "Stelvio",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Alfa Romeo",
+    "model": "Tonale",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Audi",
+    "model": "A1",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Audi",
+    "model": "A3",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Audi",
+    "model": "A3 Limousine",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Audi",
+    "model": "A4",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Audi",
+    "model": "A5",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Audi",
+    "model": "A6",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Audi",
+    "model": "A7",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Audi",
+    "model": "A8",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Audi",
+    "model": "e-tron",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Audi",
+    "model": "e-tron Sportback",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Audi",
+    "model": "Q3",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Audi",
+    "model": "Q4",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Audi",
+    "model": "Q5",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Audi",
+    "model": "Q6",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Audi",
+    "model": "Q7",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BAIC",
+    "model": "X25",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "1 series",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "2 series",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "2 series Grand Tourer",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "3 series",
+    "engines": [
+      {
+        "name": "320d 190CP",
+        "fuel": "Diesel",
+        "wear": 0.25
+      },
+      {
+        "name": "320i 184CP",
+        "fuel": "Benzină",
+        "wear": 0.24
+      },
+      {
+        "name": "330e PHEV",
+        "fuel": "Hybrid+GPL (PHEV)",
+        "wear": 0.23
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "4 series",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "5 series",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "6 series",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "7 series",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "i3",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "i4",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "iX1",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "Seria 3",
+    "engines": [
+      {
+        "name": "320d 190CP",
+        "fuel": "Diesel",
+        "wear": 0.25
+      },
+      {
+        "name": "320i 184CP",
+        "fuel": "Benzină",
+        "wear": 0.24
+      },
+      {
+        "name": "330e PHEV",
+        "fuel": "Hybrid+GPL (PHEV)",
+        "wear": 0.23
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "X1",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "X2",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "X3",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "X4",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "X5",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "X6",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BYD",
+    "model": "Atto 2",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BYD",
+    "model": "Atto 3",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "BYD",
+    "model": "Dolphin Surf",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BYD",
+    "model": "Seal 5",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "BYD",
+    "model": "Seal 6",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BYD",
+    "model": "Seal U",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BYD",
+    "model": "Sealion 5",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "BYD",
+    "model": "Sealion 7",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Chery",
+    "model": "Tiggo 4",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Chery",
+    "model": "Tiggo 8",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Chevrolet",
+    "model": "Aveo",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Chevrolet",
+    "model": "Bolt",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Chevrolet",
+    "model": "Captiva",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Chevrolet",
+    "model": "Cruze",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Chevrolet",
+    "model": "Lacetti",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Chevrolet",
+    "model": "Orlando",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Chevrolet",
+    "model": "Sonic",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Chevrolet",
+    "model": "Spark",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Chevrolet",
+    "model": "Trax",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Citroen",
+    "model": "Berlingo",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Citroen",
+    "model": "C-Elysée",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Citroen",
+    "model": "C1",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Citroen",
+    "model": "C3",
+    "engines": [
+      {
+        "name": "1.2 PureTech 83CP",
+        "fuel": "Benzină",
+        "wear": 0.13
+      }
+    ]
+  },
+  {
+    "brand": "Citroen",
+    "model": "C4",
+    "engines": [
+      {
+        "name": "1.2 PureTech 130CP",
+        "fuel": "Benzină",
+        "wear": 0.16
+      },
+      {
+        "name": "ë-C4 Electric",
+        "fuel": "Electric",
+        "wear": 0.13
+      }
+    ]
+  },
+  {
+    "brand": "Citroen",
+    "model": "C4 Space Tourer",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Citroen",
+    "model": "C4 X",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Citroen",
+    "model": "C5",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Citroen",
+    "model": "DS 3",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Citroen",
+    "model": "DS 4",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Citroen",
+    "model": "DS 5",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Citroen",
+    "model": "DS 7",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Citroen",
+    "model": "DS 7 Crossback",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Citroen",
+    "model": "Grand C4 Picasso",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Citroen",
+    "model": "Xsara Picasso",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Cupra",
+    "model": "Born",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Cupra",
+    "model": "Formentor",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Cupra",
+    "model": "León",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Dacia",
+    "model": "Bigster",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Dacia",
+    "model": "Dokker",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Dacia",
+    "model": "Duster",
+    "engines": [
+      {
+        "name": "1.0 TCe 100CP",
+        "fuel": "Benzină",
+        "wear": 0.18
+      },
+      {
+        "name": "1.0 ECO-G 100CP GPL",
+        "fuel": "Benzină+GPL",
+        "wear": 0.17
+      },
+      {
+        "name": "1.5 dCi 115CP",
+        "fuel": "Diesel",
+        "wear": 0.19
+      },
+      {
+        "name": "1.3 TCe 150CP",
+        "fuel": "Benzină",
+        "wear": 0.2
+      }
+    ]
+  },
+  {
+    "brand": "Dacia",
+    "model": "Jogger",
+    "engines": [
+      {
+        "name": "1.0 TCe 110CP",
+        "fuel": "Benzină",
+        "wear": 0.17
+      },
+      {
+        "name": "1.0 ECO-G 100CP GPL",
+        "fuel": "Benzină+GPL",
+        "wear": 0.16
+      },
+      {
+        "name": "1.6 Hybrid 140CP",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.18
+      }
+    ]
+  },
+  {
+    "brand": "Dacia",
+    "model": "Lodgy",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Dacia",
+    "model": "Logan",
+    "engines": [
+      {
+        "name": "1.0 SCe 75CP",
+        "fuel": "Benzină",
+        "wear": 0.14
+      },
+      {
+        "name": "1.0 ECO-G GPL",
+        "fuel": "Benzină+GPL",
+        "wear": 0.13
+      },
+      {
+        "name": "1.5 dCi 90CP",
+        "fuel": "Diesel",
+        "wear": 0.15
+      }
+    ]
+  },
+  {
+    "brand": "Dacia",
+    "model": "Logan MCV",
+    "engines": [
+      {
+        "name": "1.0 SCe 75CP",
+        "fuel": "Benzină",
+        "wear": 0.15
+      },
+      {
+        "name": "1.0 ECO-G GPL",
+        "fuel": "Benzină+GPL",
+        "wear": 0.14
+      },
+      {
+        "name": "1.5 dCi 90CP",
+        "fuel": "Diesel",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Dacia",
+    "model": "Sandero",
+    "engines": [
+      {
+        "name": "1.0 SCe",
+        "fuel": "Benzină",
+        "wear": 0.13
+      },
+      {
+        "name": "1.0 ECO-G GPL",
+        "fuel": "Benzină+GPL",
+        "wear": 0.12
+      }
+    ]
+  },
+  {
+    "brand": "Dacia",
+    "model": "Sandero Stepway",
+    "engines": [
+      {
+        "name": "1.0 TCe 90CP",
+        "fuel": "Benzină",
+        "wear": 0.15
+      },
+      {
+        "name": "1.0 ECO-G 100CP GPL",
+        "fuel": "Benzină+GPL",
+        "wear": 0.14
+      },
+      {
+        "name": "1.0 SCe 65CP",
+        "fuel": "Benzină",
+        "wear": 0.13
+      }
+    ]
+  },
+  {
+    "brand": "Dacia",
+    "model": "Spring",
+    "engines": [
+      {
+        "name": "Electric 45CP",
+        "fuel": "Electric",
+        "wear": 0.1
+      },
+      {
+        "name": "Electric 65CP",
+        "fuel": "Electric",
+        "wear": 0.11
+      }
+    ]
+  },
+  {
+    "brand": "Daihatsu",
+    "model": "Materia",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "DFSK",
+    "model": "Seres 3",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "DongFeng",
+    "model": "Forthing V9",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "DongFeng",
+    "model": "M4",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Fiat",
+    "model": "500",
+    "engines": [
+      {
+        "name": "1.0 Hybrid 70CP",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.11
+      },
+      {
+        "name": "500e Electric",
+        "fuel": "Electric",
+        "wear": 0.1
+      }
+    ]
+  },
+  {
+    "brand": "Fiat",
+    "model": "600E",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Fiat",
+    "model": "Bravo",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Fiat",
+    "model": "Doblò",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Fiat",
+    "model": "Fiorino",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Fiat",
+    "model": "Freemont",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Fiat",
+    "model": "Grande Punto",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Fiat",
+    "model": "Linea",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Fiat",
+    "model": "Palio",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Fiat",
+    "model": "Panda",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Fiat",
+    "model": "Punto",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Fiat",
+    "model": "Qubo",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Fiat",
+    "model": "Scudo",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Fiat",
+    "model": "Tipo",
+    "engines": [
+      {
+        "name": "1.4 T-Jet 120CP",
+        "fuel": "Benzină",
+        "wear": 0.15
+      },
+      {
+        "name": "1.6 MultiJet 130CP",
+        "fuel": "Diesel",
+        "wear": 0.17
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "B-Max",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "C-Max",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Capri",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "EcoSport",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Edge",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Explorer",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Fiesta",
+    "engines": [
+      {
+        "name": "1.1 Ti-VCT 75CP",
+        "fuel": "Benzină",
+        "wear": 0.13
+      },
+      {
+        "name": "1.0 EcoBoost 100CP",
+        "fuel": "Benzină",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Focus",
+    "engines": [
+      {
+        "name": "1.0 EcoBoost 125CP",
+        "fuel": "Benzină",
+        "wear": 0.16
+      },
+      {
+        "name": "1.5 TDCi 120CP",
+        "fuel": "Diesel",
+        "wear": 0.17
+      },
+      {
+        "name": "1.5 EcoBoost 150CP",
+        "fuel": "Benzină",
+        "wear": 0.18
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Fusion",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Galaxy",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Grand C-Max",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Ka+",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Kuga",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Mondeo",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Mustang Mach-E",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Puma",
+    "engines": [
+      {
+        "name": "1.0 EcoBoost 125CP",
+        "fuel": "Benzină",
+        "wear": 0.16
+      },
+      {
+        "name": "1.0 EcoBoost Hybrid",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.15
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "S-Max",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Tourneo",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Transit",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Vignale",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Geely",
+    "model": "Starray EM-i",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Honda",
+    "model": "Accord",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Honda",
+    "model": "Civic",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Honda",
+    "model": "CR-V",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Honda",
+    "model": "HR-V",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Honda",
+    "model": "Insight",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Honda",
+    "model": "Jazz",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "Bayon",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "Elantra",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "i10",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "i20",
+    "engines": [
+      {
+        "name": "1.2 MPI 84CP",
+        "fuel": "Benzină",
+        "wear": 0.13
+      },
+      {
+        "name": "1.0 T-GDI 100CP",
+        "fuel": "Benzină",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "i30",
+    "engines": [
+      {
+        "name": "1.4 MPI",
+        "fuel": "Benzină",
+        "wear": 0.15
+      },
+      {
+        "name": "1.5 DPI 110CP",
+        "fuel": "Benzină",
+        "wear": 0.16
+      },
+      {
+        "name": "1.6 CRDi 136CP",
+        "fuel": "Diesel",
+        "wear": 0.18
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "i40",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "Inster",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "IONIQ",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "IONIQ 5",
+    "engines": [
+      {
+        "name": "58 kWh RWD",
+        "fuel": "Electric",
+        "wear": 0.14
+      },
+      {
+        "name": "77 kWh RWD",
+        "fuel": "Electric",
+        "wear": 0.15
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "IONIQ 6",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "ix20",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "ix35",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "ix55",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "Kona",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "Kona EV",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "SANTAFE",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "Sonata",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "Staria",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "Tucson",
+    "engines": [
+      {
+        "name": "1.6 GDI",
+        "fuel": "Benzină",
+        "wear": 0.2
+      },
+      {
+        "name": "1.6 T-GDI HEV",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.18
+      },
+      {
+        "name": "1.6 CRDi 136CP",
+        "fuel": "Diesel",
+        "wear": 0.21
+      }
+    ]
+  },
+  {
+    "brand": "Infiniti",
+    "model": "Q30",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Infiniti",
+    "model": "Q50",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Infiniti",
+    "model": "Q70",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Jaguar",
+    "model": "I-Pace",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Jaguar",
+    "model": "XE",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Jaguar",
+    "model": "XF",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Jeep",
+    "model": "Avenger",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Jeep",
+    "model": "Compass",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Jeep",
+    "model": "Renegade",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "KG Mobility",
+    "model": "Torres EVX",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "KG Mobility / SsangYong",
+    "model": "Korando",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "KG Mobility / SsangYong",
+    "model": "Tivoli",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "KG Mobility / SsangYong",
+    "model": "XLV Estate",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "Carens",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "Ceed",
+    "engines": [
+      {
+        "name": "1.0 T-GDI 120CP",
+        "fuel": "Benzină",
+        "wear": 0.15
+      },
+      {
+        "name": "1.4 MPI",
+        "fuel": "Benzină",
+        "wear": 0.15
+      },
+      {
+        "name": "1.6 CRDi 136CP",
+        "fuel": "Diesel",
+        "wear": 0.17
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "e-Niro",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "e-Soul",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "EV6",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "K5",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "Niro",
+    "engines": [
+      {
+        "name": "1.6 HEV 141CP",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.16
+      },
+      {
+        "name": "EV 64kWh",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "Optima",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "Picanto",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "ProCeed",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "Rio",
+    "engines": [
+      {
+        "name": "1.2 MPI 84CP",
+        "fuel": "Benzină",
+        "wear": 0.13
+      },
+      {
+        "name": "1.0 T-GDI 100CP",
+        "fuel": "Benzină",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "Sorento",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "Soul",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "Sportage",
+    "engines": [
+      {
+        "name": "1.6 T-GDI HEV",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.2
+      },
+      {
+        "name": "1.6 CRDi 136CP",
+        "fuel": "Diesel",
+        "wear": 0.21
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "Stonic",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "Venga",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "XCeed",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Lada",
+    "model": "Granta",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Lada",
+    "model": "Kalina",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Lada",
+    "model": "Vesta",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Lancia",
+    "model": "Delta",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Lancia",
+    "model": "Thema",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Lancia",
+    "model": "Ypsilon",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Land Rover",
+    "model": "Discovery",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Land Rover",
+    "model": "Range Rover Sport",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Lexus",
+    "model": "CT200h",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Lexus",
+    "model": "ES300h",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Lexus",
+    "model": "GS300h",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Lexus",
+    "model": "IS300h",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Lexus",
+    "model": "NX300h",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Lexus",
+    "model": "RX450h",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Lexus",
+    "model": "UX250h",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Lynk & Co",
+    "model": "01",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mazda",
+    "model": "2",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mazda",
+    "model": "3",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mazda",
+    "model": "5",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mazda",
+    "model": "6",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mazda",
+    "model": "CX-3",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mazda",
+    "model": "CX-30",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mazda",
+    "model": "CX-5",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mazda",
+    "model": "CX-7",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mazda",
+    "model": "MX-30",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "A-class",
+    "engines": [
+      {
+        "name": "A180d 116CP",
+        "fuel": "Diesel",
+        "wear": 0.22
+      },
+      {
+        "name": "A180 136CP",
+        "fuel": "Benzină",
+        "wear": 0.22
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "B-class",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "C-class",
+    "engines": [
+      {
+        "name": "C220d 200CP",
+        "fuel": "Diesel",
+        "wear": 0.27
+      },
+      {
+        "name": "C200 204CP",
+        "fuel": "Benzină",
+        "wear": 0.26
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "CLA",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "Clasa A",
+    "engines": [
+      {
+        "name": "A180d 116CP",
+        "fuel": "Diesel",
+        "wear": 0.22
+      },
+      {
+        "name": "A180 136CP",
+        "fuel": "Benzină",
+        "wear": 0.22
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "Clasa C",
+    "engines": [
+      {
+        "name": "C220d 200CP",
+        "fuel": "Diesel",
+        "wear": 0.27
+      },
+      {
+        "name": "C200 204CP",
+        "fuel": "Benzină",
+        "wear": 0.26
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "E-class",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "EQA",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "EQB",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "EQE",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "EQV",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "GL",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "GLA",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "GLB",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "GLC",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "GLE",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "GLK",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "GLS",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "S-class",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "V-class",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "Vito",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "MG",
+    "model": "3",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "MG",
+    "model": "4",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "MG",
+    "model": "4 EV",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "MG",
+    "model": "4 SE",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "MG",
+    "model": "5",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "MG",
+    "model": "HS",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "MG",
+    "model": "ZS",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "MG",
+    "model": "ZS EV",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "MINI",
+    "model": "Cooper",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "MINI",
+    "model": "Countryman",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mitsubishi",
+    "model": "ASX",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mitsubishi",
+    "model": "Colt",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mitsubishi",
+    "model": "Eclipse Cross",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mitsubishi",
+    "model": "Lancer",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mitsubishi",
+    "model": "Outlander",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Mitsubishi",
+    "model": "Space Star",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Nio",
+    "model": "ET7",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Nissan",
+    "model": "Ariya",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Nissan",
+    "model": "Juke",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Nissan",
+    "model": "Leaf",
+    "engines": [
+      {
+        "name": "40 kWh",
+        "fuel": "Electric",
+        "wear": 0.13
+      },
+      {
+        "name": "62 kWh e+",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Nissan",
+    "model": "Micra",
+    "engines": [
+      {
+        "name": "1.0 IG-T 100CP",
+        "fuel": "Benzină",
+        "wear": 0.13
+      }
+    ]
+  },
+  {
+    "brand": "Nissan",
+    "model": "Note",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Nissan",
+    "model": "Pulsar",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Nissan",
+    "model": "Qashqai",
+    "engines": [
+      {
+        "name": "1.3 DIG-T 140CP",
+        "fuel": "Benzină",
+        "wear": 0.19
+      },
+      {
+        "name": "1.5 e-Power HEV",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.18
+      }
+    ]
+  },
+  {
+    "brand": "Nissan",
+    "model": "Qashqai +2",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Nissan",
+    "model": "X-Trail",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Agila",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Ampera",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Astra",
+    "engines": [
+      {
+        "name": "1.2 Turbo 130CP",
+        "fuel": "Benzină",
+        "wear": 0.17
+      },
+      {
+        "name": "1.5 Diesel 130CP",
+        "fuel": "Diesel",
+        "wear": 0.18
+      },
+      {
+        "name": "1.6 CDTI",
+        "fuel": "Diesel",
+        "wear": 0.17
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Astra Sports Tourer",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Corsa",
+    "engines": [
+      {
+        "name": "1.2 Turbo 100CP",
+        "fuel": "Benzină",
+        "wear": 0.14
+      },
+      {
+        "name": "1.2 75CP",
+        "fuel": "Benzină",
+        "wear": 0.12
+      },
+      {
+        "name": "Corsa-e Electric",
+        "fuel": "Electric",
+        "wear": 0.12
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Crossland",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Crossland X",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Grandland X",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Insignia",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Karl",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Meriva",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Mokka",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Mokka X",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Mokka-e",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Vectra",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Vivaro",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Zafira",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "107",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "108",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "2008",
+    "engines": [
+      {
+        "name": "1.2 PureTech 130CP",
+        "fuel": "Benzină",
+        "wear": 0.16
+      },
+      {
+        "name": "e-2008 Electric",
+        "fuel": "Electric",
+        "wear": 0.13
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "206+",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "207",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "208",
+    "engines": [
+      {
+        "name": "1.2 PureTech 100CP",
+        "fuel": "Benzină",
+        "wear": 0.14
+      },
+      {
+        "name": "e-208 Electric",
+        "fuel": "Electric",
+        "wear": 0.12
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "3008",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "301",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "308",
+    "engines": [
+      {
+        "name": "1.2 PureTech 130CP",
+        "fuel": "Benzină",
+        "wear": 0.17
+      },
+      {
+        "name": "1.5 BlueHDi 130CP",
+        "fuel": "Diesel",
+        "wear": 0.18
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "4008",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "408",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "5008",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "508",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "e-2008",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "e-3008",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "Expert Traveller",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "Partner",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "Rifter",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Polestar",
+    "model": "2",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Porsche",
+    "model": "Panamera",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Range Rover",
+    "model": "Evoque",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Arkana",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Austral",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Captur",
+    "engines": [
+      {
+        "name": "1.0 TCe 90CP",
+        "fuel": "Benzină",
+        "wear": 0.15
+      },
+      {
+        "name": "1.6 E-Tech Hybrid",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Clio",
+    "engines": [
+      {
+        "name": "1.0 TCe 90CP",
+        "fuel": "Benzină",
+        "wear": 0.14
+      },
+      {
+        "name": "1.0 SCe 65CP",
+        "fuel": "Benzină",
+        "wear": 0.12
+      },
+      {
+        "name": "1.6 E-Tech Hybrid",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Duster",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Espace",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Fluence",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Grand Scénic",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Kadjar",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Kangoo",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Kaptur",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Koleos",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Laguna",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Latitude",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Logan",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Mégane",
+    "engines": [
+      {
+        "name": "1.5 dCi 115CP",
+        "fuel": "Diesel",
+        "wear": 0.16
+      },
+      {
+        "name": "1.3 TCe 140CP",
+        "fuel": "Benzină",
+        "wear": 0.17
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "MÉGANE E-TECH",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Mégane Grandcoupe",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Mégane Scénic",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Modus",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Rafale",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Scénic",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Symbioz",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Symbol",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Taliant",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Talisman",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Thalia",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Trafic",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Twingo",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Zoe",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Seat",
+    "model": "Alhambra",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Seat",
+    "model": "Altea",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Seat",
+    "model": "Arona",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Seat",
+    "model": "Ateca",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Seat",
+    "model": "Exeo",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Seat",
+    "model": "Ibiza",
+    "engines": [
+      {
+        "name": "1.0 TSI 95CP",
+        "fuel": "Benzină",
+        "wear": 0.14
+      },
+      {
+        "name": "1.0 TSI 110CP",
+        "fuel": "Benzină",
+        "wear": 0.15
+      }
+    ]
+  },
+  {
+    "brand": "Seat",
+    "model": "Leon",
+    "engines": [
+      {
+        "name": "1.0 TSI 110CP",
+        "fuel": "Benzină",
+        "wear": 0.16
+      },
+      {
+        "name": "1.5 TSI 150CP",
+        "fuel": "Benzină",
+        "wear": 0.18
+      },
+      {
+        "name": "2.0 TDI 150CP",
+        "fuel": "Diesel",
+        "wear": 0.19
+      }
+    ]
+  },
+  {
+    "brand": "Seat",
+    "model": "León",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Seat",
+    "model": "Mii",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Seat",
+    "model": "Tarraco",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Seat",
+    "model": "Toledo",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "model": "Citigo",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "model": "Elroq",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "model": "Enyaq",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "model": "Fabia",
+    "engines": [
+      {
+        "name": "1.0 TSI",
+        "fuel": "Benzină",
+        "wear": 0.15
+      },
+      {
+        "name": "1.0 MPI",
+        "fuel": "Benzină",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "model": "Kamiq",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "model": "Karoq",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "model": "Kodiaq",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "model": "Octavia",
+    "engines": [
+      {
+        "name": "1.6 TDI 115CP",
+        "fuel": "Diesel",
+        "wear": 0.18
+      },
+      {
+        "name": "1.4 TSI",
+        "fuel": "Benzină",
+        "wear": 0.17
+      },
+      {
+        "name": "1.5 TSI 150CP",
+        "fuel": "Benzină",
+        "wear": 0.18
+      },
+      {
+        "name": "2.0 TDI 150CP",
+        "fuel": "Diesel",
+        "wear": 0.2
+      },
+      {
+        "name": "1.4 TSI iV PHEV",
+        "fuel": "Hybrid+GPL (PHEV)",
+        "wear": 0.19
+      }
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "model": "Rapid",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "model": "Roomster",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "model": "Scala",
+    "engines": [
+      {
+        "name": "1.0 TSI 110CP",
+        "fuel": "Benzină",
+        "wear": 0.16
+      },
+      {
+        "name": "1.5 TSI 150CP",
+        "fuel": "Benzină",
+        "wear": 0.17
+      }
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "model": "Superb",
+    "engines": [
+      {
+        "name": "2.0 TDI 150CP",
+        "fuel": "Diesel",
+        "wear": 0.22
+      },
+      {
+        "name": "1.5 TSI 150CP",
+        "fuel": "Benzină",
+        "wear": 0.2
+      }
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "model": "Yeti",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "SMART",
+    "model": "ForFour",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Subaru",
+    "model": "Impreza",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Subaru",
+    "model": "Trezia",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Subaru",
+    "model": "XV",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Suda",
+    "model": "SA01",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Suzuki",
+    "model": "Baleno",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Suzuki",
+    "model": "Celerio",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Suzuki",
+    "model": "Ignis",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Suzuki",
+    "model": "Kizashi",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Suzuki",
+    "model": "S-Cross",
+    "engines": [
+      {
+        "name": "1.4 Boosterjet Hybrid",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.17
+      }
+    ]
+  },
+  {
+    "brand": "Suzuki",
+    "model": "Splash",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Suzuki",
+    "model": "Swace",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Suzuki",
+    "model": "Swift",
+    "engines": [
+      {
+        "name": "1.2 Dualjet Hybrid",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.12
+      }
+    ]
+  },
+  {
+    "brand": "Suzuki",
+    "model": "SX4",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Suzuki",
+    "model": "Vitara",
+    "engines": [
+      {
+        "name": "1.4 Boosterjet Hybrid",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.17
+      }
+    ]
+  },
+  {
+    "brand": "SWM",
+    "model": "G03F",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Tesla",
+    "model": "Model 3",
+    "engines": [
+      {
+        "name": "Standard Range Plus",
+        "fuel": "Electric",
+        "wear": 0.16
+      },
+      {
+        "name": "Long Range",
+        "fuel": "Electric",
+        "wear": 0.17
+      }
+    ]
+  },
+  {
+    "brand": "Tesla",
+    "model": "Model S",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Tesla",
+    "model": "Model X",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Tesla",
+    "model": "Model Y",
+    "engines": [
+      {
+        "name": "RWD",
+        "fuel": "Electric",
+        "wear": 0.17
+      },
+      {
+        "name": "Long Range AWD",
+        "fuel": "Electric",
+        "wear": 0.18
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Auris",
+    "engines": [
+      {
+        "name": "1.8 Hybrid",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.15
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Avensis",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Aygo",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "bZ4X",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "C-HR",
+    "engines": [
+      {
+        "name": "1.8 Hybrid 122CP",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.17
+      },
+      {
+        "name": "2.0 Hybrid 184CP",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.19
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Camry",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Corolla",
+    "engines": [
+      {
+        "name": "1.8 Hybrid 140CP",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.16
+      },
+      {
+        "name": "2.0 Hybrid 196CP",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.18
+      },
+      {
+        "name": "1.6 VVT-i",
+        "fuel": "Benzină",
+        "wear": 0.17
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Corolla Hatchback",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Highlander",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Prius",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Prius Plus",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "ProAce",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "RAV4",
+    "engines": [
+      {
+        "name": "2.5 Hybrid 218CP",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.22
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Verso",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Yaris",
+    "engines": [
+      {
+        "name": "1.5 Hybrid",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.14
+      },
+      {
+        "name": "1.5 VVT-i",
+        "fuel": "Benzină",
+        "wear": 0.13
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Yaris Cross",
+    "engines": [
+      {
+        "name": "1.5 Hybrid 116CP",
+        "fuel": "Hybrid (HEV)",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Arteon",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Caddy",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "CC",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Golf",
+    "engines": [
+      {
+        "name": "1.0 TSI",
+        "fuel": "Benzină",
+        "wear": 0.17
+      },
+      {
+        "name": "1.5 TSI 150CP",
+        "fuel": "Benzină",
+        "wear": 0.18
+      },
+      {
+        "name": "1.6 TDI",
+        "fuel": "Diesel",
+        "wear": 0.19
+      },
+      {
+        "name": "2.0 TDI 150CP",
+        "fuel": "Diesel",
+        "wear": 0.2
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "ID.3",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "ID.4",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "ID.5",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "ID.7",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Jetta",
+    "engines": [
+      {
+        "name": "1.4 TSI",
+        "fuel": "Benzină",
+        "wear": 0.18
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Passat",
+    "engines": [
+      {
+        "name": "2.0 TDI 150CP",
+        "fuel": "Diesel",
+        "wear": 0.22
+      },
+      {
+        "name": "1.5 TSI 150CP",
+        "fuel": "Benzină",
+        "wear": 0.2
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Phaeton",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Polo",
+    "engines": [
+      {
+        "name": "1.0 TSI 95CP",
+        "fuel": "Benzină",
+        "wear": 0.15
+      },
+      {
+        "name": "1.0 MPI 80CP",
+        "fuel": "Benzină",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Sharan",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "T-Cross",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "T-Roc",
+    "engines": [
+      {
+        "name": "1.0 TSI 110CP",
+        "fuel": "Benzină",
+        "wear": 0.18
+      },
+      {
+        "name": "1.5 TSI 150CP",
+        "fuel": "Benzină",
+        "wear": 0.19
+      },
+      {
+        "name": "2.0 TDI 150CP",
+        "fuel": "Diesel",
+        "wear": 0.21
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Taigo",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Tiguan",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Touareg",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Touran",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Up",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volvo",
+    "model": "EX30",
+    "engines": [
+      {
+        "name": "Electric (setez manual)",
+        "fuel": "Electric",
+        "wear": 0.14
+      }
+    ]
+  },
+  {
+    "brand": "Volvo",
+    "model": "S40",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volvo",
+    "model": "S60",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volvo",
+    "model": "S80",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volvo",
+    "model": "S90",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volvo",
+    "model": "V40",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volvo",
+    "model": "V50",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volvo",
+    "model": "V60",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volvo",
+    "model": "V70",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volvo",
+    "model": "V90",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volvo",
+    "model": "XC40",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volvo",
+    "model": "XC60",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volvo",
+    "model": "XC70",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  },
+  {
+    "brand": "Volvo",
+    "model": "XC90",
+    "engines": [
+      {
+        "name": "Standard (setez manual)",
+        "fuel": "Benzină",
+        "wear": 0.16
+      }
+    ]
+  }
+]

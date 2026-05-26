@@ -1,4 +1,4 @@
-﻿// DRUMIQ v1.0.0 — License Screen (Login)
+// DRUMIQ v1.0.0 — License Screen (Login)
 // Dark theme with animated mascot + brutalist code input + activation flow
 
 import React, { useState } from 'react';
@@ -6,15 +6,18 @@ import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   SafeAreaView, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
 import { activateCode } from '../services/licenseManager';
 import { isValidFormat } from '../constants/licenses';
 import { APP_VERSION } from '../constants/config';
 import AppMascot from '../components/AppMascot';
+import { FONT, SIZE, RADIUS } from '../constants/typography';
+
 interface Props { onActivated: () => void; }
 
 export default function LicenseScreen({ onActivated }: Props) {
-  const { colors } = useTheme();
+  const { colors, fontsLoaded } = useTheme();
   const [key, setKey] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -35,6 +38,13 @@ export default function LicenseScreen({ onActivated }: Props) {
 
   return (
     <SafeAreaView style={[s.root, { backgroundColor: colors.bg }]}>
+      {/* Aurora blobs */}
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <View style={{ position:'absolute', top:-80, left:-60, width:260, height:260, borderRadius:300, backgroundColor:colors.aurora1 }} />
+        <View style={{ position:'absolute', top:120, right:-80, width:220, height:220, borderRadius:300, backgroundColor:colors.aurora2 }} />
+        <View style={{ position:'absolute', bottom:100, left:40, width:180, height:180, borderRadius:300, backgroundColor:colors.aurora3 }} />
+      </View>
+
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -45,48 +55,48 @@ export default function LicenseScreen({ onActivated }: Props) {
         >
           {/* Mascot */}
           <View style={s.mascotWrap}>
-            <AppMascot size={130} color={colors.accent} glowing />
+            <AppMascot size={130} color={colors.cyan} glowing />
           </View>
 
           {/* Brand */}
-          <Text style={[s.brand, { color: colors.text }]}>
-            DRUM<Text style={{ color: colors.accent }}>IQ</Text>
+          <Text style={[s.brand, { color: colors.text, fontFamily: fontsLoaded ? FONT.displayXB : FONT.system }]}>
+            DRUM<Text style={{ color: colors.cyan }}>IQ</Text>
           </Text>
-          <Text style={[s.tagline, { color: colors.textMuted }]}>
+          <Text style={[s.tagline, { color: colors.textMuted, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>
             ROMÂNIA · RIDESHARE INTEL
           </Text>
 
           {/* Description */}
-          <Text style={[s.desc, { color: colors.textMuted }]}>
+          <Text style={[s.desc, { color: colors.textMuted, fontFamily: fontsLoaded ? FONT.body : FONT.system }]}>
             Calculează profitabilitatea{'\n'}
             <Text style={{ color: colors.text, fontWeight: '700' }}>fiecărei curse Bolt</Text>, în timp real.
           </Text>
 
           {/* Code input */}
-          <Text style={[s.inputLabel, { color: colors.accent }]}>COD LICENȚĂ</Text>
-          <View style={[s.inputWrap, { borderColor: colors.borderAccent }]}>
+          <Text style={[s.inputLabel, { color: colors.cyan, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>COD LICENȚĂ</Text>
+          <View style={[s.inputWrap, { borderColor: colors.cyan + '40' }]}>
             {/* Corner brackets */}
-            <View style={[s.cornerTL, { borderColor: colors.accent }]} />
-            <View style={[s.cornerTR, { borderColor: colors.accent }]} />
-            <View style={[s.cornerBL, { borderColor: colors.accent }]} />
-            <View style={[s.cornerBR, { borderColor: colors.accent }]} />
+            <View style={[s.cornerTL, { borderColor: colors.cyan }]} />
+            <View style={[s.cornerTR, { borderColor: colors.cyan }]} />
+            <View style={[s.cornerBL, { borderColor: colors.cyan }]} />
+            <View style={[s.cornerBR, { borderColor: colors.cyan }]} />
 
             <TextInput
               value={key}
               onChangeText={(t) => setKey(t.toUpperCase().replace(/\s/g, ''))}
               placeholder="DPT-TRIAL-2026"
-              placeholderTextColor={colors.textDim}
+              placeholderTextColor={colors.textFaint}
               autoCapitalize="characters"
               autoCorrect={false}
               autoComplete="off"
               spellCheck={false}
               maxLength={25}
-              style={[s.input, { color: colors.text }]}
-              selectionColor={colors.accent}
+              style={[s.input, { color: colors.text, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}
+              selectionColor={colors.cyan}
             />
           </View>
 
-          <Text style={[s.hint, { color: colors.textDim }]}>
+          <Text style={[s.hint, { color: colors.textFaint, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>
             0 (cifră) ≠ O (literă)  ·  case-insensitive
           </Text>
 
@@ -95,31 +105,44 @@ export default function LicenseScreen({ onActivated }: Props) {
             onPress={handleActivate}
             disabled={!canActivate}
             activeOpacity={0.85}
-            style={[
-              s.btn,
-              {
-                backgroundColor: canActivate ? colors.accent : colors.surfaceAlt,
-                opacity: canActivate ? 1 : 0.5,
-              },
-            ]}
+            style={{ opacity: canActivate ? 1 : 0.5 }}
           >
-            {loading ? (
-              <ActivityIndicator color="#000" />
+            {canActivate ? (
+              <LinearGradient
+                colors={colors.gradButton}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={[s.btn, { borderRadius: RADIUS.md }]}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={[s.btnTxt, { color: '#fff', fontFamily: fontsLoaded ? FONT.displayXB : FONT.system }]}>
+                    ACTIVEAZĂ ▸
+                  </Text>
+                )}
+              </LinearGradient>
             ) : (
-              <Text style={[s.btnTxt, { color: canActivate ? '#000' : colors.textDim }]}>
-                ACTIVEAZĂ ▸
-              </Text>
+              <View style={[s.btn, { backgroundColor: colors.bgCardStrong, borderRadius: RADIUS.md }]}>
+                {loading ? (
+                  <ActivityIndicator color="#000" />
+                ) : (
+                  <Text style={[s.btnTxt, { color: colors.textFaint, fontFamily: fontsLoaded ? FONT.displayXB : FONT.system }]}>
+                    ACTIVEAZĂ ▸
+                  </Text>
+                )}
+              </View>
             )}
           </TouchableOpacity>
 
           {/* Fineprint */}
-          <Text style={[s.fineprint, { color: colors.textDim }]}>
+          <Text style={[s.fineprint, { color: colors.textFaint, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>
             Codul activează planul respectiv (TRIAL = 7 zile/100 curse).{'\n'}
             La activare se sincronizează ora cu un server.
           </Text>
 
           {/* Version */}
-          <Text style={[s.version, { color: colors.textDim }]}>
+          <Text style={[s.version, { color: colors.textFaint, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>
             v{APP_VERSION} · GO PAMPA S.R.L.
           </Text>
         </ScrollView>
@@ -176,7 +199,6 @@ const s = StyleSheet.create({
     paddingVertical: 18,
     paddingHorizontal: 16,
     fontSize: 20,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
     fontWeight: '700',
     letterSpacing: 2,
     textAlign: 'center',
@@ -184,7 +206,6 @@ const s = StyleSheet.create({
 
   hint: {
     fontSize: 9,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
     textAlign: 'center',
     letterSpacing: 0.5,
     marginTop: 10,
@@ -193,7 +214,6 @@ const s = StyleSheet.create({
 
   btn: {
     paddingVertical: 18,
-    borderRadius: 6,
     alignItems: 'center',
   },
   btnTxt: {
@@ -211,7 +231,6 @@ const s = StyleSheet.create({
 
   version: {
     fontSize: 9,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
     textAlign: 'center',
     marginTop: 24,
     letterSpacing: 1,

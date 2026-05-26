@@ -17,12 +17,13 @@ async function syncFuelToNative(s: FuelSettings): Promise<void> {
         wearPerKm: s.wearPerKm,
         consumptionGpl: s.consumptionGpl ?? null,
         pricePerUnitGpl: s.pricePerUnitGpl ?? null,
+        gplRatio: s.gplRatio ?? 0.7,
       });
     }
   } catch (e) { console.warn('syncFuelToNative failed', e); }
 }
 
-export type FuelType = 'benzina' | 'diesel' | 'electric' | 'benzina_gpl' | 'hybrid_hev' | 'hybrid_phev';
+export type FuelType = 'benzina' | 'diesel' | 'electric' | 'benzina_gpl' | 'hybrid_hev' | 'hybrid_phev' | 'hybrid_gpl';
 
 export interface FuelSettings {
   type: FuelType;
@@ -56,6 +57,8 @@ export const DEFAULTS: Record<FuelType, FuelSettings> = {
   hybrid_hev:   { type: 'hybrid_hev',   consumption:  4.7, pricePerUnit:  7.50, wearPerKm: 0.15 },
   hybrid_phev:  { type: 'hybrid_phev',  consumption:  5.5, pricePerUnit:  7.50,
                   consumptionKwh: 18.0, pricePerKwh: 1.20, electricRatio: 0.60, wearPerKm: 0.13 },
+  hybrid_gpl:   { type: 'hybrid_gpl',  consumption:  4.7, pricePerUnit:  7.50,
+                  consumptionGpl: 6.5, pricePerUnitGpl: 3.50, gplRatio: 0.75, wearPerKm: 0.16 },
 };
 
 const FUEL_KEY = '@dp_fuel_settings_v1';
@@ -128,6 +131,15 @@ export function fuelCostPerKm(s: FuelSettings): number {
     const benzinaPart  = (1 - r) * (s.consumption / 100) * s.pricePerUnit;
     const electricPart = r       * (elKwh / 100)         * elPrice;
     return benzinaPart + electricPart;
+  }
+  if (s.type === 'hybrid_gpl') {
+    const def = DEFAULTS.hybrid_gpl;
+    const gplConsum = s.consumptionGpl ?? def.consumptionGpl!;
+    const gplPrice  = s.pricePerUnitGpl ?? def.pricePerUnitGpl!;
+    const gplRatio  = s.gplRatio ?? def.gplRatio!;
+    const petrolPart = (s.consumption / 100) * s.pricePerUnit * (1 - gplRatio);
+    const gplPart    = (gplConsum / 100) * gplPrice * gplRatio;
+    return petrolPart + gplPart;
   }
   // hybrid_hev: same formula as benzina (no plug, auto-recharge)
   return (s.consumption / 100) * s.pricePerUnit;

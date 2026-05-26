@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRUMIQ — Preview Interactiv</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg: #0A0E0B;
+  --surface: #141A15;
+  --surfaceAlt: #1A2218;
+  --text: #E8FFE8;
+  --textMuted: #7A8A7C;
+  --textDim: #4A5A4C;
+  --border: #1E2A1F;
+  --accent: #00FF88;
+  --accentDim: #00CC6A;
+  --stop: #FF3366;
+  --think: #FFB800;
+  --go: #00FF88;
+  --font: -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+}
+body {
+  background: #000;
+  font-family: var(--font);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 20px;
+}
+.phone-frame {
+  width: 390px;
+  height: 844px;
+  background: var(--bg);
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 60px rgba(0,255,136,0.15), 0 0 0 2px #222;
+  display: flex;
+  flex-direction: column;
+}
+.notch {
+  width: 100%;
+  height: 50px;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.notch-pill {
+  width: 80px;
+  height: 26px;
+  background: #000;
+  border-radius: 20px;
+}
+.screen-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+.screen-area::-webkit-scrollbar { display: none; }
+
+/* Bottom tabs */
+.bottom-tabs {
+  display: flex;
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: 8px 0 20px;
+}
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+.tab-item:hover { opacity: 0.8; }
+.tab-item .indicator {
+  position: absolute;
+  top: -8px;
+  left: 25%;
+  right: 25%;
+  height: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  display: none;
+}
+.tab-item.active .indicator { display: block; }
+.tab-icon { font-size: 18px; opacity: 0.55; }
+.tab-item.active .tab-icon { opacity: 1; }
+.tab-label { font-size: 9px; font-weight: 700; letter-spacing: 1.2px; color: var(--textMuted); }
+.tab-item.active .tab-label { color: var(--accent); }
+
+/* Shared styles */
+.screen { padding: 16px; padding-bottom: 20px; }
+.page-title { font-size: 22px; font-weight: 900; letter-spacing: 1px; color: var(--text); margin-top: 4px; }
+.page-title .accent { color: var(--accent); }
+.page-sub { font-size: 10px; font-family: var(--mono); letter-spacing: 1px; color: var(--textMuted); margin-top: 2px; margin-bottom: 12px; }
+.section-lbl { font-size: 10px; letter-spacing: 2.5px; font-weight: 900; color: var(--textMuted); margin: 8px 0 10px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 8px;
+}
+.stat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.stat-card {
+  width: calc(50% - 4px);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--surface);
+}
+.stat-lbl { font-size: 8px; letter-spacing: 2px; font-weight: 700; color: var(--textMuted); margin-bottom: 4px; }
+.stat-val { font-size: 22px; font-weight: 700; font-family: var(--mono); color: var(--text); }
+.stat-unit { font-size: 11px; font-weight: 500; color: var(--textMuted); }
+
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: var(--surface);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-primary:hover { background: var(--accent); color: #000; }
+
+.btn-accent {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #000;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-align: center;
+  cursor: pointer;
+}
+.btn-accent:hover { opacity: 0.9; }
+
+.btn-danger {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--stop);
+  background: transparent;
+  color: var(--stop);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: center;
+  cursor: pointer;
+  margin-top: 16px;
+}
+
+.back-btn {
+  padding: 8px 0;
+  color: var(--accent);
+  font-size: 17px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--font);
+}
+.back-btn:hover { opacity: 0.7; }
+
+/* Tabs row */
+.tabs-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--textMuted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.tab-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+.tab-btn:hover:not(.active) { border-color: var(--accent); }
+
+/* Ride cards */
+.ride-card {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--go);
+  margin-bottom: 6px;
+  background: var(--surface);
+}
+.ride-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.ride-time { font-size: 10px; font-family: var(--mono); color: var(--textMuted); }
+.ride-price { font-size: 14px; font-weight: 700; font-family: var(--mono); color: var(--text); }
+.ride-addr { font-size: 9px; font-family: var(--mono); color: var(--textMuted); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ride-bottom { display: flex; justify-content: space-between; align-items: center; }
+.ride-meta { font-size: 9px; font-family: var(--mono); color: var(--textMuted); }
+.ride-verdict { font-size: 11px; font-weight: 700; }
+.ride-status { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-right: 8px; }
+
+/* Settings group */
+.settings-group {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.settings-row:hover { background: var(--surfaceAlt); }
+.settings-row + .settings-row { border-top: 1px solid var(--border); }
+.settings-label { font-size: 16px; font-weight: 500; color: var(--text); flex: 1; }
+.settings-sublabel { font-size: 12px; color: var(--textDim); margin-top: 2px; }
+.settings-chevron { font-size: 22px; color: var(--textDim); margin-left: auto; }
+.settings-value { font-size: 16px; font-weight: 600; color: var(--accent); margin-left: auto; }
+.settings-section-lbl { font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--textDim); padding: 12px 20px 8px; }
+
+/* Toggle switch */
+.toggle {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--border);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.toggle.on { background: var(--accent); }
+.toggle::after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--surface);
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.2s;
+}
+.toggle.on::after { transform: translateX(20px); }
+
+/* Overlay demo */
+.bolt-mock {
+  background: #f5f5f5;
+  border-radius: 16px;
+  min-height: 440px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.bolt-refuza {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: #1A1A1A;
+  padding: 8px 14px;
+  border-radius: 16px;
+  z-index: 5;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+}
+.overlay-wrap {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+}
+.bolt-card-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 14px;
+  padding-bottom: 60px;
+  border-top: 3px solid #00B85F;
+}
+.bolt-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.bolt-tag {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.bolt-price { font-size: 18px; font-weight: 800; color: #111; }
+.bolt-price-sub { font-size: 11px; color: #555; font-weight: 500; }
+.bolt-info { font-size: 11px; color: #888; margin-top: 4px; margin-bottom: 6px; }
+.bolt-accept {
+  position: absolute;
+  bottom: 12px;
+  left: 14px;
+  right: 14px;
+  background: #00B85F;
+  padding: 12px;
+  border-radius: 22px;
+  text-align: center;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Overlay card */
+.ov-card {
+  min-width: 200px;
+  max-width: 220px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+.ov-color-bar { height: 4px; width: 100%; }
+.ov-body { padding: 10px; background: rgba(10,14,11,0.92); }
+.ov-pro-body { padding: 14px; background: rgba(10,14,11,0.92); }
+.ov-verdict-row { display: flex; align-items: center; margin-bottom: 6px; }
+.ov-symbol {
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 900;
+  color: #000;
+}
+.ov-symbol-pro {
+  width: 38px;
+  height: 38px;
+  border-radius: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 900;
+  color: #000;
+}
+.ov-ppkm { font-size: 14px; font-weight: 700; font-family: var(--mono); margin-left: 8px; }
+.ov-breakdown { display: none; }
+.ov-daily { font-size: 10px; font-family: var(--mono); font-weight: 700; color: #FFB800; margin-top: 3px; }
+.ov-divider { height: 1px; background: #1E2A1F; margin: 6px 0; }
+.ov-stats-row { display: flex; margin: 3px 0; }
+.ov-stat { flex: 1; }
+.ov-stat-lbl { font-size: 8px; color: #5A6B5C; font-weight: 700; letter-spacing: 1.2px; }
+.ov-stat-val { font-size: 11px; color: #E8FFE8; font-family: var(--mono); font-weight: 600; margin-top: 1px; }
+.ov-pro-lbl { font-size: 9px; color: #7A8A7C; font-weight: 700; letter-spacing: 1.5px; }
+.ov-pro-ppkm { font-size: 16px; font-weight: 700; font-family: var(--mono); }
+.ov-src { font-size: 9px; font-family: var(--mono); }
+
+/* Plan cards */
+.plan-card {
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  background: var(--surface);
+  position: relative;
+}
+.plan-rec-badge {
+  position: absolute;
+  top: -10px;
+  right: 14px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 900;
+  color: #000;
+  letter-spacing: 2px;
+}
+.plan-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.plan-name { font-size: 22px; font-weight: 900; letter-spacing: 1px; }
+.plan-price { font-size: 18px; font-weight: 800; font-family: var(--mono); color: var(--text); }
+.plan-price-unit { font-size: 10px; font-weight: 500; color: var(--textMuted); }
+.feature-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.feature-check { font-size: 14px; font-weight: 700; width: 14px; }
+.feature-txt { font-size: 12px; }
+
+/* Profile */
+.avatar-card {
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--accent);
+  text-align: center;
+  margin-bottom: 16px;
+  background: var(--surface);
+  box-shadow: 0 0 12px rgba(0,255,136,0.15);
+}
+.avatar-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 36px;
+  border: 2px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  box-shadow: 0 0 12px rgba(0,255,136,0.3);
+}
+.avatar-letter { font-size: 32px; font-weight: 900; color: var(--accent); }
+.avatar-name { font-size: 22px; font-weight: 900; letter-spacing: 1px; color: var(--text); }
+.avatar-sub { font-size: 9px; font-family: var(--mono); letter-spacing: 2px; color: var(--textMuted); margin-top: 4px; }
+.plan-pill {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--accent);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-top: 10px;
+}
+
+/* Row with label + value */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+.info-row + .info-row { border-top: 1px solid #1E2A1F; margin-top: 4px; padding-top: 8px; }
+.info-lbl { font-size: 11px; color: var(--textMuted); }
+.info-val { font-size: 12px; font-weight: 700; font-family: var(--mono); color: var(--text); }
+
+/* Input mock */
+.input-mock {
+  background: var(--surfaceAlt);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  width: 90px;
+}
+
+/* Warning card */
+.warning-card {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid;
+  margin-bottom: 12px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Progress bar */
+.progress-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surfaceAlt);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  box-shadow: 0 0 6px;
+}
+
+/* Goal bar */
+.goal-bar-bg {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surfaceAlt);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.goal-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  box-shadow: 0 0 6px;
+}
+
+/* Beta disclaimer */
+.beta-disclaimer {
+  background: var(--surfaceAlt);
+  border: 1px solid var(--think);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.beta-disclaimer span {
+  font-size: 10px;
+  color: var(--think);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* Filter settings specifics */
+.filter-info-card {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--accent);
+  margin-bottom: 16px;
+  background: var(--surface);
+}
+.filter-info-txt { font-size: 11px; line-height: 17px; color: var(--textMuted); }
+
+.threshold-card {
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  margin-bottom: 8px;
+  background: var(--surface);
+}
+.threshold-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.threshold-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.threshold-hint { font-size: 9px; font-family: var(--mono); color: var(--textDim); margin-bottom: 8px; line-height: 13px; }
+.threshold-input-row { display: flex; align-items: center; gap: 8px; }
+.threshold-prefix { font-size: 10px; font-family: var(--mono); color: var(--textMuted); }
+.threshold-unit { font-size: 10px; font-family: var(--mono); color: var(--textMuted); }
+
+/* Onboarding */
+.onboarding-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 32px;
+  text-align: center;
+}
+.onboarding-title { font-size: 24px; font-weight: 800; color: var(--text); }
+.onboarding-hint { font-size: 14px; color: var(--textMuted); margin-top: 12px; line-height: 21px; }
+.dots-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 28px; }
+.dot { width: 8px; height: 8px; border-radius: 4px; background: var(--border); }
+.dot.active { background: var(--accent); }
+
+.bullet-row { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.bullet-circle {
+  width: 36px; height: 36px; border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 900; color: #000;
+  flex-shrink: 0;
+}
+.bullet-text { font-size: 15px; font-weight: 600; color: var(--text); }
+
+.perm-row {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+.perm-row:hover { border-color: var(--accent); }
+.perm-check {
+  width: 28px; height: 28px; border-radius: 14px;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  margin-right: 14px;
+  flex-shrink: 0;
+}
+.perm-check.checked { background: var(--accent); border-color: var(--accent); }
+.perm-check.checked::after { content: '✓'; color: #000; font-size: 16px; font-weight: 900; }
+.perm-label { font-size: 14px; font-weight: 700; color: var(--text); }
+.perm-desc { font-size: 12px; color: var(--textMuted); margin-top: 2px; }
+
+.privacy-box {
+  border: 1px dashed #00FF7F;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+.privacy-txt { font-size: 12px; color: #00FF7F; font-weight: 600; line-height: 19px; text-align: center; }
+
+/* Fuel settings */
+.fuel-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+.fuel-option + .fuel-option { border-top: 1px solid var(--border); }
+.fuel-option:hover { background: var(--surfaceAlt); }
+.fuel-label { font-size: 16px; font-weight: 500; color: var(--text); }
+.radio-circle {
+  width: 24px; height: 24px; border-radius: 12px;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+}
+.radio-circle.selected { border-color: var(--accent); background: var(--accent); }
+.radio-circle.selected::after { content: ''; width: 8px; height: 8px; border-radius: 4px; background: #fff; }
+.fuel-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+}
+.fuel-field + .fuel-field { border-top: 1px solid var(--border); }
+.fuel-field-label { font-size: 15px; font-weight: 500; color: var(--text); }
+.fuel-field-right { display: flex; align-items: center; gap: 8px; }
+.fuel-input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-width: 80px;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--text);
+}
+.fuel-suffix { font-size: 12px; color: var(--textDim); min-width: 60px; }
+
+/* Splash */
+.splash-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: #0d0a08;
+}
+.splash-logo {
+  width: 88px; height: 88px; border-radius: 22px;
+  background: #E8B27A;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 12px;
+}
+.splash-logo-txt { font-size: 52px; font-weight: 900; color: #000; }
+.splash-brand { font-size: 34px; font-weight: 900; letter-spacing: 8px; color: #E8B27A; }
+.splash-tagline { font-size: 14px; color: #a89580; margin-top: 8px; }
+
+/* Sub-screen transition */
+.screen-content { animation: fadeIn 0.2s ease-in; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Founding badge */
+.founding-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #FFD700, #FF8C00);
+  font-size: 8px;
+  font-weight: 900;
+  color: #000;
+  letter-spacing: 1px;
+}
+
+/* Bell */
+.bell-icon {
+  width: 36px; height: 36px; border-radius: 18px;
+  border: 1px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 0 8px rgba(0,255,136,0.3);
+}
+
+/* Hidden screens */
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="notch"><div class="notch-pill"></div></div>
+
+  <div class="screen-area" id="screenArea">
+    <!-- All screens rendered here by JS -->
+  </div>
+
+  <div class="bottom-tabs" id="bottomTabs">
+    <div class="tab-item active" data-tab="home" onclick="switchTab('home')">
+      <div class="indicator"></div>
+      <span class="tab-icon">&#127968;</span>
+      <span class="tab-label">ACASA</span>
+    </div>
+    <div class="tab-item" data-tab="tracker" onclick="switchTab('tracker')">
+      <div class="indicator"></div>
+      <span class="tab-icon">&#128202;</span>
+      <span class="tab-label">TRACKER</span>
+    </div>
+    <div class="tab-item" data-tab="plan" onclick="switchTab('plan')">
+      <div class="indicator"></div>
+      <span class="tab-icon">&#128142;</span>
+      <span class="tab-label">PLAN</span>
+    </div>
+    <div class="tab-item" data-tab="profil" onclick="switchTab('profil')">
+      <div class="indicator"></div>
+      <span class="tab-icon">&#128100;</span>
+      <span class="tab-label">PROFIL</span>
+    </div>
+    <div class="tab-item" data-tab="settings" onclick="switchTab('settings')">
+      <div class="indicator"></div>
+      <span class="tab-icon">&#9881;&#65039;</span>
+      <span class="tab-label">SETARI</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ STATE ============
+let currentTab = 'home';
+let currentSub = null; // null or 'overlay','fuel','filters','workmode','accessibility','upgrade','onboarding'
+let onboardingStep = 'splash';
+let overlayMode = 'pro';
+let overlayVerdict = 'go';
+let trackerPeriod = 'today';
+let trackerStatus = 'completed';
+let fuelType = 'benzina_gpl';
+
+const VERDICT = {
+  go:    { symbol: '$', label: 'GO',    color: '#00FF88' },
+  think: { symbol: '?', label: 'THINK', color: '#FFB800' },
+  stop:  { symbol: 'X', label: 'STOP',  color: '#FF3366' },
+};
+
+const DEMO_RIDES = [
+  { id:'r1', time:'14:32', date:'20/05', price:'31.12', pickup:'1.5', trip:'2.0', dur:4, pmt:'numerar', verdict:'go', ppkm:'4.68', pickupAddr:'Str. Victoriei 12', destAddr:'Spitalul Judetean', status:'finalizata', completed:true },
+  { id:'r2', time:'13:15', date:'20/05', price:'15.15', pickup:'2.3', trip:'2.0', dur:7, pmt:'card', verdict:'think', ppkm:'2.10', pickupAddr:'Bd. Republicii 45', destAddr:'Gara CFR', status:'finalizata', completed:true },
+  { id:'r3', time:'12:48', date:'20/05', price:'9.50', pickup:'3.1', trip:'11.0', dur:17, pmt:'card', verdict:'stop', ppkm:'0.07', pickupAddr:'Metro Baia Mare', destAddr:'Satu Mare', status:'acceptata', completed:false },
+  { id:'r4', time:'11:20', date:'20/05', price:'22.80', pickup:'1.2', trip:'3.5', dur:6, pmt:'numerar', verdict:'go', ppkm:'3.85', pickupAddr:'Piata Libertatii', destAddr:'Ferneziu', status:'finalizata', completed:true },
+  { id:'r5', time:'10:05', date:'20/05', price:'18.40', pickup:'1.8', trip:'2.8', dur:5, pmt:'card', verdict:'think', ppkm:'2.35', pickupAddr:'Kaufland', destAddr:'Vasile Lucaciu', status:'finalizata', completed:true },
+];
+
+const DEMO_DATA = {
+  go:    { ppkm: '4.68 RON/km', pickup: '1.5 km / 2 min', cursa: '2.0 km / 2 min', enc: '31.12 lei', profit: '9.36 lei', net: '+9.36 lei', source: 'api', breakdown: '31.1-7.8 com-3.5 tax-1.0 ben = 18.8', daily: '145/200 lei', deadKm: '1.5' },
+  think: { ppkm: '2.10 RON/km', pickup: '2.3 km / 5 min', cursa: '~2.0 km', enc: '15.15 lei', profit: '8.40 lei', net: '+8.40 lei', source: 'fallback', breakdown: '15.2-3.8 com-1.7 tax-1.0 ben = 8.7', daily: '145/200 lei', deadKm: '2.3' },
+  stop:  { ppkm: '0.07 RON/km', pickup: '1.5 km / 2 min', cursa: '11.0 km / 15 min', enc: '31.12 lei', profit: '0.85 lei', net: '+0.85 lei', source: 'api', breakdown: '31.1-7.8 com-3.5 tax-11.0 ben = 8.8', daily: '145/200 lei', deadKm: '1.5' },
+};
+
+// ============ RENDER ============
+function render() {
+  const area = document.getElementById('screenArea');
+  const tabs = document.getElementById('bottomTabs');
+
+  if (currentSub === 'onboarding') {
+    tabs.style.display = 'none';
+    area.innerHTML = renderOnboarding();
+    return;
+  }
+
+  if (currentSub) {
+    tabs.style.display = 'none';
+    area.innerHTML = renderSubScreen(currentSub);
+    return;
+  }
+
+  tabs.style.display = 'flex';
+  document.querySelectorAll('.tab-item').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === currentTab);
+  });
+
+  switch(currentTab) {
+    case 'home': area.innerHTML = renderHome(); break;
+    case 'tracker': area.innerHTML = renderTracker(); break;
+    case 'plan': area.innerHTML = renderPlan(); break;
+    case 'profil': area.innerHTML = renderProfil(); break;
+    case 'settings': area.innerHTML = renderSettings(); break;
+  }
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  currentSub = null;
+  render();
+  document.getElementById('screenArea').scrollTop = 0;
+}
+
+function openSub(sub) {
+  currentSub = sub;
+  render();
+  document.getElementById('screenArea').scrollTop = 0;
+}
+
+function closeSub() {
+  currentSub = null;
+  render();
+}
+
+// ============ HOME ============
+function renderHome() {
+  const completedRides = DEMO_RIDES.filter(r => r.completed);
+  const earnings = completedRides.reduce((s,r) => s + parseFloat(r.price), 0);
+  const avgPpkm = completedRides.reduce((s,r) => s + parseFloat(r.ppkm), 0) / completedRides.length;
+  const dailyGoal = 200;
+  const pct = Math.min(100, (earnings / dailyGoal) * 100);
+  const acceptRate = Math.round((completedRides.length / DEMO_RIDES.length) * 100);
+
+  return `<div class="screen screen-content">
+    <div class="beta-disclaimer"><span>BETA — versiune de test</span></div>
+
+    <div style="display:flex;align-items:flex-end;margin-bottom:12px">
+      <div style="flex:1">
+        <div style="font-size:9px;letter-spacing:3px;font-weight:700;color:var(--textMuted)">BUNA ZIUA</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:24px;font-weight:900;letter-spacing:1px;color:var(--text)">ANDREI</span>
+          <span class="founding-badge">FOUNDER</span>
+        </div>
+      </div>
+      <div class="bell-icon">&#128276;</div>
+    </div>
+
+    <!-- Plan badge -->
+    <div style="display:flex;padding:14px;border-radius:12px;border:1px solid var(--go);background:var(--surface);margin-bottom:6px;box-shadow:0 0 12px rgba(0,255,136,0.2)">
+      <div style="flex:1">
+        <div style="font-size:9px;letter-spacing:2px;font-weight:700;color:var(--textMuted)">PLAN ACTIV</div>
+        <div style="font-size:22px;font-weight:900;letter-spacing:1px;color:var(--go)">TRIAL</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:11px;font-family:var(--mono);color:var(--textMuted)">5 zile ramase</div>
+        <div style="font-size:9px;font-family:var(--mono);color:var(--textDim);margin-top:2px">DQ-TRIAL-2026</div>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:60%;background:var(--go);box-shadow:0 0 6px var(--go)"></div></div>
+
+    <!-- Daily Goal -->
+    <div class="card" style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-size:16px">&#127919;</span>
+        <span style="font-size:9px;letter-spacing:2px;font-weight:700;color:var(--textMuted)">TARGET AZI</span>
+        <span style="margin-left:auto;font-size:16px;font-weight:900;font-family:var(--mono);color:var(--text)">${earnings.toFixed(0)} / ${dailyGoal}<span style="font-size:10px;font-weight:500;color:var(--textMuted)"> RON</span></span>
+      </div>
+      <div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${pct}%;background:${pct >= 100 ? 'var(--go)' : 'var(--accent)'};box-shadow:0 0 6px ${pct >= 100 ? 'var(--go)' : 'var(--accent)'}"></div></div>
+      <div style="font-size:10px;font-family:var(--mono);color:var(--textDim);text-align:right">${pct >= 100 ? 'Target atins!' : `Mai ai ${(dailyGoal - earnings).toFixed(0)} RON`}</div>
+    </div>
+
+    ${acceptRate < 75 ? `<div class="warning-card" style="background:${acceptRate < 70 ? '#FF336620' : '#FFB80020'};border-color:${acceptRate < 70 ? '#FF3366' : '#FFB800'}">
+      <span style="color:${acceptRate < 70 ? '#FF3366' : '#FFB800'}">${acceptRate < 70 ? '&#128680;' : '&#9888;&#65039;'} Rata acceptare: ${acceptRate}% ${acceptRate < 70 ? '— SUB PRAG BLOCARE 70%!' : '— aproape de prag 70%'}</span>
+    </div>` : ''}
+
+    <div class="section-lbl">STATISTICI · AZI</div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-lbl">&#128202; OFERTE</div><div class="stat-val">${DEMO_RIDES.length}</div></div>
+      <div class="stat-card"><div class="stat-lbl">&#128200; PROFIT NET</div><div class="stat-val" style="color:var(--go)">${earnings.toFixed(0)}<span class="stat-unit"> RON</span></div></div>
+      <div class="stat-card"><div class="stat-lbl">&#9989; FINALIZATE</div><div class="stat-val">${completedRides.length}</div></div>
+      <div class="stat-card"><div class="stat-lbl">&#128176; LEI/KM</div><div class="stat-val" style="color:var(--think)">${avgPpkm.toFixed(2)}</div></div>
+    </div>
+
+    <div class="btn-primary" onclick="openSub('overlay')" style="margin-bottom:8px">&#10024;  VEZI OVERLAY-UL IN ACTIUNE</div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;margin-bottom:8px">
+      <div class="section-lbl" style="margin:0">ULTIMELE VERDICTE</div>
+      <span style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--accent);cursor:pointer" onclick="switchTab('tracker')">VEZI TOT &#8594;</span>
+    </div>
+    ${DEMO_RIDES.slice(0,3).map(r => {
+      const v = VERDICT[r.verdict];
+      return `<div class="ride-card" style="border-left-color:${v.color}">
+        <div class="ride-top">
+          <span class="ride-time">${r.time}</span>
+          <span class="ride-price">${r.price} lei</span>
+        </div>
+        <div class="ride-bottom">
+          <span class="ride-meta">${r.pickup} + ${r.trip} km · ${r.pmt}</span>
+          <span class="ride-verdict" style="color:${v.color}">${v.symbol} ${r.ppkm}</span>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ============ TRACKER ============
+function renderTracker() {
+  const periods = [{k:'today',l:'AZI'},{k:'week',l:'SAPTAMANAL'},{k:'total',l:'TOTAL'}];
+  const statuses = [{k:'completed',l:'FINALIZATE'},{k:'accepted',l:'ACCEPTATE'},{k:'all',l:'TOATE'}];
+  let filtered = trackerStatus === 'all' ? DEMO_RIDES
+    : trackerStatus === 'completed' ? DEMO_RIDES.filter(r => r.completed)
+    : DEMO_RIDES.filter(r => r.status === 'acceptata' || r.completed);
+  const earnings = filtered.filter(r=>r.completed).reduce((s,r) => s + parseFloat(r.price), 0);
+  const totalKm = filtered.reduce((s,r) => s + parseFloat(r.trip), 0);
+  const totalMin = filtered.reduce((s,r) => s + r.dur, 0);
+  const avgPpkm = filtered.length > 0 ? filtered.reduce((s,r) => s + parseFloat(r.ppkm), 0) / filtered.length : 0;
+  const avgPpmin = totalMin > 0 ? earnings / totalMin : 0;
+
+  return `<div class="screen screen-content">
+    <div class="page-title">TRACKER<span class="accent"> CASTIGURI</span></div>
+    <div class="page-sub">auto-detectate la accept Bolt</div>
+
+    <div class="tabs-row">
+      ${periods.map(p => `<div class="tab-btn ${trackerPeriod===p.k?'active':''}" onclick="trackerPeriod='${p.k}';render()">${p.l}</div>`).join('')}
+    </div>
+    <div class="tabs-row">
+      ${statuses.map(f => `<div class="tab-btn ${trackerStatus===f.k?'active':''}" onclick="trackerStatus='${f.k}';render()" style="${trackerStatus===f.k?'background:rgba(0,255,136,0.2);border-color:var(--go);color:var(--go)':''}">${f.l}</div>`).join('')}
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-lbl">CASTIGURI</div><div class="stat-val" style="color:var(--go)">${earnings.toFixed(0)}<span class="stat-unit"> lei</span></div></div>
+      <div class="stat-card"><div class="stat-lbl">FINALIZATE / OFERTE</div><div class="stat-val">${filtered.filter(r=>r.completed).length}<span class="stat-unit"> / ${DEMO_RIDES.length}</span></div></div>
+      <div class="stat-card"><div class="stat-lbl">DISTANTA</div><div class="stat-val">${totalKm.toFixed(0)}<span class="stat-unit"> km</span></div></div>
+      <div class="stat-card"><div class="stat-lbl">TIMP TOTAL</div><div class="stat-val">${totalMin}min</div></div>
+      <div class="stat-card"><div class="stat-lbl">MEDIE LEI/KM</div><div class="stat-val" style="color:var(--go)">${avgPpkm.toFixed(2)}</div></div>
+      <div class="stat-card"><div class="stat-lbl">MEDIE LEI/MIN</div><div class="stat-val" style="color:var(--think)">${avgPpmin.toFixed(2)}</div></div>
+    </div>
+
+    <div class="section-lbl">CURSE INDIVIDUALE</div>
+    ${filtered.map(r => {
+      const v = VERDICT[r.verdict];
+      const statusColor = r.completed ? 'var(--go)' : 'var(--think)';
+      return `<div class="ride-card" style="border-left-color:${v.color}">
+        <div class="ride-top">
+          <span class="ride-time">${r.date} · ${r.time}</span>
+          <span class="ride-price">${r.price} lei</span>
+        </div>
+        <div class="ride-addr">${r.pickupAddr} &#8594; ${r.destAddr}</div>
+        <div class="ride-bottom">
+          <span class="ride-meta">${r.trip}km · ${r.dur}min · ${r.pmt === 'numerar' ? '&#10003; Google' : '~ est'}</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="ride-status" style="color:${statusColor}">${r.status}</span>
+            <span class="ride-verdict" style="color:${v.color}">${v.symbol} ${r.ppkm}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('')}
+
+    <div class="btn-danger">&#128465;  STERGE TOATE DATELE</div>
+  </div>`;
+}
+
+// ============ PLAN ============
+function renderPlan() {
+  return `<div class="screen screen-content">
+    <div class="page-title">PLAN<span class="accent"> & FACTURARE</span></div>
+    <div class="page-sub">alege ce ti se potriveste</div>
+
+    <div class="plan-card" style="border:1px solid var(--think)">
+      <div class="plan-header">
+        <div class="plan-name" style="color:var(--think)">TRIAL</div>
+        <div>
+          <div class="plan-price">GRATUIT</div>
+          <div style="font-size:9px;font-family:var(--mono);letter-spacing:1px;color:var(--textMuted);margin-top:2px">100 curse · 7 zile</div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        ${[
+          {t:'Bulina verdict ($/?/X)', ok:true},
+          {t:'1 filtru personalizat (lei/km)', ok:true},
+          {t:'Tracker castiguri', ok:true},
+          {t:'Calcul Google trafic real', ok:false},
+          {t:'Card detaliat overlay', ok:false},
+          {t:'Toate 4 filtre + setari Pro', ok:false},
+        ].map(f => `<div class="feature-row">
+          <span class="feature-check" style="color:${f.ok?'var(--go)':'var(--textDim)'}">${f.ok?'&#10003;':'&#10007;'}</span>
+          <span class="feature-txt" style="color:${f.ok?'var(--textMuted)':'var(--textDim)'}; opacity:${f.ok?1:0.5}">${f.t}</span>
+        </div>`).join('')}
+      </div>
+      <div style="padding:10px;border-radius:8px;border:1px solid var(--go);text-align:center">
+        <span style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--go)">&#10003; PLANUL TAU ACTUAL</span>
+      </div>
+    </div>
+
+    <div class="plan-card" style="border:2px solid var(--go);box-shadow:0 0 12px rgba(0,255,136,0.2);margin-top:20px">
+      <div class="plan-rec-badge" style="background:var(--go)">&#9733; RECOMANDAT</div>
+      <div class="plan-header">
+        <div class="plan-name" style="color:var(--go)">PRO</div>
+        <div>
+          <div class="plan-price">49 RON<span class="plan-price-unit">/luna</span></div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        ${[
+          {t:'TOT din Trial', ok:true},
+          {t:'Calcul Google trafic real', ok:true},
+          {t:'Card detaliat overlay', ok:true},
+          {t:'Toate 4 filtrele personalizabile', ok:true},
+          {t:'Raza pickup max (2-40 km)', ok:true},
+          {t:'Rating pasager minim', ok:true},
+          {t:'Anual: 399 RON · Lifetime: 799 RON', ok:true},
+        ].map(f => `<div class="feature-row">
+          <span class="feature-check" style="color:var(--go)">&#10003;</span>
+          <span class="feature-txt" style="color:var(--textMuted)">${f.t}</span>
+        </div>`).join('')}
+      </div>
+      <div class="btn-accent" onclick="openSub('upgrade')">CUMPARA PRO</div>
+    </div>
+
+    <div style="padding:14px;border-radius:8px;border:1px dashed var(--border);text-align:center;margin-top:8px;cursor:pointer" onclick="openSub('upgrade')">
+      <span style="font-size:12px;font-weight:700;letter-spacing:1px;color:var(--text)">&#128203;  AM DEJA UN COD DE ACTIVARE</span>
+    </div>
+
+    <div style="font-size:9px;text-align:center;margin-top:16px;font-family:var(--mono);line-height:14px;color:var(--textDim)">
+      Toate planurile pot fi anulate oricand.<br>Platile sunt procesate prin Stripe.
+    </div>
+  </div>`;
+}
+
+// ============ PROFIL ============
+function renderProfil() {
+  return `<div class="screen screen-content">
+    <div class="page-title">PROFIL<span class="accent"> SOFER</span></div>
+    <div class="page-sub">date locale · pe acest dispozitiv</div>
+
+    <div class="avatar-card">
+      <div class="avatar-circle"><span class="avatar-letter">A</span></div>
+      <div class="avatar-name">ANDREI</div>
+      <div class="avatar-sub">gopampa35@gmail.com</div>
+      <div class="plan-pill">TRIAL</div>
+    </div>
+
+    <div class="section-lbl">VEHICUL</div>
+    <div class="card">
+      <div class="info-row">
+        <span class="info-lbl">Placuta</span>
+        <span class="input-mock">MM10GOO</span>
+      </div>
+      <div class="info-row">
+        <span class="info-lbl">Model</span>
+        <span class="info-val">Dacia Sandero 2023</span>
+      </div>
+      <div class="info-row">
+        <span class="info-lbl">Carburant</span>
+        <span class="info-val">Benzina + GPL</span>
+      </div>
+      <div class="info-row">
+        <span class="info-lbl">Cost total/km</span>
+        <span class="info-val" style="color:var(--go)">0.42 RON</span>
+      </div>
+    </div>
+
+    <div class="section-lbl">OBIECTIV ZILNIC</div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="info-lbl">Target</span>
+        <span class="input-mock" style="width:70px">200</span>
+        <span class="info-lbl">lei/zi</span>
+      </div>
+      <div style="font-size:9px;font-family:var(--mono);color:var(--textDim);margin-top:4px">Overlay afiseaza progresul AZI: X/200 lei. 0 = dezactivat.</div>
+    </div>
+
+    <div class="section-lbl">PLATFORME · auto-detect</div>
+    <div class="card">
+      <div class="info-row">
+        <div>
+          <div class="info-lbl" style="color:var(--text)">&#128663; Bolt</div>
+          <div style="font-size:9px;font-family:var(--mono);color:var(--textDim);margin-top:2px">ultima detectie: acum 2 min</div>
+        </div>
+        <span style="padding:3px 10px;border-radius:12px;border:1px solid var(--go);font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--go)">ACTIV</span>
+      </div>
+      <div class="info-row">
+        <div>
+          <div class="info-lbl" style="color:var(--text)">&#128665; Uber</div>
+          <div style="font-size:9px;font-family:var(--mono);color:var(--textDim);margin-top:2px">nu a fost detectat</div>
+        </div>
+        <span style="padding:3px 10px;border-radius:12px;border:1px solid var(--textDim);font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--textDim)">NEDETECTAT</span>
+      </div>
+    </div>
+
+    <div class="section-lbl">LIFETIME STATS</div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-lbl">CURSE TOTAL</div><div class="stat-val">47</div></div>
+      <div class="stat-card"><div class="stat-lbl">VENIT NET</div><div class="stat-val" style="color:var(--go)">1.2k<span class="stat-unit"> RON</span></div></div>
+      <div class="stat-card"><div class="stat-lbl">KM PARCURSI</div><div class="stat-val">342<span class="stat-unit"> km</span></div></div>
+      <div class="stat-card"><div class="stat-lbl">LICENTA</div><div style="font-size:11px;font-family:var(--mono);color:var(--textMuted);margin-top:6px">DQ-TRIAL-2026</div></div>
+    </div>
+
+    <div class="btn-danger">SCHIMBA COD / LOGOUT</div>
+
+    <div style="font-size:9px;text-align:center;margin-top:20px;font-family:var(--mono);line-height:14px;color:var(--textDim)">
+      DRUMIQ · v1.0.0<br>GO PAMPA S.R.L.
+    </div>
+  </div>`;
+}
+
+// ============ SETTINGS ============
+function renderSettings() {
+  return `<div class="screen screen-content" style="padding:0">
+    <div style="font-size:34px;font-weight:700;padding:16px 16px 24px;color:var(--text)">Settings</div>
+
+    <div class="settings-section-lbl">PLAN</div>
+    <div class="settings-group" style="margin:0 16px">
+      <div class="settings-row" style="cursor:default">
+        <span class="settings-label">Plan curent</span>
+        <span class="settings-value">TRIAL</span>
+      </div>
+      <div class="settings-row" onclick="openSub('upgrade')">
+        <span class="settings-label" style="color:var(--accent)">&#11088; Upgrade plan</span>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label" style="color:var(--stop)">Schimba cod / Logout</span>
+      </div>
+    </div>
+
+    <div class="settings-section-lbl">CARBURANT</div>
+    <div class="settings-group" style="margin:0 16px">
+      <div class="settings-row" onclick="openSub('fuel')">
+        <span class="settings-label">&#9981; Tip & pret carburant</span>
+        <span class="settings-chevron">&#8250;</span>
+      </div>
+    </div>
+
+    <div class="settings-section-lbl">MOD DE LUCRU</div>
+    <div class="settings-group" style="margin:0 16px">
+      <div class="settings-row" onclick="openSub('workmode')">
+        <div style="flex:1">
+          <div class="settings-label">Individual / PFA / SRL</div>
+          <div class="settings-sublabel">Costuri fixe saptamanale pentru calculul profitului</div>
+        </div>
+        <span class="settings-chevron">&#8250;</span>
+      </div>
+    </div>
+
+    <div class="settings-section-lbl">PRAGURI PROFITABILITATE</div>
+    <div class="settings-group" style="margin:0 16px">
+      <div class="settings-row" onclick="openSub('filters')">
+        <div style="flex:1">
+          <div class="settings-label">Praguri & filtre curse</div>
+          <div class="settings-sublabel">RON/km, RON/min, pickup max, rating min</div>
+        </div>
+        <span class="settings-chevron">&#8250;</span>
+      </div>
+    </div>
+
+    <div class="settings-section-lbl">&#128269; DIAGNOSTIC</div>
+    <div class="settings-group" style="margin:0 16px">
+      <div class="settings-row" onclick="openSub('accessibility')">
+        <div style="flex:1">
+          <div class="settings-label">Accessibility Test</div>
+          <div class="settings-sublabel">Verifica ca DRUMIQ citeste Bolt corect</div>
+        </div>
+        <span class="settings-chevron">&#8250;</span>
+      </div>
+    </div>
+
+    <div class="settings-section-lbl">PRO &#128274;</div>
+    <div class="settings-group" style="margin:0 16px">
+      <div class="settings-row" style="cursor:default">
+        <div style="flex:1">
+          <div class="settings-label" style="color:var(--textDim)">&#128274; Card complet (overlay detaliat)</div>
+          <div class="settings-sublabel">Disponibil in planul Pro</div>
+        </div>
+        <div class="toggle" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+
+    <div class="settings-section-lbl">OVERLAY PERMISSION</div>
+    <div class="settings-group" style="margin:0 16px">
+      <div class="settings-row" style="cursor:default">
+        <div style="flex:1">
+          <div class="settings-label">Display over other apps</div>
+          <div class="settings-sublabel">Acordata &#10003;</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section-lbl">CONSUM ADAPTIV</div>
+    <div class="settings-group" style="margin:0 16px">
+      <div class="settings-row" style="cursor:default">
+        <div style="flex:1">
+          <div class="settings-label">Consum adaptiv (manual din bord)</div>
+        </div>
+        <div class="toggle" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+
+    <div class="settings-section-lbl">TAXE</div>
+    <div class="settings-group" style="margin:0 16px">
+      <div class="settings-row" style="cursor:default">
+        <div style="flex:1">
+          <div class="settings-label">Taxe</div>
+          <div class="settings-sublabel">Taxele se aplica estimativ pe venitul cursei</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span class="input-mock" style="width:50px">10</span>
+          <span style="font-size:11px;color:var(--textDim)">%</span>
+        </div>
+      </div>
+      <div class="settings-row" style="cursor:default">
+        <div style="flex:1">
+          <div class="settings-label">Comision Bolt</div>
+          <div class="settings-sublabel">Daca suma Bolt e deja neta, lasa 0%</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span class="input-mock" style="width:50px">25</span>
+          <span style="font-size:11px;color:var(--textDim)">%</span>
+        </div>
+      </div>
+      <div class="settings-row" style="justify-content:center;cursor:default">
+        <span style="font-size:14px;font-weight:800;color:var(--textDim);letter-spacing:1px">&#10003; SALVAT</span>
+      </div>
+    </div>
+
+    <div class="settings-section-lbl">THEME</div>
+    <div class="settings-group" style="margin:0 16px">
+      ${[{m:'automatic',l:'Automatic',i:'&#9684;'},{m:'light',l:'Light',i:'&#9728;'},{m:'dark',l:'Dark',i:'&#9790;'}].map((o,i) => {
+        const sel = o.m === 'dark';
+        return `<div class="settings-row" style="${i>0?'border-top:1px solid var(--border)':''}">
+          <span style="font-size:22px;width:32px;color:var(--text)">${o.i}</span>
+          <span class="settings-label">${o.l}</span>
+          <div class="radio-circle ${sel?'selected':''}"></div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <div style="font-size:12px;text-align:center;padding:24px 0 16px;color:var(--textDim)">
+      DRUMIQ · v1.0.0 · GO PAMPA S.R.L.
+    </div>
+  </div>`;
+}
+
+// ============ SUB-SCREENS ============
+function renderSubScreen(sub) {
+  switch(sub) {
+    case 'overlay': return renderOverlay();
+    case 'fuel': return renderFuel();
+    case 'filters': return renderFilters();
+    case 'workmode': return renderWorkMode();
+    case 'accessibility': return renderAccessibility();
+    case 'upgrade': return renderUpgrade();
+    case 'onboarding': return renderOnboarding();
+    default: return '';
+  }
+}
+
+// ============ OVERLAY DEMO ============
+function renderOverlay() {
+  const v = VERDICT[overlayVerdict];
+  const d = DEMO_DATA[overlayVerdict];
+
+  const overlayCard = overlayMode === 'simple'
+    ? `<div class="ov-card" style="border:2px solid ${v.color}">
+        <div class="ov-color-bar" style="background:${v.color}"></div>
+        <div class="ov-body" style="background:rgba(10,14,11,0.92)">
+          <div class="ov-verdict-row">
+            <div class="ov-symbol" style="background:${v.color}">${v.symbol}</div>
+            <span class="ov-ppkm" style="color:${v.color}">${d.ppkm}</span>
+          </div>
+          <div class="ov-breakdown">${d.breakdown}</div>
+          <div class="ov-daily">AZI: ${d.daily}</div>
+        </div>
+       </div>`
+    : `<div class="ov-card" style="width:220px;border:2px solid ${v.color}">
+        <div class="ov-color-bar" style="background:${v.color};height:5px"></div>
+        <div class="ov-pro-body" style="background:rgba(10,14,11,0.92)">
+          <div class="ov-verdict-row">
+            <div class="ov-symbol-pro" style="background:${v.color};border:2px solid ${v.color}">${v.symbol}</div>
+            <div style="flex:1;margin-left:10px">
+              <div class="ov-pro-lbl">PROFIT/KM</div>
+              <div class="ov-pro-ppkm" style="color:${v.color}">${d.ppkm}</div>
+            </div>
+          </div>
+          <div class="ov-breakdown">${d.breakdown}</div>
+          <div class="ov-divider"></div>
+          <div class="ov-stats-row">
+            <div class="ov-stat"><div class="ov-stat-lbl">PICKUP</div><div class="ov-stat-val">${d.pickup}</div></div>
+            <div class="ov-stat"><div class="ov-stat-lbl">CURSA</div><div class="ov-stat-val">${d.cursa}</div></div>
+          </div>
+          <div class="ov-stats-row">
+            <div class="ov-stat"><div class="ov-stat-lbl">PROFIT/MIN</div><div class="ov-stat-val">${d.net}</div></div>
+            <div class="ov-stat"><div class="ov-stat-lbl" style="color:#F59E0B">DEAD KM</div><div class="ov-stat-val" style="color:#F59E0B">${d.deadKm} km</div></div>
+          </div>
+          <div class="ov-divider"></div>
+          <div class="ov-src" style="color:${d.source==='api'?'#00FF88':'#7A8A7C'}">${d.source==='api'?'&#10003; Google trafic real':'~ estimat'}</div>
+          <div class="ov-daily">AZI: ${d.daily}</div>
+        </div>
+       </div>`;
+
+  return `<div class="screen screen-content">
+    <div style="display:flex;align-items:center;padding-bottom:8px">
+      <button class="back-btn" onclick="closeSub()">&#8249; Inapoi</button>
+      <div style="flex:1;text-align:center">
+        <div style="font-size:18px;font-weight:900;letter-spacing:2px;color:var(--text)">OVERLAY DEMO</div>
+        <div style="font-size:9px;font-family:var(--mono);letter-spacing:1px;color:var(--textMuted);margin-top:2px">preview interactiv</div>
+      </div>
+      <div style="width:70px"></div>
+    </div>
+
+    <div class="bolt-mock">
+      <div class="bolt-refuza">&#10005; Refuza</div>
+      <div class="overlay-wrap">${overlayCard}</div>
+      <div class="bolt-card-bottom">
+        <div class="bolt-tags">
+          <span class="bolt-tag" style="background:#f0f0f0;color:#333">&#128663; Bolt</span>
+          <span class="bolt-tag" style="background:#d8f3dc;color:#1b6e3a">$ Numerar</span>
+          <span class="bolt-tag" style="background:#fde9d6;color:#8b4513">&#128205; Locatie</span>
+        </div>
+        <div class="bolt-price">${d.enc} <span class="bolt-price-sub">(NET, taxe incluse)</span></div>
+        <div class="bolt-info">Respingerea nu va afecta rata de acceptare</div>
+        <div style="font-size:11px;color:#444">Marcu &#183; 5.0 &#9733;</div>
+        <div style="font-size:11px;color:#555;margin-top:4px;line-height:16px">${d.pickup}<br>Spitalul Judetean Baia Mare</div>
+        <div class="bolt-accept">Accepta</div>
+      </div>
+    </div>
+
+    <div class="section-lbl">MOD OVERLAY</div>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      ${['simple','pro'].map(m => `<div class="tab-btn ${overlayMode===m?'active':''}" onclick="overlayMode='${m}';render()" style="flex:1;padding:14px">
+        <div style="font-size:13px;font-weight:900;letter-spacing:1.5px">${m.toUpperCase()}</div>
+        <div style="font-size:9px;font-family:var(--mono);margin-top:2px">${m==='simple'?'mini-card':'card detaliat'}</div>
+      </div>`).join('')}
+    </div>
+
+    <div class="section-lbl">VERDICT</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      ${['go','think','stop'].map(vk => {
+        const vd = VERDICT[vk];
+        const active = overlayVerdict === vk;
+        return `<div style="flex:1;padding:12px;border-radius:8px;border:2px solid ${vd.color};background:${active?vd.color:'var(--surface)'};text-align:center;cursor:pointer" onclick="overlayVerdict='${vk}';render()">
+          <div style="font-size:22px;font-weight:900;color:${active?'#000':vd.color}">${vd.symbol}</div>
+          <div style="font-size:9px;font-weight:700;margin-top:2px;letter-spacing:1px;color:${active?'#000':'var(--textMuted)'}">${vd.label}</div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <div style="padding:14px;border-radius:8px;border:1px dashed var(--border);text-align:center;cursor:pointer" onclick="openSub('accessibility')">
+      <span style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--textMuted)">&#128269; ACCESSIBILITY DIAGNOSTIC</span>
+    </div>
+
+    <div style="font-size:10px;text-align:center;margin-top:24px;line-height:14px;font-style:italic;color:var(--textDim)">
+      Acesta este doar un preview.<br>In condusul real, overlay-ul apare automat peste Bolt.
+    </div>
+  </div>`;
+}
+
+// ============ FUEL SETTINGS ============
+function renderFuel() {
+  const fuels = [
+    {k:'benzina', l:'Benzina'},
+    {k:'diesel', l:'Diesel'},
+    {k:'electric', l:'Electric'},
+    {k:'benzina_gpl', l:'Benzina+GPL'},
+    {k:'hybrid_hev', l:'Hybrid (HEV)'},
+    {k:'hybrid_phev', l:'Hybrid+GPL (PHEV)'},
+  ];
+  const vals = {
+    benzina: {cons:'7.5',price:'7.20',unit:'RON/L',cunit:'L/100km',wear:'0.05'},
+    diesel: {cons:'6.0',price:'7.50',unit:'RON/L',cunit:'L/100km',wear:'0.06'},
+    electric: {cons:'15',price:'1.20',unit:'RON/kWh',cunit:'kWh/100km',wear:'0.03'},
+    benzina_gpl: {cons:'8.0',price:'7.20',unit:'RON/L',cunit:'L/100km',wear:'0.05',consGpl:'10.5',priceGpl:'3.50'},
+    hybrid_hev: {cons:'5.0',price:'7.20',unit:'RON/L',cunit:'L/100km',wear:'0.04'},
+    hybrid_phev: {cons:'5.5',price:'7.20',unit:'RON/L',cunit:'L/100km',wear:'0.04'},
+  };
+  const v = vals[fuelType];
+  const isGpl = fuelType === 'benzina_gpl';
+
+  return `<div class="screen screen-content" style="padding:0">
+    <div style="padding:8px 16px"><button class="back-btn" onclick="closeSub()">&#8249; Back</button></div>
+    <div style="padding:0 16px 60px">
+      <div style="font-size:28px;font-weight:700;color:var(--text);margin-bottom:20px">Carburant</div>
+
+      <div class="settings-section-lbl" style="padding-left:4px">TIP CARBURANT</div>
+      <div class="settings-group">
+        ${fuels.map(f => `<div class="fuel-option" onclick="fuelType='${f.k}';render()">
+          <span class="fuel-label">${f.l}</span>
+          <div class="radio-circle ${fuelType===f.k?'selected':''}"></div>
+        </div>`).join('')}
+      </div>
+
+      <div class="settings-section-lbl" style="padding-left:4px">VALORI ${fuels.find(f=>f.k===fuelType).l.toUpperCase()}</div>
+      <div class="settings-group">
+        <div class="fuel-field">
+          <span class="fuel-field-label">Consum</span>
+          <div class="fuel-field-right">
+            <span class="fuel-input">${v.cons}</span>
+            <span class="fuel-suffix">${v.cunit}</span>
+          </div>
+        </div>
+        <div class="fuel-field">
+          <span class="fuel-field-label">Pret</span>
+          <div class="fuel-field-right">
+            <span class="fuel-input">${v.price}</span>
+            <span class="fuel-suffix">${v.unit}</span>
+          </div>
+        </div>
+        ${isGpl ? `
+        <div class="fuel-field">
+          <span class="fuel-field-label">Consum GPL</span>
+          <div class="fuel-field-right">
+            <span class="fuel-input">${v.consGpl}</span>
+            <span class="fuel-suffix">L/100km</span>
+          </div>
+        </div>
+        <div class="fuel-field">
+          <span class="fuel-field-label">Pret GPL</span>
+          <div class="fuel-field-right">
+            <span class="fuel-input">${v.priceGpl}</span>
+            <span class="fuel-suffix">RON/L</span>
+          </div>
+        </div>` : ''}
+        <div class="fuel-field">
+          <span class="fuel-field-label">Uzura</span>
+          <div class="fuel-field-right">
+            <span class="fuel-input">${v.wear}</span>
+            <span class="fuel-suffix">RON/km</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:12px;padding:12px 4px;color:var(--textDim);font-style:italic;line-height:17px">
+        Cost total estimat: 0.42 RON/km${isGpl ? '<br>(estimat la 80% GPL + 20% benzina)' : ''}
+      </div>
+
+      <div class="btn-accent" onclick="closeSub()">Salveaza</div>
+    </div>
+  </div>`;
+}
+
+// ============ FILTER SETTINGS ============
+function renderFilters() {
+  return `<div class="screen screen-content" style="padding:0">
+    <div style="padding:8px 16px"><button class="back-btn" onclick="closeSub()">&#8249; Back</button></div>
+    <div style="padding:0 16px 40px">
+      <div class="page-title">PRAGURI<span class="accent"> PROFITABILITATE</span></div>
+      <div class="page-sub">O singura sursa de adevar pentru verdicte</div>
+
+      <div class="filter-info-card">
+        <div class="filter-info-txt">
+          <span style="color:#FF3366;font-weight:700">X</span> sub minim ·
+          <span style="color:#FFB800;font-weight:700">?</span> zona galbena ·
+          <span style="color:var(--go);font-weight:700">$</span> profitabil
+        </div>
+      </div>
+
+      <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--textMuted);margin:16px 0 8px">PRAGURI PROFIT</div>
+
+      ${[
+        {icon:'&#128176;',label:'RON / km',hint:'Castig net pe km (pickup + cursa)',val:'2.0',unit:'RON/km',on:true},
+        {icon:'&#9201;',label:'RON / minut',hint:'Castig net pe minut lucrat',val:'0.50',unit:'RON/min',on:false},
+        {icon:'&#128200;',label:'RON / ora',hint:'Castig net pe ora echivalent',val:'50',unit:'RON/h',on:false},
+      ].map(t => `<div class="threshold-card">
+        <div class="threshold-header">
+          <span class="threshold-title">${t.icon}  ${t.label}</span>
+          <div class="toggle ${t.on?'on':''}" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="threshold-hint">${t.hint}</div>
+        <div class="threshold-input-row">
+          <span class="threshold-prefix">Minim</span>
+          <span class="input-mock">${t.val}</span>
+          <span class="threshold-unit">${t.unit}</span>
+        </div>
+      </div>`).join('')}
+
+      <!-- Yellow zone -->
+      <div class="threshold-card">
+        <div class="threshold-header">
+          <span class="threshold-title">&#9888;&#65039;  Zona galbena</span>
+        </div>
+        <div class="threshold-hint">Procent peste minim in care cursa e THINK (galbena)</div>
+        <div class="threshold-input-row">
+          <span class="input-mock">20</span>
+          <span class="threshold-unit">%</span>
+        </div>
+        <div style="margin-top:8px;padding:8px;border:1px dashed var(--border);border-radius:6px">
+          <span style="font-size:9px;font-family:var(--mono);color:var(--textDim)">
+            Ex: minim 2 RON/km &#8594; galben pana la 2.40 RON/km
+          </span>
+        </div>
+      </div>
+
+      <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--textMuted);margin:16px 0 8px">FILTRE DURE (independent de profit)</div>
+
+      ${[
+        {icon:'&#128205;',label:'Pickup maxim',hint:'Refuza automat daca pickup > X km',val:'3.5',unit:'km',prefix:'Peste',on:false},
+        {icon:'&#11088;',label:'Rating minim',hint:'Refuza automat daca rating < X stele',val:'4.5',unit:'stele',prefix:'Sub',on:false},
+      ].map(t => `<div class="threshold-card">
+        <div class="threshold-header">
+          <span class="threshold-title">${t.icon}  ${t.label}</span>
+          <div class="toggle ${t.on?'on':''}" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="threshold-hint">${t.hint}</div>
+        <div class="threshold-input-row">
+          <span class="threshold-prefix">${t.prefix}</span>
+          <span class="input-mock">${t.val}</span>
+          <span class="threshold-unit">${t.unit}</span>
+        </div>
+      </div>`).join('')}
+
+      <div class="btn-accent" style="margin-top:16px" onclick="closeSub()">SALVEAZA PRAGURILE</div>
+      <div style="padding:12px;border-radius:8px;border:1px dashed var(--border);text-align:center;margin-top:8px">
+        <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--textMuted)">RESETEAZA LA VALORI IMPLICITE</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ============ WORK MODE ============
+function renderWorkMode() {
+  return `<div class="screen screen-content" style="padding:0">
+    <div style="padding:8px 16px"><button class="back-btn" onclick="closeSub()">&#8249; Setari</button></div>
+    <div style="padding:0 16px 40px">
+      <div class="page-title">MOD<span class="accent"> DE LUCRU</span></div>
+      <div class="page-sub">costuri fixe saptamanale</div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <div style="width:20px;height:20px;border-radius:10px;border:2px solid var(--accent);background:var(--accent);display:flex;align-items:center;justify-content:center">
+            <span style="font-size:12px;color:#000;font-weight:900">&#10003;</span>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--text)">Individual / PFA / SRL</div>
+            <div style="font-size:11px;color:var(--textMuted)">Lucrez pe cont propriu</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:20px;height:20px;border-radius:10px;border:2px solid var(--border)"></div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--text)">Flota / masina inchiriata</div>
+            <div style="font-size:11px;color:var(--textMuted)">Platesc chirie saptamanala</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-lbl">COSTURI FIXE SAPTAMANALE</div>
+      <div class="card">
+        <div class="info-row">
+          <span class="info-lbl">Chirie masina</span>
+          <div style="display:flex;align-items:center;gap:4px">
+            <span class="input-mock" style="width:70px">0</span>
+            <span style="font-size:11px;color:var(--textDim)">RON/sapt</span>
+          </div>
+        </div>
+        <div class="info-row">
+          <span class="info-lbl">Asigurare</span>
+          <div style="display:flex;align-items:center;gap:4px">
+            <span class="input-mock" style="width:70px">0</span>
+            <span style="font-size:11px;color:var(--textDim)">RON/sapt</span>
+          </div>
+        </div>
+        <div class="info-row">
+          <span class="info-lbl">Alte costuri</span>
+          <div style="display:flex;align-items:center;gap:4px">
+            <span class="input-mock" style="width:70px">0</span>
+            <span style="font-size:11px;color:var(--textDim)">RON/sapt</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-accent" onclick="closeSub()">SALVEAZA</div>
+    </div>
+  </div>`;
+}
+
+// ============ ACCESSIBILITY TEST ============
+function renderAccessibility() {
+  return `<div class="screen screen-content" style="padding:0">
+    <div style="padding:8px 16px"><button class="back-btn" onclick="closeSub()">&#8249; Back</button></div>
+    <div style="padding:0 16px 40px">
+      <div class="page-title">ACCESSIBILITY<span class="accent"> TEST</span></div>
+      <div class="page-sub">verifica ca DRUMIQ citeste Bolt corect</div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:11px;font-weight:700;color:var(--textMuted)">STATUS SERVICIU</span>
+          <span style="padding:3px 10px;border-radius:12px;border:1px solid var(--go);font-size:9px;font-weight:700;color:var(--go)">ACTIV</span>
+        </div>
+        <div style="font-size:10px;font-family:var(--mono);color:var(--textDim);line-height:16px">
+          DrumIQ Accessibility Service este pornit si citeste ecranul Bolt.
+        </div>
+      </div>
+
+      <div class="section-lbl">TEST PARSARE</div>
+      <div class="card" style="margin-bottom:16px">
+        <div style="font-size:9px;font-family:var(--mono);color:var(--textDim);margin-bottom:8px">TEXT CAPTURAT (simulat):</div>
+        <div style="background:var(--surfaceAlt);border-radius:6px;padding:8px;font-size:10px;font-family:var(--mono);color:var(--text);line-height:16px;white-space:pre-wrap;margin-bottom:12px">Refuza
+Bolt
+Numerar
+9,75 lei (NET, taxe incluse)
+Refuzul cursei nu-ti va afecta rata de acceptare
+Marcu · 5.0 ★
+2 min · 1.5 km
+Strada Victoriei, Baia Mare
+Spitalul Judetean, Baia Mare
+Accepta</div>
+        <div style="font-size:10px;font-weight:700;color:var(--accent);margin-bottom:8px">REZULTAT PARSARE:</div>
+        <div style="font-size:10px;font-family:var(--mono);color:var(--text);line-height:18px">
+          Screen: <span style="color:var(--accent)">ride_offer</span><br>
+          Net: <span style="color:var(--go)">9.75 lei</span><br>
+          Pickup: <span style="color:var(--think)">1.5 km / 2 min</span><br>
+          Pasager: Marcu · 5.0 &#9733;<br>
+          Plata: numerar<br>
+          Pickup: Strada Victoriei, Baia Mare<br>
+          Dest: Spitalul Judetean, Baia Mare
+        </div>
+      </div>
+
+      <div class="section-lbl">VERDICT</div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:38px;height:38px;border-radius:19px;background:var(--go);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#000">$</div>
+          <div>
+            <div style="font-size:16px;font-weight:700;font-family:var(--mono);color:var(--go)">4.68 RON/km</div>
+            <div style="font-size:9px;color:var(--textMuted)">GO — cursa profitabila</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-primary" style="margin-top:16px" onclick="closeSub()">INAPOI LA SETARI</div>
+    </div>
+  </div>`;
+}
+
+// ============ UPGRADE / PAYWALL ============
+function renderUpgrade() {
+  return `<div class="screen screen-content" style="padding:0">
+    <div style="padding:8px 16px"><button class="back-btn" onclick="closeSub()">&#8249; Inchide</button></div>
+    <div style="padding:0 16px 40px;text-align:center">
+      <div style="font-size:40px;margin:20px 0">&#128142;</div>
+      <div style="font-size:24px;font-weight:900;color:var(--text)">DRUMIQ<span style="color:var(--go)"> PRO</span></div>
+      <div style="font-size:12px;color:var(--textMuted);margin-top:8px;margin-bottom:24px">Deblochezi tot: Google trafic real, card detaliat, toate filtrele</div>
+
+      <div class="card" style="text-align:left;margin-bottom:12px;border-color:var(--go)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:16px;font-weight:900;color:var(--go)">LUNAR</span>
+          <span style="font-size:18px;font-weight:800;font-family:var(--mono);color:var(--text)">49 RON</span>
+        </div>
+        <div class="btn-accent">ACTIVEAZA PRO LUNAR</div>
+      </div>
+
+      <div class="card" style="text-align:left;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div>
+            <span style="font-size:16px;font-weight:900;color:var(--think)">ANUAL</span>
+            <span style="font-size:10px;color:var(--go);margin-left:8px;font-weight:700">-32%</span>
+          </div>
+          <span style="font-size:18px;font-weight:800;font-family:var(--mono);color:var(--text)">399 RON</span>
+        </div>
+        <div style="font-size:10px;color:var(--textMuted);margin-bottom:8px">33 RON/luna</div>
+        <div class="btn-primary" onclick="">ACTIVEAZA PRO ANUAL</div>
+      </div>
+
+      <div class="card" style="text-align:left;margin-bottom:24px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div>
+            <span style="font-size:16px;font-weight:900;color:var(--accent)">LIFETIME</span>
+            <span style="font-size:10px;color:var(--go);margin-left:8px;font-weight:700">O singura plata</span>
+          </div>
+          <span style="font-size:18px;font-weight:800;font-family:var(--mono);color:var(--text)">799 RON</span>
+        </div>
+        <div class="btn-primary" onclick="">ACTIVEAZA LIFETIME</div>
+      </div>
+
+      <div style="padding:14px;border-radius:8px;border:1px dashed var(--border);margin-bottom:16px">
+        <div style="font-size:11px;color:var(--textMuted);margin-bottom:8px">Am deja un cod de activare:</div>
+        <div style="display:flex;gap:8px">
+          <span class="input-mock" style="flex:1;width:auto;text-align:left;padding:10px;font-size:14px">DQ-PRO-XXXXX</span>
+          <div class="btn-accent" style="width:auto;padding:10px 20px;font-size:12px">ACTIVEAZA</div>
+        </div>
+      </div>
+
+      <div style="font-size:9px;color:var(--textDim);font-family:var(--mono);line-height:14px">
+        Plata prin Stripe · Anulezi oricand<br>Codul se activeaza pe un singur dispozitiv
+      </div>
+    </div>
+  </div>`;
+}
+
+// ============ ONBOARDING ============
+function renderOnboarding() {
+  if (onboardingStep === 'splash') {
+    return `<div class="splash-screen" style="height:100%">
+      <div class="splash-logo"><span class="splash-logo-txt">D</span></div>
+      <div class="splash-brand">DRUMIQ</div>
+      <div class="splash-tagline">Stii instant daca merita cursa</div>
+      <div style="margin-top:40px">
+        <div class="btn-accent" style="padding:12px 40px;font-size:13px" onclick="onboardingStep='welcome';render()">INTRA &#8594;</div>
+      </div>
+    </div>`;
+  }
+
+  const dotSteps = ['welcome','car','permissions','ready'];
+  const dotIdx = dotSteps.indexOf(onboardingStep);
+  const dots = dotIdx >= 0 ? `<div class="dots-row">
+    ${dotSteps.map((_, i) => `<div class="dot ${i <= dotIdx ? 'active' : ''}"></div>`).join('')}
+  </div>` : '';
+
+  if (onboardingStep === 'welcome') {
+    return `<div class="onboarding-center">
+      ${dots}
+      <div class="onboarding-title">Salut!</div>
+      <div class="onboarding-title" style="color:var(--accent)">Hai sa configuram DRUMIQ</div>
+      <div style="height:32px"></div>
+      <div style="width:100%;margin-bottom:32px">
+        <div class="bullet-row"><div class="bullet-circle" style="background:#00FF88">$</div><span class="bullet-text">GO = cursa profitabila</span></div>
+        <div class="bullet-row"><div class="bullet-circle" style="background:#FFB800">?</div><span class="bullet-text">THINK = analizeaza</span></div>
+        <div class="bullet-row"><div class="bullet-circle" style="background:#FF3366">X</div><span class="bullet-text">STOP = evita</span></div>
+      </div>
+      <div class="btn-accent" onclick="onboardingStep='car';render()">CONTINUA &#8594;</div>
+    </div>`;
+  }
+
+  if (onboardingStep === 'car') {
+    return `<div class="onboarding-center" style="justify-content:flex-start;padding-top:48px">
+      ${dots}
+      <div class="onboarding-title">Alege masina ta</div>
+      <div class="onboarding-hint" style="margin-bottom:24px">Selecteaza marca, modelul si motorul</div>
+
+      <div class="card" style="width:100%;margin-bottom:8px;cursor:pointer" onclick="onboardingStep='permissions';render()">
+        <div style="font-size:14px;font-weight:700;color:var(--text)">Dacia</div>
+        <div style="font-size:11px;color:var(--textMuted);margin-top:4px">Sandero, Logan, Duster, Spring...</div>
+      </div>
+      <div class="card" style="width:100%;margin-bottom:8px;cursor:pointer" onclick="onboardingStep='permissions';render()">
+        <div style="font-size:14px;font-weight:700;color:var(--text)">Skoda</div>
+        <div style="font-size:11px;color:var(--textMuted);margin-top:4px">Fabia, Octavia, Scala...</div>
+      </div>
+      <div class="card" style="width:100%;margin-bottom:8px;cursor:pointer" onclick="onboardingStep='permissions';render()">
+        <div style="font-size:14px;font-weight:700;color:var(--text)">Toyota</div>
+        <div style="font-size:11px;color:var(--textMuted);margin-top:4px">Corolla, Yaris, C-HR...</div>
+      </div>
+      <div class="card" style="width:100%;margin-bottom:8px;cursor:pointer" onclick="onboardingStep='permissions';render()">
+        <div style="font-size:14px;font-weight:700;color:var(--text)">Volkswagen</div>
+        <div style="font-size:11px;color:var(--textMuted);margin-top:4px">Polo, Golf, Passat, ID.3...</div>
+      </div>
+
+      <div style="margin-top:20px;cursor:pointer" onclick="onboardingStep='permissions';render()">
+        <span style="font-size:13px;color:var(--textMuted);font-weight:500;letter-spacing:0.5px">Alta masina (setez manual) &#8594;</span>
+      </div>
+    </div>`;
+  }
+
+  if (onboardingStep === 'permissions') {
+    return `<div class="onboarding-center">
+      ${dots}
+      <div class="onboarding-title">Permisiuni necesare</div>
+      <div class="onboarding-hint" style="margin-bottom:24px">DRUMIQ are nevoie de aceste permisiuni ca sa functioneze corect</div>
+
+      <div class="privacy-box">
+        <div class="privacy-txt">Datele tale raman DOAR pe telefon.<br>Nu trimitem nimic pe internet.</div>
+      </div>
+
+      <div style="width:100%">
+        <div class="perm-row" onclick="this.querySelector('.perm-check').classList.toggle('checked')">
+          <div class="perm-check checked"></div>
+          <div style="flex:1">
+            <div class="perm-label">Accessibility</div>
+            <div class="perm-desc">Citeste ofertele Bolt automat</div>
+          </div>
+        </div>
+        <div class="perm-row" onclick="this.querySelector('.perm-check').classList.toggle('checked')">
+          <div class="perm-check checked"></div>
+          <div style="flex:1">
+            <div class="perm-label">Overlay (afisare peste alte aplicatii)</div>
+            <div class="perm-desc">Arata verdictul GO/THINK/STOP peste Bolt</div>
+          </div>
+        </div>
+        <div class="perm-row" onclick="this.querySelector('.perm-check').classList.toggle('checked')">
+          <div class="perm-check"></div>
+          <div style="flex:1">
+            <div class="perm-label">Baterie (fara optimizare)</div>
+            <div class="perm-desc">Previne oprirea DRUMIQ in fundal</div>
+          </div>
+          <span style="color:var(--accent);font-size:13px;font-weight:700">ACORDA</span>
+        </div>
+      </div>
+
+      <div class="btn-accent" onclick="onboardingStep='ready';render()">CONTINUA &#8594;</div>
+    </div>`;
+  }
+
+  if (onboardingStep === 'ready') {
+    return `<div class="onboarding-center">
+      ${dots}
+      <div style="font-size:48px;margin-bottom:16px">&#127881;</div>
+      <div class="onboarding-title" style="color:var(--accent)">Gata!</div>
+      <div style="height:16px"></div>
+      <div style="border:1px solid rgba(0,255,136,0.25);border-radius:12px;padding:20px;width:100%;text-align:center;background:var(--surface)">
+        <div style="font-size:18px;font-weight:700;color:var(--text)">Trial activ</div>
+        <div style="font-size:22px;font-weight:900;color:var(--accent);margin-top:8px">100 curse · 7 zile</div>
+      </div>
+      <div class="btn-accent" onclick="onboardingStep='bolt';render()">CONTINUA &#8594;</div>
+    </div>`;
+  }
+
+  if (onboardingStep === 'bolt') {
+    return `<div class="onboarding-center">
+      <div class="onboarding-title">Deschide Sofer partener</div>
+      <div class="onboarding-hint">Porneste aplicatia Bolt Driver si accepta o cursa.<br>DRUMIQ va analiza automat oferta si iti va arata verdictul.</div>
+      <div class="btn-accent" style="background:#34D058;margin-top:28px" onclick="currentSub=null;onboardingStep='splash';render()">
+        <span style="color:#fff">DESCHIDE BOLT DRIVER</span>
+      </div>
+      <div style="margin-top:14px;cursor:pointer" onclick="currentSub=null;onboardingStep='splash';render()">
+        <span style="font-size:13px;color:var(--textMuted);font-weight:500;letter-spacing:0.5px">Inchide configurarea &#8594;</span>
+      </div>
+    </div>`;
+  }
+
+  return '';
+}
+
+// ============ INIT ============
+render();
+
+// Add onboarding entry button floating
+document.body.insertAdjacentHTML('beforeend', `
+<div style="position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:100">
+  <button onclick="openSub('onboarding');onboardingStep='splash'" style="
+    padding:10px 16px;border-radius:8px;border:1px solid var(--accent);
+    background:var(--surface);color:var(--accent);font-size:11px;font-weight:700;
+    letter-spacing:1px;cursor:pointer;font-family:var(--font);
+  ">&#128260; ONBOARDING</button>
+</div>
+`);
+</script>
+</body>
+</html>

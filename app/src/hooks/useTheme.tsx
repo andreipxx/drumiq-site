@@ -1,6 +1,22 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { Appearance, AppState, ColorSchemeName } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFonts } from 'expo-font';
+import {
+  BricolageGrotesque_400Regular,
+  BricolageGrotesque_600SemiBold,
+  BricolageGrotesque_700Bold,
+  BricolageGrotesque_800ExtraBold,
+} from '@expo-google-fonts/bricolage-grotesque';
+import {
+  JetBrainsMono_400Regular,
+  JetBrainsMono_500Medium,
+  JetBrainsMono_700Bold,
+} from '@expo-google-fonts/jetbrains-mono';
+import {
+  InstrumentSerif_400Regular,
+  InstrumentSerif_400Regular_Italic,
+} from '@expo-google-fonts/instrument-serif';
 import { LIGHT, DARK, type ThemeColors, type ThemeMode } from '../constants/theme';
 
 const STORAGE_KEY = '@dp_theme_mode';
@@ -10,6 +26,7 @@ interface ThemeContextValue {
   setMode: (mode: ThemeMode) => void;
   colors: ThemeColors;
   isDark: boolean;
+  fontsLoaded: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -17,6 +34,18 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [system, setSystem] = useState<ColorSchemeName>(() => Appearance.getColorScheme());
   const [mode, setModeState] = useState<ThemeMode>('automatic');
+
+  const [fontsLoaded] = useFonts({
+    BricolageGrotesque_400Regular,
+    BricolageGrotesque_600SemiBold,
+    BricolageGrotesque_700Bold,
+    BricolageGrotesque_800ExtraBold,
+    JetBrainsMono_400Regular,
+    JetBrainsMono_500Medium,
+    JetBrainsMono_700Bold,
+    InstrumentSerif_400Regular,
+    InstrumentSerif_400Regular_Italic,
+  });
 
   useEffect(() => {
     const sub = Appearance.addChangeListener(({ colorScheme }) => {
@@ -48,8 +77,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const colors = effective === 'dark' ? DARK : LIGHT;
 
   const value = useMemo<ThemeContextValue>(
-    () => ({ mode, setMode, colors, isDark: effective === 'dark' }),
-    [mode, setMode, colors, effective]
+    () => ({ mode, setMode, colors, isDark: effective === 'dark', fontsLoaded }),
+    [mode, setMode, colors, effective, fontsLoaded]
   );
 
   return (

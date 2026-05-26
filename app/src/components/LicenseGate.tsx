@@ -66,7 +66,7 @@ export default function LicenseGate({ children }: Props) {
   if (tosOk === null) {
     return (
       <View style={[s.center, { backgroundColor: colors.bg }]}>
-        <ActivityIndicator size="large" color={colors.accent} />
+        <ActivityIndicator size="large" color={colors.cyan} />
       </View>
     );
   }
@@ -78,7 +78,7 @@ export default function LicenseGate({ children }: Props) {
   if (authOk === null) {
     return (
       <View style={[s.center, { backgroundColor: colors.bg }]}>
-        <ActivityIndicator size="large" color={colors.accent} />
+        <ActivityIndicator size="large" color={colors.cyan} />
       </View>
     );
   }
@@ -90,7 +90,7 @@ export default function LicenseGate({ children }: Props) {
   if (state === null) {
     return (
       <View style={[s.center, { backgroundColor: colors.bg }]}>
-        <ActivityIndicator size="large" color={colors.accent} />
+        <ActivityIndicator size="large" color={colors.cyan} />
       </View>
     );
   }
@@ -111,7 +111,7 @@ export default function LicenseGate({ children }: Props) {
     }
     return (
       <View style={[s.center, { backgroundColor: colors.bg }]}>
-        <ActivityIndicator size="large" color={colors.accent} />
+        <ActivityIndicator size="large" color={colors.cyan} />
       </View>
     );
   }

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DRUMIQ v2.0 — Simple overlay: mini-card with breakdown formula -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/dp_card_bg"
+    android:elevation="14dp"
+    android:minWidth="180dp"
+    android:maxWidth="220dp">
+
+    <!-- Top color bar (verdict color) -->
+    <View
+        android:id="@+id/dp_border"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="#00FF88" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <!-- Verdict row: symbol circle + profit/km -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="6dp">
+
+            <!-- Symbol circle -->
+            <FrameLayout
+                android:id="@+id/dp_symbol_wrap"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/dp_circle_bg">
+
+                <TextView
+                    android:id="@+id/dp_symbol"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="$"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-black" />
+            </FrameLayout>
+
+            <!-- Profit/km value -->
+            <TextView
+                android:id="@+id/dp_profitkm"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="—"
+                android:textColor="#00FF88"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace" />
+        </LinearLayout>
+
+        <!-- Daily goal progress -->
+        <TextView
+            android:id="@+id/dp_daily"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#FFB800"
+            android:textSize="9sp"
+            android:fontFamily="monospace"
+            android:textStyle="bold"
+            android:layout_marginTop="3dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</LinearLayout>

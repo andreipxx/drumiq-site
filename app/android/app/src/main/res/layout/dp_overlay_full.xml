@@ -10,7 +10,7 @@
         android:id="@+id/dp_border"
         android:layout_width="match_parent"
         android:layout_height="3dp"
-        android:background="#00FF88" />
+        android:background="#10b981" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -48,7 +48,7 @@
             android:text="—"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="#00FF88" />
+            android:textColor="#10b981" />
     </LinearLayout>
 
     <View
@@ -56,7 +56,7 @@
         android:layout_height="1dp"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
-        android:background="#1AFFFFFF" />
+        android:background="#14FFFFFF" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -78,7 +78,7 @@
                 android:layout_weight="1"
                 android:text="Pickup"
                 android:textSize="10sp"
-                android:textColor="#7A8A7C" />
+                android:textColor="#73FFFFFF" />
 
             <TextView
                 android:id="@+id/dp_pickup"
@@ -86,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:text="—"
                 android:textSize="10sp"
-                android:textColor="#CCCCCC" />
+                android:textColor="#FFFFFF" />
         </LinearLayout>
 
         <LinearLayout
@@ -101,7 +101,7 @@
                 android:layout_weight="1"
                 android:text="Cursa"
                 android:textSize="10sp"
-                android:textColor="#7A8A7C" />
+                android:textColor="#73FFFFFF" />
 
             <TextView
                 android:id="@+id/dp_trip"
@@ -109,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:text="—"
                 android:textSize="10sp"
-                android:textColor="#CCCCCC" />
+                android:textColor="#FFFFFF" />
         </LinearLayout>
 
         <LinearLayout
@@ -124,7 +124,7 @@
                 android:layout_weight="1"
                 android:text="Durata"
                 android:textSize="10sp"
-                android:textColor="#7A8A7C" />
+                android:textColor="#73FFFFFF" />
 
             <TextView
                 android:id="@+id/dp_duration"
@@ -132,7 +132,7 @@
                 android:layout_height="wrap_content"
                 android:text="—"
                 android:textSize="10sp"
-                android:textColor="#CCCCCC" />
+                android:textColor="#FFFFFF" />
         </LinearLayout>
 
         <LinearLayout
@@ -147,7 +147,7 @@
                 android:layout_weight="1"
                 android:text="NET"
                 android:textSize="10sp"
-                android:textColor="#7A8A7C" />
+                android:textColor="#73FFFFFF" />
 
             <TextView
                 android:id="@+id/dp_gross"
@@ -155,7 +155,7 @@
                 android:layout_height="wrap_content"
                 android:text="—"
                 android:textSize="10sp"
-                android:textColor="#CCCCCC" />
+                android:textColor="#FFFFFF" />
         </LinearLayout>
 
         <LinearLayout
@@ -170,7 +170,7 @@
                 android:layout_weight="1"
                 android:text="Profit/km"
                 android:textSize="10sp"
-                android:textColor="#7A8A7C" />
+                android:textColor="#73FFFFFF" />
 
             <TextView
                 android:id="@+id/dp_profitkm"
@@ -179,7 +179,7 @@
                 android:text="—"
                 android:textSize="10sp"
                 android:textStyle="bold"
-                android:textColor="#00FF88" />
+                android:textColor="#10b981" />
         </LinearLayout>
 
         <LinearLayout
@@ -194,7 +194,7 @@
                 android:layout_weight="1"
                 android:text="Profit/min"
                 android:textSize="10sp"
-                android:textColor="#7A8A7C" />
+                android:textColor="#73FFFFFF" />
 
             <TextView
                 android:id="@+id/dp_profitmin"
@@ -202,7 +202,7 @@
                 android:layout_height="wrap_content"
                 android:text="—"
                 android:textSize="10sp"
-                android:textColor="#7A8A7C" />
+                android:textColor="#73FFFFFF" />
         </LinearLayout>
 
     </LinearLayout>
@@ -214,7 +214,7 @@
         android:gravity="center"
         android:text=""
         android:textSize="10sp"
-        android:textColor="#FFB800"
+        android:textColor="#f59e0b"
         android:visibility="gone"
         android:paddingBottom="2dp" />
 
@@ -225,7 +225,7 @@
         android:gravity="center"
         android:text=""
         android:textSize="11sp"
-        android:textColor="#FFB800"
+        android:textColor="#f59e0b"
         android:visibility="gone"
         android:paddingBottom="4dp" />
 
@@ -236,7 +236,7 @@
         android:gravity="center"
         android:text="~ estimat"
         android:textSize="9sp"
-        android:textColor="#7A8A7C"
+        android:textColor="#73FFFFFF"
         android:paddingBottom="8dp" />
 
 </LinearLayout>

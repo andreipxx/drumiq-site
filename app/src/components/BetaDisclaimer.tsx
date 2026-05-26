@@ -5,8 +5,8 @@ import { useTheme } from '../hooks/useTheme';
 export default function BetaDisclaimer() {
   const { colors } = useTheme();
   return (
-    <View style={[s.banner, { backgroundColor: '#FFB80020', borderColor: '#FFB800' }]}>
-      <Text style={[s.title, { color: '#FFB800' }]}>{'⚠'} Aplicație în dezvoltare</Text>
+    <View style={[s.banner, { backgroundColor: colors.thinkBg, borderColor: colors.think }]}>
+      <Text style={[s.title, { color: colors.think }]}>{'⚠'} Aplicație în dezvoltare</Text>
       <Text style={[s.text, { color: colors.textMuted }]}>
         Versiunea finală poate varia. Calculele sunt estimative și trebuie verificate înainte de utilizare reală.
       </Text>

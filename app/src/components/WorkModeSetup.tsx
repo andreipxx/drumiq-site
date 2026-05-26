@@ -1,9 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Platform,
+  View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView,
   ActivityIndicator,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
+import { FONT, RADIUS } from '../constants/typography';
 import type {
   WorkMode, WorkModeConfig, IndividualCosts, FlotaCosts,
 } from '../services/workMode';
@@ -20,7 +22,7 @@ interface Props {
 }
 
 export default function WorkModeSetup({ onSave, initialConfig }: Props) {
-  const { colors } = useTheme();
+  const { colors, fontsLoaded } = useTheme();
   const [mode, setMode] = useState<WorkMode>(initialConfig?.mode ?? 'individual');
   const [individual, setIndividual] = useState<IndividualCosts>(
     initialConfig?.individual ?? DEFAULT_INDIVIDUAL
@@ -43,7 +45,7 @@ export default function WorkModeSetup({ onSave, initialConfig }: Props) {
 
   return (
     <ScrollView style={[s.root, { backgroundColor: colors.bg }]} contentContainerStyle={s.content}>
-      <Text style={[s.title, { color: colors.text }]}>Cum lucrezi?</Text>
+      <Text style={[s.title, { color: colors.text, fontFamily: fontsLoaded ? FONT.displayXB : FONT.system }]}>Cum lucrezi?</Text>
       <Text style={[s.subtitle, { color: colors.textMuted }]}>
         Alege modul de lucru ca DRUMIQ să calculeze corect
       </Text>
@@ -53,15 +55,15 @@ export default function WorkModeSetup({ onSave, initialConfig }: Props) {
           onPress={() => setMode('individual')}
           style={[
             s.modeCard,
-            { borderColor: mode === 'individual' ? colors.accent : colors.border,
-              backgroundColor: mode === 'individual' ? colors.accent + '15' : colors.surface },
+            { borderColor: mode === 'individual' ? colors.cyan : colors.border,
+              backgroundColor: mode === 'individual' ? colors.cyan + '15' : colors.bgCard },
           ]}
           activeOpacity={0.7}
         >
-          <Text style={[s.modeIcon, { color: mode === 'individual' ? colors.accent : colors.text }]}>
+          <Text style={[s.modeIcon, { color: mode === 'individual' ? colors.cyan : colors.text }]}>
             {'👤'}
           </Text>
-          <Text style={[s.modeLabel, { color: mode === 'individual' ? colors.accent : colors.text }]}>
+          <Text style={[s.modeLabel, { color: mode === 'individual' ? colors.cyan : colors.text }]}>
             Individual / PFA / SRL
           </Text>
           <Text style={[s.modeDesc, { color: colors.textMuted }]}>
@@ -73,15 +75,15 @@ export default function WorkModeSetup({ onSave, initialConfig }: Props) {
           onPress={() => setMode('flota')}
           style={[
             s.modeCard,
-            { borderColor: mode === 'flota' ? colors.accent : colors.border,
-              backgroundColor: mode === 'flota' ? colors.accent + '15' : colors.surface },
+            { borderColor: mode === 'flota' ? colors.cyan : colors.border,
+              backgroundColor: mode === 'flota' ? colors.cyan + '15' : colors.bgCard },
           ]}
           activeOpacity={0.7}
         >
-          <Text style={[s.modeIcon, { color: mode === 'flota' ? colors.accent : colors.text }]}>
+          <Text style={[s.modeIcon, { color: mode === 'flota' ? colors.cyan : colors.text }]}>
             {'🚗'}
           </Text>
-          <Text style={[s.modeLabel, { color: mode === 'flota' ? colors.accent : colors.text }]}>
+          <Text style={[s.modeLabel, { color: mode === 'flota' ? colors.cyan : colors.text }]}>
             Flotă / mașină închiriată
           </Text>
           <Text style={[s.modeDesc, { color: colors.textMuted }]}>
@@ -92,13 +94,14 @@ export default function WorkModeSetup({ onSave, initialConfig }: Props) {
 
       {mode === 'individual' && (
         <View style={[s.costSection, { borderColor: colors.border }]}>
-          <Text style={[s.costSectionTitle, { color: colors.textMuted }]}>COSTURI INDIVIDUALE</Text>
+          <Text style={[s.costSectionTitle, { color: colors.textMuted, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>COSTURI INDIVIDUALE</Text>
           <CostInput
             label="Contabilitate"
             value={individual.contabilitate}
             onChange={(v) => setIndividual({ ...individual, contabilitate: v })}
             suffix="RON/lună"
             colors={colors}
+            fontsLoaded={fontsLoaded}
           />
           <CostInput
             label="Alte cheltuieli"
@@ -106,13 +109,14 @@ export default function WorkModeSetup({ onSave, initialConfig }: Props) {
             onChange={(v) => setIndividual({ ...individual, alteCheltuieli: v })}
             suffix="RON/săpt."
             colors={colors}
+            fontsLoaded={fontsLoaded}
           />
         </View>
       )}
 
       {mode === 'flota' && (
         <View style={[s.costSection, { borderColor: colors.border }]}>
-          <Text style={[s.costSectionTitle, { color: colors.textMuted }]}>COSTURI FLOTĂ</Text>
+          <Text style={[s.costSectionTitle, { color: colors.textMuted, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>COSTURI FLOTĂ</Text>
           <CostInput
             label="Chirie mașină"
             value={flota.chirieMasina}
@@ -120,6 +124,7 @@ export default function WorkModeSetup({ onSave, initialConfig }: Props) {
             suffix="RON/săpt."
             placeholder="550"
             colors={colors}
+            fontsLoaded={fontsLoaded}
           />
           <CostInput
             label="Carte muncă / contract"
@@ -128,6 +133,7 @@ export default function WorkModeSetup({ onSave, initialConfig }: Props) {
             suffix="RON/săpt."
             placeholder="200"
             colors={colors}
+            fontsLoaded={fontsLoaded}
           />
           <CostInput
             label="Contabilitate"
@@ -136,6 +142,7 @@ export default function WorkModeSetup({ onSave, initialConfig }: Props) {
             suffix="RON/săpt."
             placeholder="50"
             colors={colors}
+            fontsLoaded={fontsLoaded}
           />
           <CostInput
             label="Alte cheltuieli"
@@ -143,39 +150,40 @@ export default function WorkModeSetup({ onSave, initialConfig }: Props) {
             onChange={(v) => setFlota({ ...flota, alteCheltuieli: v })}
             suffix="RON/săpt."
             colors={colors}
+            fontsLoaded={fontsLoaded}
           />
 
-          <View style={[s.totalBox, { backgroundColor: colors.accent + '10', borderColor: colors.accent + '30' }]}>
+          <View style={[s.totalBox, { backgroundColor: colors.cyan + '10', borderColor: colors.cyan + '30' }]}>
             <View style={s.totalRow}>
               <Text style={[s.totalLabel, { color: colors.text }]}>Total săptămânal:</Text>
-              <Text style={[s.totalValue, { color: colors.accent }]}>{weeklyCost.toFixed(0)} RON</Text>
+              <Text style={[s.totalValue, { color: colors.cyan, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>{weeklyCost.toFixed(0)} RON</Text>
             </View>
             <View style={s.totalRow}>
               <Text style={[s.totalLabel, { color: colors.text }]}>Total lunar:</Text>
-              <Text style={[s.totalValue, { color: colors.accent }]}>{monthlyCost.toFixed(0)} RON</Text>
+              <Text style={[s.totalValue, { color: colors.cyan, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>{monthlyCost.toFixed(0)} RON</Text>
             </View>
           </View>
         </View>
       )}
 
       {mode === 'individual' && (
-        <View style={[s.totalBox, { backgroundColor: colors.accent + '10', borderColor: colors.accent + '30', marginHorizontal: 0, marginTop: 12 }]}>
+        <View style={[s.totalBox, { backgroundColor: colors.cyan + '10', borderColor: colors.cyan + '30', marginHorizontal: 0, marginTop: 12 }]}>
           <View style={s.totalRow}>
             <Text style={[s.totalLabel, { color: colors.text }]}>Total săptămânal:</Text>
-            <Text style={[s.totalValue, { color: colors.accent }]}>{weeklyCost.toFixed(0)} RON</Text>
+            <Text style={[s.totalValue, { color: colors.cyan, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>{weeklyCost.toFixed(0)} RON</Text>
           </View>
           <View style={s.totalRow}>
             <Text style={[s.totalLabel, { color: colors.text }]}>Total lunar:</Text>
-            <Text style={[s.totalValue, { color: colors.accent }]}>{monthlyCost.toFixed(0)} RON</Text>
+            <Text style={[s.totalValue, { color: colors.cyan, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>{monthlyCost.toFixed(0)} RON</Text>
           </View>
         </View>
       )}
 
       <View style={[s.costSection, { borderColor: colors.border, marginTop: 20 }]}>
-        <Text style={[s.costSectionTitle, { color: colors.textMuted }]}>TAXE</Text>
+        <Text style={[s.costSectionTitle, { color: colors.textMuted, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>TAXE</Text>
         {tax === null ? (
           <View style={{ padding: 16, alignItems: 'center' }}>
-            <ActivityIndicator size="small" color={colors.accent} />
+            <ActivityIndicator size="small" color={colors.cyan} />
           </View>
         ) : (
           <>
@@ -186,6 +194,7 @@ export default function WorkModeSetup({ onSave, initialConfig }: Props) {
               suffix="%"
               placeholder="0"
               colors={colors}
+              fontsLoaded={fontsLoaded}
             />
             <CostInput
               label="Comision Bolt"
@@ -194,6 +203,7 @@ export default function WorkModeSetup({ onSave, initialConfig }: Props) {
               suffix="%"
               placeholder="0"
               colors={colors}
+              fontsLoaded={fontsLoaded}
             />
             <View style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
               <Text style={[s.costSuffix, { color: colors.textMuted, marginLeft: 0 }]}>
@@ -205,23 +215,31 @@ export default function WorkModeSetup({ onSave, initialConfig }: Props) {
       </View>
 
       <TouchableOpacity
-        style={[s.saveBtn, { backgroundColor: colors.accent }]}
+        style={s.saveBtn}
         onPress={handleSave}
         activeOpacity={0.7}
       >
-        <Text style={s.saveBtnText}>SALVEAZĂ</Text>
+        <LinearGradient
+          colors={colors.gradButton}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={s.saveBtnGrad}
+        >
+          <Text style={s.saveBtnText}>SALVEAZĂ</Text>
+        </LinearGradient>
       </TouchableOpacity>
     </ScrollView>
   );
 }
 
-function CostInput({ label, value, onChange, suffix, placeholder, colors }: {
+function CostInput({ label, value, onChange, suffix, placeholder, colors, fontsLoaded }: {
   label: string;
   value: number;
   onChange: (v: number) => void;
   suffix: string;
   placeholder?: string;
   colors: any;
+  fontsLoaded: boolean;
 }) {
   const [text, setText] = useState(value > 0 ? String(value) : '');
 
@@ -251,8 +269,9 @@ function CostInput({ label, value, onChange, suffix, placeholder, colors }: {
             color: colors.text,
             backgroundColor: colors.bg,
             borderColor: colors.border,
+            fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono,
           }]}
-          selectionColor={colors.accent}
+          selectionColor={colors.cyan}
         />
         <Text style={[s.costSuffix, { color: colors.textMuted }]}>{suffix}</Text>
       </View>
@@ -267,12 +286,12 @@ const s = StyleSheet.create({
   subtitle: { fontSize: 14, textAlign: 'center', marginTop: 8, marginBottom: 28 },
   modeRow: { gap: 12, marginBottom: 20 },
   modeCard: {
-    borderWidth: 1.5, borderRadius: 14, padding: 18, alignItems: 'center',
+    borderWidth: 1.5, borderRadius: RADIUS.md, padding: 18, alignItems: 'center',
   },
   modeIcon: { fontSize: 28, marginBottom: 8 },
   modeLabel: { fontSize: 16, fontWeight: '700', textAlign: 'center' },
   modeDesc: { fontSize: 12, marginTop: 4, textAlign: 'center' },
-  costSection: { borderWidth: 1, borderRadius: 12, overflow: 'hidden', marginBottom: 8 },
+  costSection: { borderWidth: 1, borderRadius: RADIUS.sm, overflow: 'hidden', marginBottom: 8 },
   costSectionTitle: {
     fontSize: 11, letterSpacing: 1.5, fontWeight: '700', paddingHorizontal: 16, paddingTop: 14, paddingBottom: 8,
   },
@@ -285,20 +304,22 @@ const s = StyleSheet.create({
   costInput: {
     borderWidth: StyleSheet.hairlineWidth, borderRadius: 8,
     paddingVertical: 6, paddingHorizontal: 10, minWidth: 70,
-    textAlign: 'right', fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    fontSize: 15, fontWeight: '600',
+    textAlign: 'right', fontSize: 15, fontWeight: '600',
   },
   costSuffix: { fontSize: 11, marginLeft: 6, minWidth: 60 },
   totalBox: {
-    borderWidth: 1, borderRadius: 10, padding: 14, marginTop: 12, marginHorizontal: 16,
+    borderWidth: 1, borderRadius: RADIUS.sm, padding: 14, marginTop: 12, marginHorizontal: 16,
   },
   totalRow: {
     flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4,
   },
   totalLabel: { fontSize: 14, fontWeight: '500' },
-  totalValue: { fontSize: 16, fontWeight: '700', fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace' },
+  totalValue: { fontSize: 16, fontWeight: '700' },
   saveBtn: {
-    marginTop: 28, paddingVertical: 16, borderRadius: 12, alignItems: 'center',
+    marginTop: 28, borderRadius: RADIUS.sm, overflow: 'hidden',
   },
-  saveBtnText: { color: '#000', fontSize: 15, fontWeight: '900', letterSpacing: 1.5 },
+  saveBtnGrad: {
+    paddingVertical: 16, borderRadius: RADIUS.sm, alignItems: 'center',
+  },
+  saveBtnText: { color: '#fff', fontSize: 15, fontWeight: '900', letterSpacing: 1.5 },
 });

@@ -1,0 +1,3877 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRUMIQ Design System v1 -- Complete UI Reference</title>
+<style>
+/* ============================================================
+   DRUMIQ DESIGN SYSTEM v1.0
+   Complete UI reference for React Native / Expo Android app
+   Target: Bolt/Uber rideshare drivers, Romania
+   Primary: Dark theme (drivers work at night)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  /* === CORE PALETTE === */
+  --bg:          #0A0E0B;
+  --bgDeep:      #060806;
+  --surface:     #141A15;
+  --surfaceAlt:  #1A2218;
+  --surfaceHigh: #1E2820;
+  --text:        #E8FFE8;
+  --textSoft:    #C0D8C2;
+  --textMuted:   #7A8A7C;
+  --textDim:     #4A5A4C;
+  --border:      #1E2A1F;
+  --borderLight: #2A3A2C;
+
+  /* === BRAND ACCENT === */
+  --accent:      #00FF88;
+  --accentDim:   #00CC6A;
+  --accentDeep:  #00994F;
+  --accentGlow:  rgba(0, 255, 136, 0.15);
+  --accentGlow2: rgba(0, 255, 136, 0.08);
+
+  /* === VERDICT COLORS === */
+  --go:          #00FF88;
+  --goGlow:      rgba(0, 255, 136, 0.25);
+  --goBg:        rgba(0, 255, 136, 0.08);
+  --think:       #FFB800;
+  --thinkGlow:   rgba(255, 184, 0, 0.25);
+  --thinkBg:     rgba(255, 184, 0, 0.08);
+  --stop:        #FF3366;
+  --stopGlow:    rgba(255, 51, 102, 0.25);
+  --stopBg:      rgba(255, 51, 102, 0.08);
+
+  /* === TYPOGRAPHY === */
+  --font:  'Inter', -apple-system, 'Segoe UI', sans-serif;
+  --mono:  'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+
+  /* === SPACING === */
+  --sp-xs: 4px;
+  --sp-sm: 8px;
+  --sp-md: 12px;
+  --sp-lg: 16px;
+  --sp-xl: 20px;
+  --sp-2xl: 24px;
+  --sp-3xl: 32px;
+
+  /* === RADII === */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-pill: 100px;
+}
+
+body {
+  background: #050505;
+  font-family: var(--font);
+  color: var(--text);
+  padding: 32px 24px;
+  min-height: 100vh;
+}
+
+/* ============================================================
+   PAGE LAYOUT
+   ============================================================ */
+
+.design-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.design-header h1 {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: var(--accent);
+  text-shadow: 0 0 40px var(--accentGlow);
+}
+.design-header p {
+  font-size: 13px;
+  color: var(--textMuted);
+  letter-spacing: 2px;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: var(--textMuted);
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+.frames-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 32px;
+  margin-bottom: 64px;
+}
+
+/* ============================================================
+   DESIGN TOKENS REFERENCE BAR
+   ============================================================ */
+
+.tokens-bar {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+.token-group { text-align: center; }
+.token-group-label {
+  font-size: 8px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: var(--textDim);
+  margin-bottom: 8px;
+}
+.token-swatches { display: flex; gap: 6px; }
+.token-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  position: relative;
+}
+.token-swatch::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 7px;
+  color: var(--textDim);
+  white-space: nowrap;
+  font-family: var(--mono);
+}
+.type-sample { font-family: var(--mono); }
+.type-sample.hero { font-size: 36px; font-weight: 900; color: var(--accent); }
+.type-sample.heading { font-size: 18px; font-weight: 800; color: var(--text); }
+.type-sample.body { font-size: 12px; font-weight: 500; color: var(--textMuted); }
+.type-sample.micro { font-size: 8px; font-weight: 700; letter-spacing: 2px; color: var(--textDim); }
+
+/* ============================================================
+   PHONE FRAME
+   ============================================================ */
+
+.phone-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.phone-frame {
+  width: 390px;
+  height: 844px;
+  background: var(--bg);
+  border-radius: 44px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 0 80px rgba(0, 255, 136, 0.06),
+    0 0 0 1px #1a1a1a,
+    0 0 0 2px #0d0d0d,
+    inset 0 0 0 1px rgba(255,255,255,0.03);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.phone-label {
+  text-align: center;
+  padding: 14px 0 4px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  color: var(--textMuted);
+}
+.phone-label-sub {
+  text-align: center;
+  font-size: 9px;
+  color: var(--textDim);
+  letter-spacing: 1px;
+}
+
+/* Status bar / notch */
+.status-bar {
+  width: 100%;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+  background: var(--bg);
+}
+.status-bar-overlay {
+  background: transparent;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 20;
+}
+.notch-pill {
+  width: 72px;
+  height: 24px;
+  background: #000;
+  border-radius: 20px;
+}
+.status-time {
+  position: absolute;
+  left: 28px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: var(--mono);
+}
+.status-icons {
+  position: absolute;
+  right: 28px;
+  font-size: 10px;
+  color: var(--text);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+/* Screen scrollable area */
+.screen {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  padding: 0 16px 16px;
+}
+.screen::-webkit-scrollbar { display: none; }
+
+/* ============================================================
+   BOTTOM NAVIGATION
+   ============================================================ */
+
+.bottom-nav {
+  display: flex;
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+  background: rgba(20, 26, 21, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 6px 0 24px;
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  position: relative;
+  cursor: pointer;
+}
+.nav-item .nav-indicator {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.nav-item.active .nav-indicator { opacity: 1; }
+.nav-icon {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--textDim);
+  stroke-width: 2;
+  fill: none;
+  transition: all 0.2s;
+}
+.nav-item.active .nav-icon svg {
+  stroke: var(--accent);
+  filter: drop-shadow(0 0 4px var(--accentGlow));
+}
+.nav-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--textDim);
+  transition: color 0.2s;
+}
+.nav-item.active .nav-label { color: var(--accent); }
+
+/* ============================================================
+   SHARED COMPONENTS
+   ============================================================ */
+
+/* Glass card */
+.glass-card {
+  background: linear-gradient(135deg, rgba(20,26,21,0.9) 0%, rgba(26,34,24,0.7) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Hero card with glow */
+.hero-card {
+  background: linear-gradient(135deg, #0D150F 0%, #141A15 40%, #1A2218 100%);
+  border: 1px solid rgba(0,255,136,0.2);
+  border-radius: var(--r-xl);
+  padding: 24px 20px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0,255,136,0.06);
+}
+.hero-card::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 140px;
+  height: 140px;
+  border-radius: 70px;
+  background: radial-gradient(circle, rgba(0,255,136,0.1) 0%, transparent 70%);
+}
+.hero-card::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
+  background: radial-gradient(circle, rgba(0,255,136,0.04) 0%, transparent 70%);
+}
+
+/* Labels */
+.label-micro {
+  font-size: 8px;
+  letter-spacing: 2.5px;
+  font-weight: 700;
+  color: var(--textDim);
+  text-transform: uppercase;
+}
+.label-sm {
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: var(--textMuted);
+  text-transform: uppercase;
+}
+.label-md {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--textMuted);
+}
+
+/* Pill badge */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.pill-accent {
+  background: var(--accentGlow);
+  border: 1px solid rgba(0,255,136,0.3);
+  color: var(--accent);
+}
+.pill-warn {
+  background: var(--thinkBg);
+  border: 1px solid rgba(255,184,0,0.3);
+  color: var(--think);
+}
+.pill-danger {
+  background: var(--stopBg);
+  border: 1px solid rgba(255,51,102,0.3);
+  color: var(--stop);
+}
+.pill-neutral {
+  background: rgba(122,138,124,0.1);
+  border: 1px solid rgba(122,138,124,0.2);
+  color: var(--textMuted);
+}
+
+/* Progress bar */
+.progress-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surfaceAlt);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accentDeep), var(--accent));
+  box-shadow: 0 0 8px rgba(0,255,136,0.3);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Stat card */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 12px;
+}
+.stat-label {
+  font-size: 8px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: var(--textDim);
+  margin-bottom: 4px;
+}
+.stat-value {
+  font-size: 22px;
+  font-weight: 800;
+  font-family: var(--mono);
+  color: var(--text);
+  line-height: 1.1;
+}
+.stat-value.green { color: var(--go); }
+.stat-value.yellow { color: var(--think); }
+.stat-value.red { color: var(--stop); }
+.stat-unit {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--textMuted);
+}
+
+/* Button styles */
+.btn-primary {
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, var(--accentDeep), var(--accent));
+  color: #000;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,255,136,0.25);
+  /* animation hint: scale(0.98) on press, glow pulse on hover */
+}
+.btn-secondary {
+  width: 100%;
+  padding: 14px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: center;
+  cursor: pointer;
+}
+.btn-ghost {
+  width: 100%;
+  padding: 14px 20px;
+  border: 1px solid rgba(0,255,136,0.2);
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: center;
+  cursor: pointer;
+}
+.btn-danger {
+  width: 100%;
+  padding: 14px 20px;
+  border: 1px solid rgba(255,51,102,0.3);
+  border-radius: var(--r-md);
+  background: var(--stopBg);
+  color: var(--stop);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* Section header */
+.section-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  margin-top: 8px;
+}
+.section-hdr-label {
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  font-weight: 900;
+  color: var(--textMuted);
+}
+.section-hdr-action {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 12px 0;
+}
+
+/* ============================================================
+   SCREEN 1: SPLASH / LOADING
+   ============================================================ */
+
+.splash-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 50% 40%, rgba(0,255,136,0.06) 0%, var(--bg) 70%);
+  position: relative;
+  overflow: hidden;
+}
+.splash-screen::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  left: -100px;
+  width: 300px;
+  height: 300px;
+  border-radius: 150px;
+  background: radial-gradient(circle, rgba(0,255,136,0.03) 0%, transparent 60%);
+  animation: splashPulse 3s ease-in-out infinite;
+}
+.splash-screen::after {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  right: -50px;
+  width: 200px;
+  height: 200px;
+  border-radius: 100px;
+  background: radial-gradient(circle, rgba(0,255,136,0.02) 0%, transparent 60%);
+  animation: splashPulse 3s ease-in-out infinite 1.5s;
+}
+@keyframes splashPulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+.splash-logo {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 16px;
+}
+.splash-logo-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #0F1A12, #1A2818);
+  border: 2px solid rgba(0,255,136,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 0 40px rgba(0,255,136,0.15),
+    0 0 80px rgba(0,255,136,0.05);
+  /* Micro-interaction: subtle breathing glow animation */
+}
+.splash-logo-svg {
+  width: 44px;
+  height: 44px;
+}
+.splash-brand {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+.splash-brand-name {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 8px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.splash-brand-name span { color: var(--accent); }
+.splash-tagline {
+  font-size: 10px;
+  letter-spacing: 4px;
+  font-weight: 600;
+  color: var(--textDim);
+  text-transform: uppercase;
+}
+.splash-loader {
+  position: absolute;
+  bottom: 100px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.splash-progress {
+  width: 120px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--surfaceAlt);
+  overflow: hidden;
+}
+.splash-progress-fill {
+  width: 65%;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(0,255,136,0.4);
+  animation: splashLoad 2s ease-in-out infinite;
+}
+@keyframes splashLoad {
+  0% { width: 20%; }
+  50% { width: 80%; }
+  100% { width: 20%; }
+}
+.splash-status {
+  font-size: 9px;
+  letter-spacing: 2px;
+  font-weight: 600;
+  color: var(--textDim);
+}
+.splash-version {
+  position: absolute;
+  bottom: 40px;
+  z-index: 2;
+  font-size: 9px;
+  font-family: var(--mono);
+  color: var(--textDim);
+  letter-spacing: 1px;
+}
+
+/* ============================================================
+   SCREEN 2: HOME DASHBOARD
+   ============================================================ */
+
+.home-greeting {
+  margin-bottom: 4px;
+}
+.home-greeting-time {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--textDim);
+  letter-spacing: 1px;
+}
+.home-greeting-name {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1.2;
+}
+.home-greeting-name span { color: var(--accent); }
+
+.home-plan-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  margin-top: 8px;
+}
+
+/* Radial progress for daily target */
+.radial-target {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  margin-bottom: 16px;
+}
+.radial-ring {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  position: relative;
+}
+.radial-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.radial-ring-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.radial-ring-value {
+  font-size: 16px;
+  font-weight: 900;
+  font-family: var(--mono);
+  color: var(--accent);
+  line-height: 1;
+}
+.radial-ring-unit {
+  font-size: 7px;
+  color: var(--textDim);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.radial-info { flex: 1; }
+.radial-info-title {
+  font-size: 9px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: var(--textDim);
+  margin-bottom: 2px;
+}
+.radial-info-detail {
+  font-size: 14px;
+  font-weight: 800;
+  font-family: var(--mono);
+  color: var(--text);
+}
+.radial-info-detail span { color: var(--textMuted); font-size: 11px; font-weight: 500; }
+.radial-info-sub {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--textDim);
+  margin-top: 2px;
+}
+
+/* Quick stats row on home */
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.quick-stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 10px 8px;
+  text-align: center;
+}
+.quick-stat-val {
+  font-size: 18px;
+  font-weight: 800;
+  font-family: var(--mono);
+  color: var(--text);
+  line-height: 1.1;
+}
+.quick-stat-lbl {
+  font-size: 7px;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  color: var(--textDim);
+  margin-top: 2px;
+}
+
+/* Acceptance rate banner */
+.accept-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--r-md);
+  margin-bottom: 16px;
+}
+.accept-banner.ok {
+  background: var(--goBg);
+  border: 1px solid rgba(0,255,136,0.15);
+}
+.accept-banner.warn {
+  background: var(--stopBg);
+  border: 1px solid rgba(255,51,102,0.2);
+}
+.accept-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 900;
+}
+.accept-text { flex: 1; }
+.accept-value {
+  font-size: 13px;
+  font-weight: 800;
+  font-family: var(--mono);
+}
+.accept-label {
+  font-size: 9px;
+  color: var(--textMuted);
+  font-weight: 500;
+}
+
+/* CTA button for overlay */
+.overlay-cta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(0,255,136,0.08) 0%, rgba(0,255,136,0.02) 100%);
+  border: 1px solid rgba(0,255,136,0.2);
+  border-radius: var(--r-lg);
+  margin-bottom: 16px;
+  cursor: pointer;
+  /* Micro-interaction: slight glow pulse animation */
+}
+.overlay-cta-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accentDeep), var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0,255,136,0.3);
+}
+.overlay-cta-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+.overlay-cta-sub {
+  font-size: 10px;
+  color: var(--textMuted);
+  margin-top: 1px;
+}
+.overlay-cta-arrow {
+  margin-left: auto;
+  color: var(--accent);
+  font-size: 16px;
+}
+
+/* Recent verdicts list */
+.verdict-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  margin-bottom: 6px;
+}
+.verdict-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.verdict-dot.go { background: var(--go); box-shadow: 0 0 6px var(--goGlow); }
+.verdict-dot.think { background: var(--think); box-shadow: 0 0 6px var(--thinkGlow); }
+.verdict-dot.stop { background: var(--stop); box-shadow: 0 0 6px var(--stopGlow); }
+.verdict-info { flex: 1; min-width: 0; }
+.verdict-time {
+  font-size: 9px;
+  font-family: var(--mono);
+  color: var(--textDim);
+}
+.verdict-route {
+  font-size: 10px;
+  color: var(--textMuted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.verdict-values {
+  text-align: right;
+  flex-shrink: 0;
+}
+.verdict-profit {
+  font-size: 13px;
+  font-weight: 800;
+  font-family: var(--mono);
+}
+.verdict-ppkm {
+  font-size: 9px;
+  font-family: var(--mono);
+  color: var(--textDim);
+}
+
+/* ============================================================
+   SCREEN 3: TRACKER (inherits from design-2)
+   ============================================================ */
+
+.page-title {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: var(--text);
+  line-height: 1.2;
+}
+.page-title .accent { color: var(--accent); }
+.page-sub {
+  font-size: 10px;
+  font-family: var(--mono);
+  letter-spacing: 1px;
+  color: var(--textMuted);
+  margin-top: 2px;
+  margin-bottom: 14px;
+}
+
+/* Hero earnings */
+.hero-label {
+  font-size: 10px;
+  letter-spacing: 3px;
+  font-weight: 700;
+  color: var(--textMuted);
+  margin-bottom: 4px;
+}
+.hero-amount {
+  font-size: 48px;
+  font-weight: 900;
+  font-family: var(--mono);
+  color: var(--go);
+  line-height: 1;
+}
+.hero-unit {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--textMuted);
+  margin-left: 4px;
+}
+.hero-sub {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--textDim);
+  margin-top: 6px;
+}
+.hero-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(0,255,136,0.12);
+  border: 1px solid rgba(0,255,136,0.3);
+}
+.hero-badge-txt {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--go);
+  letter-spacing: 1px;
+}
+
+/* Goal card */
+.goal-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.goal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.goal-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.goal-icon-wrap {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--accentGlow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.goal-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: var(--textMuted);
+}
+.goal-value {
+  font-size: 16px;
+  font-weight: 900;
+  font-family: var(--mono);
+  color: var(--text);
+}
+.goal-value-unit {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--textMuted);
+}
+.goal-bar-bg {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surfaceAlt);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.goal-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--accentDeep), var(--accent));
+  box-shadow: 0 0 8px rgba(0,255,136,0.4);
+  transition: width 0.6s ease;
+}
+.goal-sub {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--textDim);
+  text-align: right;
+}
+
+/* Period tabs */
+.tabs-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--textMuted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.tab-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+
+/* Acceptance strip */
+.accept-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--r-sm);
+  margin-bottom: 12px;
+}
+.accept-strip.ok {
+  background: var(--goBg);
+  border: 1px solid rgba(0,255,136,0.2);
+}
+.accept-strip.warn {
+  background: var(--thinkBg);
+  border: 1px solid rgba(255,184,0,0.25);
+}
+.accept-strip.danger {
+  background: var(--stopBg);
+  border: 1px solid rgba(255,51,102,0.2);
+}
+.accept-strip-val {
+  font-size: 12px;
+  font-weight: 800;
+  font-family: var(--mono);
+}
+.accept-strip-txt {
+  font-size: 9px;
+  color: var(--textDim);
+}
+
+/* Stats grid */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+/* 7-day bar chart */
+.chart-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 16px 12px 12px;
+  margin-bottom: 16px;
+}
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 100px;
+  margin-bottom: 8px;
+}
+.chart-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+.chart-bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  transition: height 0.4s ease;
+  position: relative;
+}
+.chart-bar-value {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 8px;
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--textMuted);
+  white-space: nowrap;
+}
+.chart-bar-day {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--textDim);
+  margin-top: 6px;
+  letter-spacing: 0.5px;
+}
+.chart-bar-wrap.today .chart-bar-day { color: var(--accent); }
+.chart-avg-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+.chart-avg-lbl {
+  font-size: 9px;
+  font-family: var(--mono);
+  color: var(--textDim);
+}
+.chart-avg-val {
+  font-size: 11px;
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--think);
+}
+
+/* Ride cards */
+.ride-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  border-left: 3px solid var(--go);
+}
+.ride-card.think { border-left-color: var(--think); }
+.ride-card.stop { border-left-color: var(--stop); }
+.ride-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.ride-time {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--textMuted);
+}
+.ride-price {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--text);
+}
+.ride-addr {
+  font-size: 9px;
+  font-family: var(--mono);
+  color: var(--textMuted);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ride-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ride-meta {
+  font-size: 9px;
+  font-family: var(--mono);
+  color: var(--textMuted);
+}
+.ride-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ride-status {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.ride-verdict {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--mono);
+}
+
+/* ============================================================
+   SCREEN 4: OVERLAY (inherits from design-3, enhanced)
+   ============================================================ */
+
+/* Bolt simulated background */
+.bolt-bg {
+  flex: 1;
+  background: linear-gradient(180deg, #e8e8e8 0%, #d0d0d0 30%, #f0f0f0 60%, #ffffff 100%);
+  position: relative;
+  overflow: hidden;
+}
+.bolt-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+.bolt-refuza {
+  position: absolute;
+  top: 60px;
+  right: 14px;
+  background: #1A1A1A;
+  padding: 8px 14px;
+  border-radius: 16px;
+  z-index: 5;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+}
+.bolt-card-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 14px 14px 70px;
+  border-top: 3px solid #00B85F;
+}
+.bolt-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.bolt-tag {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.bolt-price { font-size: 18px; font-weight: 800; color: #111; }
+.bolt-price-sub { font-size: 11px; color: #555; font-weight: 500; }
+.bolt-info { font-size: 11px; color: #888; margin-top: 4px; margin-bottom: 4px; }
+.bolt-pass { font-size: 11px; color: #444; margin-bottom: 2px; }
+.bolt-route { font-size: 11px; color: #555; line-height: 16px; }
+.bolt-accept {
+  position: absolute;
+  bottom: 12px;
+  left: 14px;
+  right: 14px;
+  background: #00B85F;
+  padding: 13px;
+  border-radius: 22px;
+  text-align: center;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Overlay card - PRO version */
+.overlay-wrap {
+  position: absolute;
+  top: 60px;
+  left: 14px;
+  z-index: 10;
+}
+.ov-card {
+  width: 234px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.7),
+    0 0 0 1px rgba(255,255,255,0.05);
+}
+.ov-color-bar { height: 4px; width: 100%; }
+.ov-body {
+  padding: 14px;
+  background: rgba(10,14,11,0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Verdict row: THE most important element */
+.ov-verdict-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.ov-symbol {
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 900;
+  color: #000;
+  flex-shrink: 0;
+  /* CRITICAL: readable from 50cm in <0.5s */
+}
+.ov-symbol.go-glow {
+  background: var(--go);
+  box-shadow: 0 0 16px var(--goGlow), 0 0 4px var(--go);
+}
+.ov-symbol.think-glow {
+  background: var(--think);
+  box-shadow: 0 0 16px var(--thinkGlow), 0 0 4px var(--think);
+}
+.ov-symbol.stop-glow {
+  background: var(--stop);
+  box-shadow: 0 0 16px var(--stopGlow), 0 0 4px var(--stop);
+}
+.ov-verdict-info {
+  margin-left: 10px;
+  flex: 1;
+}
+.ov-ppkm-label {
+  font-size: 9px;
+  color: #7A8A7C;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+.ov-ppkm-value {
+  font-size: 20px;
+  font-weight: 900;
+  font-family: var(--mono);
+  line-height: 1.1;
+  /* CRITICAL: the single most important number, readable at 50cm */
+}
+.ov-divider {
+  height: 1px;
+  background: rgba(30,42,31,0.8);
+  margin: 6px 0;
+}
+.ov-stats-row {
+  display: flex;
+  margin: 4px 0;
+}
+.ov-stat { flex: 1; }
+.ov-stat-lbl {
+  font-size: 8px;
+  color: #5A6B5C;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+.ov-stat-val {
+  font-size: 12px;
+  color: #E8FFE8;
+  font-family: var(--mono);
+  font-weight: 600;
+  margin-top: 1px;
+}
+.ov-profit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+}
+.ov-profit-lbl {
+  font-size: 8px;
+  color: #5A6B5C;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+.ov-profit-val {
+  font-size: 15px;
+  font-weight: 900;
+  font-family: var(--mono);
+}
+.ov-source-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+.ov-src {
+  font-size: 9px;
+  font-family: var(--mono);
+}
+.ov-daily {
+  font-size: 10px;
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--think);
+}
+.ov-warning {
+  margin-top: 6px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--mono);
+  letter-spacing: 0.5px;
+}
+.ov-warning.pickup-far {
+  background: rgba(255,51,102,0.12);
+  border: 1px solid rgba(255,51,102,0.3);
+  color: var(--stop);
+}
+.ov-warning.surge {
+  background: rgba(255,184,0,0.12);
+  border: 1px solid rgba(255,184,0,0.3);
+  color: var(--think);
+}
+
+/* SIMPLU overlay - mini card */
+.ov-card-mini {
+  width: 180px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 6px 24px rgba(0,0,0,0.7),
+    0 0 0 1px rgba(255,255,255,0.05);
+}
+.ov-mini-body {
+  padding: 10px 12px;
+  background: rgba(10,14,11,0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ov-mini-symbol {
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 900;
+  color: #000;
+  flex-shrink: 0;
+}
+.ov-mini-info { flex: 1; }
+.ov-mini-value {
+  font-size: 16px;
+  font-weight: 900;
+  font-family: var(--mono);
+  line-height: 1;
+}
+.ov-mini-unit {
+  font-size: 8px;
+  color: var(--textDim);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.ov-mini-daily {
+  font-size: 8px;
+  font-family: var(--mono);
+  color: var(--textDim);
+  margin-top: 2px;
+}
+
+/* ============================================================
+   SCREEN 5: PLAN & PRICING
+   ============================================================ */
+
+.pricing-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.pricing-header h2 {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.pricing-header p {
+  font-size: 11px;
+  color: var(--textMuted);
+}
+
+.plan-card {
+  border-radius: var(--r-xl);
+  padding: 20px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.plan-card.trial {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.plan-card.pro {
+  background: linear-gradient(135deg, #0D150F 0%, #141A15 40%, #1A2818 100%);
+  border: 1px solid rgba(0,255,136,0.3);
+  box-shadow: 0 0 40px rgba(0,255,136,0.08);
+}
+.plan-card.pro::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+  background: radial-gradient(circle, rgba(0,255,136,0.08) 0%, transparent 70%);
+}
+
+.plan-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+.plan-badge.rec {
+  background: var(--accent);
+  color: #000;
+}
+
+.plan-name {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.plan-price {
+  font-size: 13px;
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.plan-price.free { color: var(--textMuted); }
+
+.plan-features {
+  list-style: none;
+  padding: 0;
+}
+.plan-features li {
+  font-size: 11px;
+  color: var(--textSoft);
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.plan-features li .check {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.plan-features li .cross {
+  color: var(--textDim);
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.plan-features li.disabled {
+  color: var(--textDim);
+  text-decoration: line-through;
+}
+
+/* Upgrade tiers */
+.tier-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.tier-card.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--accentGlow2);
+}
+.tier-radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tier-card.selected .tier-radio {
+  border-color: var(--accent);
+}
+.tier-radio-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--accent);
+  display: none;
+}
+.tier-card.selected .tier-radio-dot { display: block; }
+.tier-info { flex: 1; }
+.tier-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+.tier-desc {
+  font-size: 10px;
+  color: var(--textMuted);
+  margin-top: 1px;
+}
+.tier-price {
+  text-align: right;
+  flex-shrink: 0;
+}
+.tier-price-val {
+  font-size: 16px;
+  font-weight: 800;
+  font-family: var(--mono);
+  color: var(--accent);
+}
+.tier-price-per {
+  font-size: 9px;
+  color: var(--textDim);
+}
+
+.founding-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(255,184,0,0.08) 0%, rgba(255,184,0,0.02) 100%);
+  border: 1px solid rgba(255,184,0,0.2);
+  border-radius: var(--r-md);
+  margin-bottom: 16px;
+}
+.founding-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.founding-text {
+  font-size: 11px;
+  color: var(--think);
+  font-weight: 600;
+}
+.founding-text strong {
+  display: block;
+  font-size: 12px;
+  color: var(--think);
+  font-weight: 800;
+}
+
+/* ============================================================
+   SCREEN 6: PROFILE
+   ============================================================ */
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0 20px;
+}
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 36px;
+  background: linear-gradient(135deg, var(--accentDeep), var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 900;
+  color: #000;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 24px rgba(0,255,136,0.2);
+}
+.profile-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+}
+.profile-email {
+  font-size: 11px;
+  color: var(--textMuted);
+  margin-top: 2px;
+}
+.profile-badge {
+  margin-top: 8px;
+}
+
+.profile-section {
+  margin-bottom: 16px;
+}
+.profile-section-title {
+  font-size: 9px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: var(--textDim);
+  margin-bottom: 8px;
+}
+.profile-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  margin-bottom: 4px;
+}
+.profile-field-label {
+  font-size: 11px;
+  color: var(--textMuted);
+  font-weight: 500;
+}
+.profile-field-value {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--text);
+}
+
+.lifetime-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.lifetime-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 12px;
+  text-align: center;
+}
+.lifetime-val {
+  font-size: 20px;
+  font-weight: 800;
+  font-family: var(--mono);
+  color: var(--text);
+  line-height: 1.1;
+}
+.lifetime-lbl {
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  color: var(--textDim);
+  margin-top: 2px;
+}
+
+/* ============================================================
+   SCREEN 7: SETTINGS
+   ============================================================ */
+
+.settings-group {
+  margin-bottom: 20px;
+}
+.settings-group-title {
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  font-weight: 800;
+  color: var(--textDim);
+  margin-bottom: 8px;
+  padding-left: 4px;
+}
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-bottom: 2px;
+  cursor: pointer;
+}
+.settings-item:first-of-type { border-radius: var(--r-md) var(--r-md) 0 0; }
+.settings-item:last-of-type { border-radius: 0 0 var(--r-md) var(--r-md); margin-bottom: 0; }
+.settings-item:only-of-type { border-radius: var(--r-md); }
+.settings-item.single { border-radius: var(--r-md); margin-bottom: 4px; }
+
+.settings-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+.settings-icon.green { background: var(--goBg); }
+.settings-icon.yellow { background: var(--thinkBg); }
+.settings-icon.red { background: var(--stopBg); }
+.settings-icon.blue { background: rgba(66,133,244,0.12); }
+.settings-icon.gray { background: rgba(122,138,124,0.1); }
+
+.settings-content { flex: 1; min-width: 0; }
+.settings-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.settings-desc {
+  font-size: 10px;
+  color: var(--textDim);
+  margin-top: 1px;
+}
+.settings-arrow {
+  color: var(--textDim);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.settings-toggle {
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  background: var(--surfaceAlt);
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.settings-toggle.on { background: var(--accent); }
+.settings-toggle-knob {
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background: white;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: left 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+.settings-toggle.on .settings-toggle-knob { left: 20px; }
+
+.settings-version {
+  text-align: center;
+  padding: 16px 0;
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--textDim);
+}
+
+/* ============================================================
+   SCREEN 8: FILTER / THRESHOLD SETTINGS
+   ============================================================ */
+
+.filter-section {
+  margin-bottom: 20px;
+}
+.filter-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.filter-header-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--goBg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+.filter-header h3 {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+}
+.filter-header p {
+  font-size: 10px;
+  color: var(--textMuted);
+  margin-top: 1px;
+}
+
+.filter-legend {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+.filter-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--textMuted);
+  font-weight: 600;
+}
+.filter-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7px;
+  font-weight: 900;
+  color: #000;
+}
+
+/* Radio options */
+.filter-radio-group {
+  margin-bottom: 12px;
+}
+.filter-radio {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+.filter-radio.selected {
+  border-color: rgba(0,255,136,0.3);
+  background: rgba(0,255,136,0.04);
+}
+.filter-radio-circle {
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.filter-radio.selected .filter-radio-circle {
+  border-color: var(--accent);
+}
+.filter-radio-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--accent);
+  display: none;
+}
+.filter-radio.selected .filter-radio-dot { display: block; }
+.filter-radio-text { flex: 1; }
+.filter-radio-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+.filter-radio-desc {
+  font-size: 10px;
+  color: var(--textDim);
+}
+.filter-radio-value {
+  font-size: 16px;
+  font-weight: 800;
+  font-family: var(--mono);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* Slider-like input display */
+.filter-slider-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  margin-bottom: 4px;
+}
+.filter-slider-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+.filter-slider-desc {
+  font-size: 9px;
+  color: var(--textDim);
+}
+.filter-slider-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.filter-slider-value {
+  font-size: 14px;
+  font-weight: 800;
+  font-family: var(--mono);
+  color: var(--accent);
+}
+
+/* Yellow zone indicator */
+.yellow-zone {
+  padding: 10px 14px;
+  background: var(--thinkBg);
+  border: 1px solid rgba(255,184,0,0.2);
+  border-radius: var(--r-sm);
+  margin-bottom: 14px;
+}
+.yellow-zone-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--think);
+  margin-bottom: 2px;
+}
+.yellow-zone-desc {
+  font-size: 9px;
+  color: var(--textDim);
+}
+
+/* ============================================================
+   ANIMATIONS (CSS keyframes for suggestions)
+   ============================================================ */
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(0,255,136,0.15); }
+  50% { box-shadow: 0 0 24px rgba(0,255,136,0.3); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInBottom {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* ============================================================
+   RESPONSIVE LAYOUT
+   ============================================================ */
+@media (max-width: 1200px) {
+  .frames-row { gap: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<div class="design-header">
+  <h1>DRUM<span style="color: var(--text);">IQ</span></h1>
+  <p>DESIGN SYSTEM v1.0 &mdash; COMPLETE UI REFERENCE &mdash; DARK THEME PRIMARY</p>
+</div>
+
+<!-- ============================================================
+     DESIGN TOKENS BAR
+     ============================================================ -->
+<div class="tokens-bar">
+  <div class="token-group">
+    <div class="token-group-label">BACKGROUNDS</div>
+    <div class="token-swatches">
+      <div class="token-swatch" style="background:#0A0E0B;" data-label="bg"></div>
+      <div class="token-swatch" style="background:#141A15;" data-label="surface"></div>
+      <div class="token-swatch" style="background:#1A2218;" data-label="surfAlt"></div>
+      <div class="token-swatch" style="background:#1E2820;" data-label="surfHi"></div>
+    </div>
+  </div>
+  <div class="token-group">
+    <div class="token-group-label">TEXT</div>
+    <div class="token-swatches">
+      <div class="token-swatch" style="background:#E8FFE8;" data-label="text"></div>
+      <div class="token-swatch" style="background:#C0D8C2;" data-label="soft"></div>
+      <div class="token-swatch" style="background:#7A8A7C;" data-label="muted"></div>
+      <div class="token-swatch" style="background:#4A5A4C;" data-label="dim"></div>
+    </div>
+  </div>
+  <div class="token-group">
+    <div class="token-group-label">VERDICTS</div>
+    <div class="token-swatches">
+      <div class="token-swatch" style="background:#00FF88;" data-label="GO"></div>
+      <div class="token-swatch" style="background:#FFB800;" data-label="THINK"></div>
+      <div class="token-swatch" style="background:#FF3366;" data-label="STOP"></div>
+    </div>
+  </div>
+  <div class="token-group">
+    <div class="token-group-label">ACCENT</div>
+    <div class="token-swatches">
+      <div class="token-swatch" style="background:#00FF88;" data-label="accent"></div>
+      <div class="token-swatch" style="background:#00CC6A;" data-label="dim"></div>
+      <div class="token-swatch" style="background:#00994F;" data-label="deep"></div>
+    </div>
+  </div>
+  <div class="token-group">
+    <div class="token-group-label">TYPOGRAPHY</div>
+    <div style="display: flex; flex-direction: column; gap: 2px; align-items: flex-start;">
+      <span class="type-sample hero">247</span>
+      <span class="type-sample heading">Tracker</span>
+      <span class="type-sample body">12 curse finalizate</span>
+      <span class="type-sample micro">PROFIT/KM</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     1. SPLASH / LOADING SCREEN
+     ============================================================ -->
+<div class="section-title">1. SPLASH / LOADING</div>
+<div class="frames-row">
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="splash-screen">
+        <div class="splash-logo">
+          <div class="splash-logo-icon" style="animation: glowPulse 3s ease-in-out infinite;">
+            <!-- DrumIQ Logo: stylized road/signal icon -->
+            <svg class="splash-logo-svg" viewBox="0 0 44 44" fill="none">
+              <path d="M22 4L22 40" stroke="#00FF88" stroke-width="3" stroke-linecap="round"/>
+              <path d="M14 12L22 4L30 12" stroke="#00FF88" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="22" cy="20" r="4" fill="#00FF88" opacity="0.8"/>
+              <circle cx="22" cy="20" r="8" stroke="#00FF88" stroke-width="1.5" opacity="0.3"/>
+              <circle cx="22" cy="20" r="14" stroke="#00FF88" stroke-width="1" opacity="0.15"/>
+              <path d="M10 32L22 40L34 32" stroke="#00FF88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+            </svg>
+          </div>
+        </div>
+        <div class="splash-brand">
+          <div class="splash-brand-name">DRUM<span>IQ</span></div>
+          <div class="splash-tagline">DECIDE MAI DESTEPT</div>
+        </div>
+        <div class="splash-loader">
+          <div class="splash-progress">
+            <div class="splash-progress-fill"></div>
+          </div>
+          <div class="splash-status">SE CONECTEAZA...</div>
+        </div>
+        <div class="splash-version">v1.0.0 &mdash; GO PAMPA S.R.L.</div>
+      </div>
+    </div>
+    <div class="phone-label">SPLASH SCREEN</div>
+    <div class="phone-label-sub">Afisata la deschidere + verificare securitate</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     2. HOME DASHBOARD
+     ============================================================ -->
+<div class="section-title">2. HOME DASHBOARD</div>
+<div class="frames-row">
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="status-bar">
+        <span class="status-time">14:32</span>
+        <div class="notch-pill"></div>
+        <div class="status-icons">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+        </div>
+      </div>
+      <div class="screen">
+        <!-- Greeting -->
+        <div class="home-greeting">
+          <div class="home-greeting-time">BUNA ZIUA</div>
+          <div class="home-greeting-name">Alex<span> P.</span></div>
+        </div>
+
+        <!-- Plan strip -->
+        <div class="home-plan-strip">
+          <span class="pill pill-accent">PRO</span>
+          <span style="font-size:10px; color:var(--textDim); font-family:var(--mono);">30 zile ramase</span>
+        </div>
+
+        <!-- Daily target with radial progress -->
+        <div class="radial-target">
+          <div class="radial-ring">
+            <svg viewBox="0 0 72 72">
+              <circle cx="36" cy="36" r="30" fill="none" stroke="var(--surfaceAlt)" stroke-width="5"/>
+              <circle cx="36" cy="36" r="30" fill="none" stroke="url(#radialGrad)" stroke-width="5"
+                stroke-dasharray="188.5" stroke-dashoffset="56.5" stroke-linecap="round"/>
+              <defs>
+                <linearGradient id="radialGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#00994F"/>
+                  <stop offset="100%" stop-color="#00FF88"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="radial-ring-text">
+              <div class="radial-ring-value">70%</div>
+              <div class="radial-ring-unit">TARGET</div>
+            </div>
+          </div>
+          <div class="radial-info">
+            <div class="radial-info-title">TARGET AZI</div>
+            <div class="radial-info-detail">247 <span>/ 350 RON</span></div>
+            <div class="radial-info-sub">Mai ai 103 RON</div>
+          </div>
+        </div>
+
+        <!-- Acceptance rate -->
+        <div class="accept-banner ok">
+          <div class="accept-icon" style="background: var(--goBg); color: var(--go);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="accept-text">
+            <div class="accept-value" style="color: var(--go);">71%</div>
+            <div class="accept-label">Rata acceptare -- peste pragul de 70%</div>
+          </div>
+        </div>
+
+        <!-- Quick stats -->
+        <div class="quick-stats">
+          <div class="quick-stat">
+            <div class="quick-stat-val" style="color: var(--text);">29</div>
+            <div class="quick-stat-lbl">OFERTE</div>
+          </div>
+          <div class="quick-stat">
+            <div class="quick-stat-val" style="color: var(--go);">247</div>
+            <div class="quick-stat-lbl">PROFIT NET</div>
+          </div>
+          <div class="quick-stat">
+            <div class="quick-stat-val" style="color: var(--text);">12</div>
+            <div class="quick-stat-lbl">FINALIZATE</div>
+          </div>
+          <div class="quick-stat">
+            <div class="quick-stat-val" style="color: var(--go);">5.14</div>
+            <div class="quick-stat-lbl">LEI/KM</div>
+          </div>
+        </div>
+
+        <!-- Overlay CTA -->
+        <div class="overlay-cta">
+          <div class="overlay-cta-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8m-4-4h8"/></svg>
+          </div>
+          <div>
+            <div class="overlay-cta-text">Vezi Overlay-ul in actiune</div>
+            <div class="overlay-cta-sub">Preview interactiv al cardului PRO</div>
+          </div>
+          <div class="overlay-cta-arrow">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+
+        <!-- Recent verdicts -->
+        <div class="section-hdr">
+          <span class="section-hdr-label">ULTIMELE VERDICTE</span>
+          <span class="section-hdr-action">TOATE</span>
+        </div>
+
+        <div class="verdict-item">
+          <div class="verdict-dot go"></div>
+          <div class="verdict-info">
+            <div class="verdict-time">14:32 &middot; 2.0 km &middot; Numerar</div>
+            <div class="verdict-route">Spitalul Judetean &#8594; Kaufland</div>
+          </div>
+          <div class="verdict-values">
+            <div class="verdict-profit" style="color: var(--go);">+9.36</div>
+            <div class="verdict-ppkm">4.68/km</div>
+          </div>
+        </div>
+
+        <div class="verdict-item">
+          <div class="verdict-dot think"></div>
+          <div class="verdict-info">
+            <div class="verdict-time">14:15 &middot; 2.0 km &middot; Card</div>
+            <div class="verdict-route">Str. V. Alecsandri &#8594; Gara BM</div>
+          </div>
+          <div class="verdict-values">
+            <div class="verdict-profit" style="color: var(--think);">+8.40</div>
+            <div class="verdict-ppkm">2.10/km</div>
+          </div>
+        </div>
+
+        <div class="verdict-item">
+          <div class="verdict-dot stop"></div>
+          <div class="verdict-info">
+            <div class="verdict-time">13:48 &middot; 11.0 km &middot; Numerar</div>
+            <div class="verdict-route">Bvd. Unirii &#8594; Sat Firiza</div>
+          </div>
+          <div class="verdict-values">
+            <div class="verdict-profit" style="color: var(--stop);">+0.85</div>
+            <div class="verdict-ppkm">0.07/km</div>
+          </div>
+        </div>
+
+        <div class="verdict-item">
+          <div class="verdict-dot go"></div>
+          <div class="verdict-info">
+            <div class="verdict-time">13:22 &middot; 3.2 km &middot; Numerar</div>
+            <div class="verdict-route">Metro BM &#8594; Parcul Central</div>
+          </div>
+          <div class="verdict-values">
+            <div class="verdict-profit" style="color: var(--go);">+12.44</div>
+            <div class="verdict-ppkm">3.89/km</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom nav -->
+      <div class="bottom-nav">
+        <div class="nav-item active">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg></div>
+          <span class="nav-label">ACASA</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+          <span class="nav-label">TRACKER</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+          <span class="nav-label">PLAN</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zm-4 7a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
+          <span class="nav-label">PROFIL</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <span class="nav-label">SETARI</span>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">HOME DASHBOARD</div>
+    <div class="phone-label-sub">Ecran principal cu target, stats si verdicte recente</div>
+  </div>
+
+  <!-- HOME with warning state -->
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="status-bar">
+        <span class="status-time">09:15</span>
+        <div class="notch-pill"></div>
+        <div class="status-icons">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+        </div>
+      </div>
+      <div class="screen">
+        <div class="home-greeting">
+          <div class="home-greeting-time">BUNA DIMINEATA</div>
+          <div class="home-greeting-name">Alex<span> P.</span></div>
+        </div>
+
+        <div class="home-plan-strip">
+          <span class="pill pill-accent">PRO</span>
+          <span style="font-size:10px; color:var(--textDim); font-family:var(--mono);">30 zile ramase</span>
+        </div>
+
+        <!-- Target at early stage -->
+        <div class="radial-target">
+          <div class="radial-ring">
+            <svg viewBox="0 0 72 72">
+              <circle cx="36" cy="36" r="30" fill="none" stroke="var(--surfaceAlt)" stroke-width="5"/>
+              <circle cx="36" cy="36" r="30" fill="none" stroke="var(--stop)" stroke-width="5"
+                stroke-dasharray="188.5" stroke-dashoffset="161" stroke-linecap="round"/>
+            </svg>
+            <div class="radial-ring-text">
+              <div class="radial-ring-value" style="color: var(--stop);">14%</div>
+              <div class="radial-ring-unit">TARGET</div>
+            </div>
+          </div>
+          <div class="radial-info">
+            <div class="radial-info-title">TARGET AZI</div>
+            <div class="radial-info-detail">71 <span>/ 500 RON</span></div>
+            <div class="radial-info-sub">Mai ai 429 RON</div>
+          </div>
+        </div>
+
+        <!-- Acceptance rate WARNING -->
+        <div class="accept-banner warn">
+          <div class="accept-icon" style="background: var(--stopBg); color: var(--stop);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div class="accept-text">
+            <div class="accept-value" style="color: var(--stop);">14%</div>
+            <div class="accept-label">Rata acceptare -- SUB PRAG BLOCARE 70%!</div>
+          </div>
+        </div>
+
+        <!-- Quick stats low values -->
+        <div class="quick-stats">
+          <div class="quick-stat">
+            <div class="quick-stat-val">29</div>
+            <div class="quick-stat-lbl">OFERTE</div>
+          </div>
+          <div class="quick-stat">
+            <div class="quick-stat-val" style="color: var(--think);">71</div>
+            <div class="quick-stat-lbl">PROFIT NET</div>
+          </div>
+          <div class="quick-stat">
+            <div class="quick-stat-val">4</div>
+            <div class="quick-stat-lbl">FINALIZATE</div>
+          </div>
+          <div class="quick-stat">
+            <div class="quick-stat-val" style="color: var(--think);">2.31</div>
+            <div class="quick-stat-lbl">LEI/KM</div>
+          </div>
+        </div>
+
+        <!-- Overlay CTA -->
+        <div class="overlay-cta">
+          <div class="overlay-cta-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8m-4-4h8"/></svg>
+          </div>
+          <div>
+            <div class="overlay-cta-text">Vezi Overlay-ul in actiune</div>
+            <div class="overlay-cta-sub">Preview interactiv al cardului PRO</div>
+          </div>
+          <div class="overlay-cta-arrow">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+
+        <!-- Recent verdicts -->
+        <div class="section-hdr">
+          <span class="section-hdr-label">ULTIMELE VERDICTE</span>
+          <span class="section-hdr-action">TOATE</span>
+        </div>
+
+        <div class="verdict-item">
+          <div class="verdict-dot go"></div>
+          <div class="verdict-info">
+            <div class="verdict-time">09:02 &middot; 2.0 km &middot; Numerar</div>
+            <div class="verdict-route">Spitalul Judetean &#8594; Kaufland</div>
+          </div>
+          <div class="verdict-values">
+            <div class="verdict-profit" style="color: var(--go);">+9.36</div>
+            <div class="verdict-ppkm">4.68/km</div>
+          </div>
+        </div>
+
+        <div class="verdict-item">
+          <div class="verdict-dot stop"></div>
+          <div class="verdict-info">
+            <div class="verdict-time">08:48 &middot; 11.0 km &middot; Numerar</div>
+            <div class="verdict-route">Bvd. Unirii &#8594; Sat Firiza</div>
+          </div>
+          <div class="verdict-values">
+            <div class="verdict-profit" style="color: var(--stop);">+0.85</div>
+            <div class="verdict-ppkm">0.07/km</div>
+          </div>
+        </div>
+
+        <div class="verdict-item">
+          <div class="verdict-dot think"></div>
+          <div class="verdict-info">
+            <div class="verdict-time">08:35 &middot; 2.0 km &middot; Card</div>
+            <div class="verdict-route">Piata Libertatii &#8594; Dedeman</div>
+          </div>
+          <div class="verdict-values">
+            <div class="verdict-profit" style="color: var(--think);">+4.20</div>
+            <div class="verdict-ppkm">2.45/km</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item active">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg></div>
+          <span class="nav-label">ACASA</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+          <span class="nav-label">TRACKER</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+          <span class="nav-label">PLAN</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zm-4 7a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
+          <span class="nav-label">PROFIL</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <span class="nav-label">SETARI</span>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">HOME -- STARE WARNING</div>
+    <div class="phone-label-sub">Rata acceptare scazuta, target neatins</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     3. TRACKER SCREEN
+     ============================================================ -->
+<div class="section-title">3. TRACKER CASTIGURI</div>
+<div class="frames-row">
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="status-bar">
+        <span class="status-time">14:32</span>
+        <div class="notch-pill"></div>
+        <div class="status-icons">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+        </div>
+      </div>
+      <div class="screen">
+        <div class="page-title">TRACKER<span class="accent"> CASTIGURI</span></div>
+        <div class="page-sub">auto-detectate la accept Bolt</div>
+
+        <!-- Hero earnings -->
+        <div class="hero-card">
+          <div class="hero-badge"><span class="hero-badge-txt">AZI</span></div>
+          <div class="hero-label">CASTIGURI NETE</div>
+          <div class="hero-amount">247<span class="hero-unit">lei</span></div>
+          <div class="hero-sub">12 curse finalizate din 17 oferte</div>
+        </div>
+
+        <!-- Daily goal -->
+        <div class="goal-card">
+          <div class="goal-row">
+            <div class="goal-left">
+              <div class="goal-icon-wrap">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="var(--accent)"/></svg>
+              </div>
+              <span class="goal-label">TARGET AZI</span>
+            </div>
+            <div class="goal-value">247 / 350<span class="goal-value-unit"> RON</span></div>
+          </div>
+          <div class="goal-bar-bg">
+            <div class="goal-bar-fill" style="width: 70%"></div>
+          </div>
+          <div class="goal-sub">Mai ai 103 RON</div>
+        </div>
+
+        <!-- Period tabs -->
+        <div class="tabs-row">
+          <div class="tab-btn active">AZI</div>
+          <div class="tab-btn">SAPTAMANAL</div>
+          <div class="tab-btn">TOTAL</div>
+        </div>
+
+        <!-- Acceptance rate -->
+        <div class="accept-strip ok">
+          <span class="accept-strip-val" style="color: var(--go);">71%</span>
+          <span class="accept-strip-txt">Rata acceptare -- OK</span>
+        </div>
+
+        <!-- Stats grid -->
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-label">FINALIZATE / OFERTE</div>
+            <div class="stat-value">12<span class="stat-unit"> / 17</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">DISTANTA TOTALA</div>
+            <div class="stat-value">48<span class="stat-unit"> km</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">MEDIE LEI/KM</div>
+            <div class="stat-value green">5.14</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">MEDIE LEI/MIN</div>
+            <div class="stat-value yellow">1.82</div>
+          </div>
+        </div>
+
+        <!-- 7-day chart -->
+        <div class="section-hdr">
+          <span class="section-hdr-label">CASTIGURI 7 ZILE</span>
+        </div>
+        <div class="chart-container">
+          <div class="chart-bars">
+            <div class="chart-bar-wrap">
+              <div class="chart-bar" style="height: 45%; background: var(--accentDim);"><span class="chart-bar-value">89</span></div>
+              <span class="chart-bar-day">LU</span>
+            </div>
+            <div class="chart-bar-wrap">
+              <div class="chart-bar" style="height: 72%; background: var(--accentDim);"><span class="chart-bar-value">178</span></div>
+              <span class="chart-bar-day">MA</span>
+            </div>
+            <div class="chart-bar-wrap">
+              <div class="chart-bar" style="height: 55%; background: var(--accentDim);"><span class="chart-bar-value">135</span></div>
+              <span class="chart-bar-day">MI</span>
+            </div>
+            <div class="chart-bar-wrap">
+              <div class="chart-bar" style="height: 88%; background: var(--accentDim);"><span class="chart-bar-value">217</span></div>
+              <span class="chart-bar-day">JO</span>
+            </div>
+            <div class="chart-bar-wrap">
+              <div class="chart-bar" style="height: 62%; background: var(--accentDim);"><span class="chart-bar-value">153</span></div>
+              <span class="chart-bar-day">VI</span>
+            </div>
+            <div class="chart-bar-wrap">
+              <div class="chart-bar" style="height: 95%; background: var(--accentDim);"><span class="chart-bar-value">264</span></div>
+              <span class="chart-bar-day">SA</span>
+            </div>
+            <div class="chart-bar-wrap today">
+              <div class="chart-bar" style="height: 78%; background: var(--accent); box-shadow: 0 0 12px rgba(0,255,136,0.3);"><span class="chart-bar-value" style="color: var(--accent);">247</span></div>
+              <span class="chart-bar-day">DU</span>
+            </div>
+          </div>
+          <div class="chart-avg-line">
+            <span class="chart-avg-lbl">Medie saptamana</span>
+            <span class="chart-avg-val">183 lei/zi</span>
+          </div>
+        </div>
+
+        <!-- Ride list -->
+        <div class="section-hdr">
+          <span class="section-hdr-label">CURSE INDIVIDUALE</span>
+        </div>
+
+        <div class="ride-card">
+          <div class="ride-top">
+            <span class="ride-time">14:32</span>
+            <span class="ride-price">31.12 lei</span>
+          </div>
+          <div class="ride-addr">Spitalul Judetean &#8594; Kaufland Vasile Lucaciu</div>
+          <div class="ride-bottom">
+            <span class="ride-meta">2.0km &middot; 7min &middot; &#10003; Google</span>
+            <div class="ride-right">
+              <span class="ride-status" style="color: var(--go);">finalizata</span>
+              <span class="ride-verdict" style="color: var(--go);">$ 4.68</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ride-card think">
+          <div class="ride-top">
+            <span class="ride-time">14:15</span>
+            <span class="ride-price">15.15 lei</span>
+          </div>
+          <div class="ride-addr">Str. V. Alecsandri &#8594; Gara Baia Mare</div>
+          <div class="ride-bottom">
+            <span class="ride-meta">~2.0km &middot; 5min &middot; ~ est</span>
+            <div class="ride-right">
+              <span class="ride-status" style="color: var(--think);">finalizata</span>
+              <span class="ride-verdict" style="color: var(--think);">? 2.10</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ride-card stop">
+          <div class="ride-top">
+            <span class="ride-time">13:48</span>
+            <span class="ride-price">9.75 lei</span>
+          </div>
+          <div class="ride-addr">Bulevardul Unirii &#8594; Sat Firiza</div>
+          <div class="ride-bottom">
+            <span class="ride-meta">11.0km &middot; 15min &middot; &#10003; Google</span>
+            <div class="ride-right">
+              <span class="ride-status" style="color: var(--textMuted);">oferita</span>
+              <span class="ride-verdict" style="color: var(--stop);">X 0.07</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg></div>
+          <span class="nav-label">ACASA</span>
+        </div>
+        <div class="nav-item active">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+          <span class="nav-label">TRACKER</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+          <span class="nav-label">PLAN</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zm-4 7a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
+          <span class="nav-label">PROFIL</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <span class="nav-label">SETARI</span>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">TRACKER CASTIGURI</div>
+    <div class="phone-label-sub">Grafic 7 zile, stats, curse individuale</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     4. OVERLAY -- PRO + SIMPLU (GO / THINK / STOP)
+     ============================================================ -->
+<div class="section-title">4. OVERLAY VERDICT -- ELEMENTUL PRINCIPAL</div>
+
+<!-- PRO variants: GO / THINK / STOP -->
+<div class="frames-row">
+
+  <!-- GO PRO -->
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="status-bar status-bar-overlay">
+        <span class="status-time" style="color: #333;">14:32</span>
+        <div class="notch-pill"></div>
+        <div class="status-icons" style="color: #333;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+        </div>
+      </div>
+      <div class="bolt-bg">
+        <!-- Map route -->
+        <svg style="position:absolute; top:100px; left:70px; width:220px; height:200px;" viewBox="0 0 200 180">
+          <path d="M20,160 C40,120 60,80 100,60 C140,40 180,30 190,20" stroke="#00B85F" stroke-width="4" fill="none" stroke-dasharray="8,4" opacity="0.6"/>
+          <circle cx="20" cy="160" r="6" fill="#00B85F"/>
+          <circle cx="190" cy="20" r="6" fill="#FF3366"/>
+        </svg>
+
+        <div class="bolt-refuza">&#10005; Refuza</div>
+
+        <!-- DRUMIQ PRO Overlay -->
+        <div class="overlay-wrap">
+          <div class="ov-card">
+            <div class="ov-color-bar" style="background: var(--go);"></div>
+            <div class="ov-body">
+              <div class="ov-verdict-row">
+                <div class="ov-symbol go-glow">$</div>
+                <div class="ov-verdict-info">
+                  <div class="ov-ppkm-label">PROFIT/KM</div>
+                  <div class="ov-ppkm-value" style="color: var(--go);">4.68 RON/km</div>
+                </div>
+              </div>
+              <div class="ov-divider"></div>
+              <div class="ov-stats-row">
+                <div class="ov-stat">
+                  <div class="ov-stat-lbl">PICKUP</div>
+                  <div class="ov-stat-val">1.5 km / 2 min</div>
+                </div>
+                <div class="ov-stat">
+                  <div class="ov-stat-lbl">CURSA</div>
+                  <div class="ov-stat-val">2.0 km / 2 min</div>
+                </div>
+              </div>
+              <div class="ov-stats-row">
+                <div class="ov-stat">
+                  <div class="ov-stat-lbl">INCASARE</div>
+                  <div class="ov-stat-val">31.12 lei</div>
+                </div>
+                <div class="ov-stat">
+                  <div class="ov-stat-lbl">DURATA</div>
+                  <div class="ov-stat-val">4 min</div>
+                </div>
+              </div>
+              <div class="ov-divider"></div>
+              <div class="ov-profit-row">
+                <div class="ov-profit-lbl">IN BUZUNAR</div>
+                <div class="ov-profit-val" style="color: var(--go);">+9.36 lei</div>
+              </div>
+              <div class="ov-source-row">
+                <span class="ov-src" style="color: var(--go);">&#10003; Google trafic real</span>
+                <span class="ov-daily">AZI: 247/350</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bolt bottom card -->
+        <div class="bolt-card-bottom">
+          <div class="bolt-tags">
+            <div class="bolt-tag" style="background:#f0f0f0;"><span style="font-size:10px;font-weight:700;color:#333">Bolt</span></div>
+            <div class="bolt-tag" style="background:#d8f3dc;"><span style="font-size:10px;font-weight:700;color:#1b6e3a">$ Numerar</span></div>
+          </div>
+          <div class="bolt-price">31,12 lei <span class="bolt-price-sub">(NET)</span></div>
+          <div class="bolt-info">Respingerea nu va afecta rata de acceptare</div>
+          <div class="bolt-pass">Marcu &bull; 5.0 &#9733;</div>
+          <div class="bolt-route">2 min &bull; 1.5 km<br>Spitalul Judetean, Baia Mare</div>
+          <div class="bolt-accept">Accepta</div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label" style="color: var(--go);">$ GO -- PRO OVERLAY</div>
+    <div class="phone-label-sub">Cursa profitabila, semnal clar de accept</div>
+  </div>
+
+  <!-- THINK PRO -->
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="status-bar status-bar-overlay">
+        <span class="status-time" style="color: #333;">14:15</span>
+        <div class="notch-pill"></div>
+        <div class="status-icons" style="color: #333;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+        </div>
+      </div>
+      <div class="bolt-bg">
+        <svg style="position:absolute; top:100px; left:70px; width:220px; height:200px;" viewBox="0 0 200 180">
+          <path d="M30,150 C50,100 100,80 140,50 C160,35 180,30 190,25" stroke="#00B85F" stroke-width="4" fill="none" stroke-dasharray="8,4" opacity="0.6"/>
+          <circle cx="30" cy="150" r="6" fill="#00B85F"/>
+          <circle cx="190" cy="25" r="6" fill="#FF3366"/>
+        </svg>
+
+        <div class="bolt-refuza">&#10005; Refuza</div>
+
+        <div class="overlay-wrap">
+          <div class="ov-card">
+            <div class="ov-color-bar" style="background: var(--think);"></div>
+            <div class="ov-body">
+              <div class="ov-verdict-row">
+                <div class="ov-symbol think-glow">?</div>
+                <div class="ov-verdict-info">
+                  <div class="ov-ppkm-label">PROFIT/KM</div>
+                  <div class="ov-ppkm-value" style="color: var(--think);">2.10 RON/km</div>
+                </div>
+              </div>
+              <div class="ov-divider"></div>
+              <div class="ov-stats-row">
+                <div class="ov-stat">
+                  <div class="ov-stat-lbl">PICKUP</div>
+                  <div class="ov-stat-val">2.3 km / 5 min</div>
+                </div>
+                <div class="ov-stat">
+                  <div class="ov-stat-lbl">CURSA</div>
+                  <div class="ov-stat-val">~2.0 km</div>
+                </div>
+              </div>
+              <div class="ov-stats-row">
+                <div class="ov-stat">
+                  <div class="ov-stat-lbl">INCASARE</div>
+                  <div class="ov-stat-val">15.15 lei</div>
+                </div>
+                <div class="ov-stat">
+                  <div class="ov-stat-lbl">DURATA</div>
+                  <div class="ov-stat-val">7 min</div>
+                </div>
+              </div>
+              <div class="ov-divider"></div>
+              <div class="ov-profit-row">
+                <div class="ov-profit-lbl">IN BUZUNAR</div>
+                <div class="ov-profit-val" style="color: var(--think);">+8.40 lei</div>
+              </div>
+              <div class="ov-source-row">
+                <span class="ov-src" style="color: var(--textMuted);">~ estimat</span>
+                <span class="ov-daily">AZI: 247/350</span>
+              </div>
+              <div class="ov-warning surge">&#9889; Cerere mare 1.2x</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bolt-card-bottom">
+          <div class="bolt-tags">
+            <div class="bolt-tag" style="background:#f0f0f0;"><span style="font-size:10px;font-weight:700;color:#333">Bolt</span></div>
+            <div class="bolt-tag" style="background:#fef3cd;"><span style="font-size:10px;font-weight:700;color:#856404">Card</span></div>
+            <div class="bolt-tag" style="background:#fff3cd;"><span style="font-size:10px;font-weight:700;color:#856404">&#9889; 1.2x</span></div>
+          </div>
+          <div class="bolt-price">15,15 lei <span class="bolt-price-sub">(NET)</span></div>
+          <div class="bolt-info">Respingerea nu va afecta rata de acceptare</div>
+          <div class="bolt-pass">Elena &bull; 4.8 &#9733;</div>
+          <div class="bolt-route">5 min &bull; 2.3 km<br>Str. Vasile Alecsandri, Baia Mare</div>
+          <div class="bolt-accept">Accepta</div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label" style="color: var(--think);">? THINK -- PRO OVERLAY</div>
+    <div class="phone-label-sub">Cursa marginala, decizia apartine soferului</div>
+  </div>
+
+  <!-- STOP PRO -->
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="status-bar status-bar-overlay">
+        <span class="status-time" style="color: #333;">13:48</span>
+        <div class="notch-pill"></div>
+        <div class="status-icons" style="color: #333;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+        </div>
+      </div>
+      <div class="bolt-bg">
+        <svg style="position:absolute; top:80px; left:50px; width:260px; height:240px;" viewBox="0 0 260 240">
+          <path d="M20,220 C50,180 80,120 130,80 C180,40 220,30 250,15" stroke="#00B85F" stroke-width="4" fill="none" stroke-dasharray="8,4" opacity="0.6"/>
+          <circle cx="20" cy="220" r="6" fill="#00B85F"/>
+          <circle cx="250" cy="15" r="6" fill="#FF3366"/>
+        </svg>
+
+        <div class="bolt-refuza">&#10005; Refuza</div>
+
+        <div class="overlay-wrap">
+          <div class="ov-card">
+            <div class="ov-color-bar" style="background: var(--stop);"></div>
+            <div class="ov-body">
+              <div class="ov-verdict-row">
+                <div class="ov-symbol stop-glow">X</div>
+                <div class="ov-verdict-info">
+                  <div class="ov-ppkm-label">PROFIT/KM</div>
+                  <div class="ov-ppkm-value" style="color: var(--stop);">0.07 RON/km</div>
+                </div>
+              </div>
+              <div class="ov-divider"></div>
+              <div class="ov-stats-row">
+                <div class="ov-stat">
+                  <div class="ov-stat-lbl">PICKUP</div>
+                  <div class="ov-stat-val">1.5 km / 2 min</div>
+                </div>
+                <div class="ov-stat">
+                  <div class="ov-stat-lbl">CURSA</div>
+                  <div class="ov-stat-val">11.0 km / 15 min</div>
+                </div>
+              </div>
+              <div class="ov-stats-row">
+                <div class="ov-stat">
+                  <div class="ov-stat-lbl">INCASARE</div>
+                  <div class="ov-stat-val">9.75 lei</div>
+                </div>
+                <div class="ov-stat">
+                  <div class="ov-stat-lbl">DURATA</div>
+                  <div class="ov-stat-val">17 min</div>
+                </div>
+              </div>
+              <div class="ov-divider"></div>
+              <div class="ov-profit-row">
+                <div class="ov-profit-lbl">IN BUZUNAR</div>
+                <div class="ov-profit-val" style="color: var(--stop);">+0.85 lei</div>
+              </div>
+              <div class="ov-source-row">
+                <span class="ov-src" style="color: var(--go);">&#10003; Google trafic real</span>
+                <span class="ov-daily">AZI: 247/350</span>
+              </div>
+              <div class="ov-warning pickup-far">&#9888; Pickup 1.5km &gt; prag -- REFUZA</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bolt-card-bottom">
+          <div class="bolt-tags">
+            <div class="bolt-tag" style="background:#f0f0f0;"><span style="font-size:10px;font-weight:700;color:#333">Bolt</span></div>
+            <div class="bolt-tag" style="background:#f8d7da;"><span style="font-size:10px;font-weight:700;color:#721c24">In afara razei</span></div>
+            <div class="bolt-tag" style="background:#d8f3dc;"><span style="font-size:10px;font-weight:700;color:#1b6e3a">$ Numerar</span></div>
+          </div>
+          <div class="bolt-price">9,75 lei <span class="bolt-price-sub">(NET)</span></div>
+          <div class="bolt-info">Respingerea nu va afecta rata de acceptare</div>
+          <div class="bolt-pass">Ion &bull; 3.8 &#9733;</div>
+          <div class="bolt-route">2 min &bull; 1.5 km<br>Bulevardul Unirii &#8594; Sat Firiza</div>
+          <div class="bolt-accept">Accepta</div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label" style="color: var(--stop);">X STOP -- PRO OVERLAY</div>
+    <div class="phone-label-sub">Cursa neprofitabila, pickup lung, refuza!</div>
+  </div>
+</div>
+
+<!-- SIMPLU variants -->
+<div class="section-title">4B. OVERLAY SIMPLU (MINI-CARD)</div>
+<div class="frames-row">
+
+  <!-- SIMPLU GO -->
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="status-bar status-bar-overlay">
+        <span class="status-time" style="color: #333;">14:32</span>
+        <div class="notch-pill"></div>
+        <div class="status-icons" style="color: #333;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+        </div>
+      </div>
+      <div class="bolt-bg">
+        <svg style="position:absolute; top:100px; left:70px; width:220px; height:200px;" viewBox="0 0 200 180">
+          <path d="M20,160 C40,120 60,80 100,60 C140,40 180,30 190,20" stroke="#00B85F" stroke-width="4" fill="none" stroke-dasharray="8,4" opacity="0.6"/>
+          <circle cx="20" cy="160" r="6" fill="#00B85F"/>
+          <circle cx="190" cy="20" r="6" fill="#FF3366"/>
+        </svg>
+        <div class="bolt-refuza">&#10005; Refuza</div>
+
+        <!-- SIMPLU overlay -->
+        <div class="overlay-wrap">
+          <div class="ov-card-mini">
+            <div class="ov-color-bar" style="background: var(--go);"></div>
+            <div class="ov-mini-body">
+              <div class="ov-mini-symbol go-glow" style="width:36px;height:36px;border-radius:18px;font-size:20px;">$</div>
+              <div class="ov-mini-info">
+                <div class="ov-mini-value" style="color: var(--go);">4.68</div>
+                <div class="ov-mini-unit">RON/KM</div>
+                <div class="ov-mini-daily">AZI: 247/350</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bolt-card-bottom">
+          <div class="bolt-tags">
+            <div class="bolt-tag" style="background:#f0f0f0;"><span style="font-size:10px;font-weight:700;color:#333">Bolt</span></div>
+            <div class="bolt-tag" style="background:#d8f3dc;"><span style="font-size:10px;font-weight:700;color:#1b6e3a">$ Numerar</span></div>
+          </div>
+          <div class="bolt-price">31,12 lei <span class="bolt-price-sub">(NET)</span></div>
+          <div class="bolt-info">Respingerea nu va afecta rata de acceptare</div>
+          <div class="bolt-pass">Marcu &bull; 5.0 &#9733;</div>
+          <div class="bolt-route">2 min &bull; 1.5 km<br>Spitalul Judetean, Baia Mare</div>
+          <div class="bolt-accept">Accepta</div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label" style="color: var(--go);">$ GO -- SIMPLU</div>
+    <div class="phone-label-sub">Mini-card: verdict + RON/km + target zilnic</div>
+  </div>
+
+  <!-- SIMPLU THINK -->
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="status-bar status-bar-overlay">
+        <span class="status-time" style="color: #333;">14:15</span>
+        <div class="notch-pill"></div>
+        <div class="status-icons" style="color: #333;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+        </div>
+      </div>
+      <div class="bolt-bg">
+        <svg style="position:absolute; top:100px; left:70px; width:220px; height:200px;" viewBox="0 0 200 180">
+          <path d="M30,150 C50,100 100,80 140,50 C160,35 180,30 190,25" stroke="#00B85F" stroke-width="4" fill="none" stroke-dasharray="8,4" opacity="0.6"/>
+          <circle cx="30" cy="150" r="6" fill="#00B85F"/>
+          <circle cx="190" cy="25" r="6" fill="#FF3366"/>
+        </svg>
+        <div class="bolt-refuza">&#10005; Refuza</div>
+
+        <div class="overlay-wrap">
+          <div class="ov-card-mini">
+            <div class="ov-color-bar" style="background: var(--think);"></div>
+            <div class="ov-mini-body">
+              <div class="ov-mini-symbol think-glow" style="width:36px;height:36px;border-radius:18px;font-size:20px;">?</div>
+              <div class="ov-mini-info">
+                <div class="ov-mini-value" style="color: var(--think);">2.10</div>
+                <div class="ov-mini-unit">RON/KM</div>
+                <div class="ov-mini-daily">AZI: 247/350</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bolt-card-bottom">
+          <div class="bolt-tags">
+            <div class="bolt-tag" style="background:#f0f0f0;"><span style="font-size:10px;font-weight:700;color:#333">Bolt</span></div>
+            <div class="bolt-tag" style="background:#fef3cd;"><span style="font-size:10px;font-weight:700;color:#856404">Card</span></div>
+          </div>
+          <div class="bolt-price">15,15 lei <span class="bolt-price-sub">(NET)</span></div>
+          <div class="bolt-info">Respingerea nu va afecta rata de acceptare</div>
+          <div class="bolt-pass">Elena &bull; 4.8 &#9733;</div>
+          <div class="bolt-route">5 min &bull; 2.3 km<br>Str. Vasile Alecsandri, Baia Mare</div>
+          <div class="bolt-accept">Accepta</div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label" style="color: var(--think);">? THINK -- SIMPLU</div>
+    <div class="phone-label-sub">Mini-card cu avertizare vizuala galbena</div>
+  </div>
+
+  <!-- SIMPLU STOP -->
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="status-bar status-bar-overlay">
+        <span class="status-time" style="color: #333;">13:48</span>
+        <div class="notch-pill"></div>
+        <div class="status-icons" style="color: #333;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+        </div>
+      </div>
+      <div class="bolt-bg">
+        <svg style="position:absolute; top:80px; left:50px; width:260px; height:240px;" viewBox="0 0 260 240">
+          <path d="M20,220 C50,180 80,120 130,80 C180,40 220,30 250,15" stroke="#00B85F" stroke-width="4" fill="none" stroke-dasharray="8,4" opacity="0.6"/>
+          <circle cx="20" cy="220" r="6" fill="#00B85F"/>
+          <circle cx="250" cy="15" r="6" fill="#FF3366"/>
+        </svg>
+        <div class="bolt-refuza">&#10005; Refuza</div>
+
+        <div class="overlay-wrap">
+          <div class="ov-card-mini">
+            <div class="ov-color-bar" style="background: var(--stop);"></div>
+            <div class="ov-mini-body">
+              <div class="ov-mini-symbol stop-glow" style="width:36px;height:36px;border-radius:18px;font-size:20px;">X</div>
+              <div class="ov-mini-info">
+                <div class="ov-mini-value" style="color: var(--stop);">0.07</div>
+                <div class="ov-mini-unit">RON/KM</div>
+                <div class="ov-mini-daily">AZI: 247/350</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bolt-card-bottom">
+          <div class="bolt-tags">
+            <div class="bolt-tag" style="background:#f0f0f0;"><span style="font-size:10px;font-weight:700;color:#333">Bolt</span></div>
+            <div class="bolt-tag" style="background:#f8d7da;"><span style="font-size:10px;font-weight:700;color:#721c24">In afara razei</span></div>
+          </div>
+          <div class="bolt-price">9,75 lei <span class="bolt-price-sub">(NET)</span></div>
+          <div class="bolt-info">Respingerea nu va afecta rata de acceptare</div>
+          <div class="bolt-pass">Ion &bull; 3.8 &#9733;</div>
+          <div class="bolt-route">2 min &bull; 1.5 km<br>Bulevardul Unirii &#8594; Sat Firiza</div>
+          <div class="bolt-accept">Accepta</div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label" style="color: var(--stop);">X STOP -- SIMPLU</div>
+    <div class="phone-label-sub">Mini-card rosu: verdict instant, refuza rapid</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     5. PLAN & PRICING
+     ============================================================ -->
+<div class="section-title">5. PLAN &amp; PRICING</div>
+<div class="frames-row">
+
+  <!-- Plan selection -->
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="status-bar">
+        <span class="status-time">14:32</span>
+        <div class="notch-pill"></div>
+        <div class="status-icons">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+        </div>
+      </div>
+      <div class="screen">
+        <div class="pricing-header">
+          <h2>Alege Planul Tau</h2>
+          <p>Incepe gratuit, upgrade-uieste cand vrei</p>
+        </div>
+
+        <!-- TRIAL -->
+        <div class="plan-card trial">
+          <div class="plan-name">Trial</div>
+          <div class="plan-price free">Gratuit &mdash; 7 zile, 100 curse</div>
+          <ul class="plan-features">
+            <li><span class="check">&#10003;</span> Verdict GO / THINK / STOP</li>
+            <li><span class="check">&#10003;</span> 1 filtru de profitabilitate</li>
+            <li><span class="check">&#10003;</span> Tracker castiguri basic</li>
+            <li class="disabled"><span class="cross">&#10005;</span> Google trafic real</li>
+            <li class="disabled"><span class="cross">&#10005;</span> Card detaliat overlay</li>
+            <li class="disabled"><span class="cross">&#10005;</span> 4 filtre avansate</li>
+          </ul>
+        </div>
+
+        <!-- PRO -->
+        <div class="plan-card pro">
+          <div class="plan-badge rec">RECOMANDAT</div>
+          <div class="plan-name">Pro</div>
+          <div class="plan-price">De la 49 RON/luna</div>
+          <ul class="plan-features">
+            <li><span class="check">&#10003;</span> Tot ce include Trial</li>
+            <li><span class="check">&#10003;</span> Google Routes API -- trafic real</li>
+            <li><span class="check">&#10003;</span> Card detaliat PRO overlay</li>
+            <li><span class="check">&#10003;</span> 4 filtre: pickup, rating, profit, durata</li>
+            <li><span class="check">&#10003;</span> Statistici avansate + export</li>
+            <li><span class="check">&#10003;</span> Suport prioritar WhatsApp</li>
+          </ul>
+          <div style="margin-top: 16px;">
+            <div class="btn-primary">Upgrade la PRO</div>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 12px;">
+          <div class="btn-ghost" style="max-width: 280px; margin: 0 auto;">Am deja un cod de activare</div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg></div>
+          <span class="nav-label">ACASA</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+          <span class="nav-label">TRACKER</span>
+        </div>
+        <div class="nav-item active">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+          <span class="nav-label">PLAN</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zm-4 7a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
+          <span class="nav-label">PROFIL</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <span class="nav-label">SETARI</span>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">PLAN -- SELECTIE</div>
+    <div class="phone-label-sub">Comparatie Trial vs PRO cu features</div>
+  </div>
+
+  <!-- Upgrade tiers -->
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="status-bar">
+        <span class="status-time">14:32</span>
+        <div class="notch-pill"></div>
+        <div class="status-icons">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+        </div>
+      </div>
+      <div class="screen">
+        <div class="pricing-header">
+          <h2>Upgrade la PRO</h2>
+          <p>Alege periodicitatea potrivita</p>
+        </div>
+
+        <!-- Founding member banner -->
+        <div class="founding-banner">
+          <div class="founding-icon">&#9733;</div>
+          <div class="founding-text">
+            <strong>Founding Member -- Primii 100</strong>
+            Preturi speciale: Anual 199 RON, Lifetime 399 RON
+          </div>
+        </div>
+
+        <!-- Tier options -->
+        <div class="tier-card">
+          <div class="tier-radio"><div class="tier-radio-dot"></div></div>
+          <div class="tier-info">
+            <div class="tier-name">Pro Lunar</div>
+            <div class="tier-desc">Platesti lunar, anulezi oricand</div>
+          </div>
+          <div class="tier-price">
+            <div class="tier-price-val">49</div>
+            <div class="tier-price-per">RON/luna</div>
+          </div>
+        </div>
+
+        <div class="tier-card selected">
+          <div class="tier-radio"><div class="tier-radio-dot"></div></div>
+          <div class="tier-info">
+            <div class="tier-name">Pro Anual</div>
+            <div class="tier-desc">Economisesti 98 RON/an</div>
+          </div>
+          <div class="tier-price">
+            <div class="tier-price-val">490</div>
+            <div class="tier-price-per">RON/an</div>
+          </div>
+        </div>
+
+        <div class="tier-card">
+          <div class="tier-radio"><div class="tier-radio-dot"></div></div>
+          <div class="tier-info">
+            <div class="tier-name">Pro Lifetime</div>
+            <div class="tier-desc">O singura plata, fara reinnoire</div>
+          </div>
+          <div class="tier-price">
+            <div class="tier-price-val">888</div>
+            <div class="tier-price-per">RON</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <div class="btn-primary">Cumpara Pro Anual -- 490 RON</div>
+        </div>
+
+        <div style="margin-top: 10px;">
+          <div class="btn-ghost">Am deja un cod de activare</div>
+        </div>
+
+        <div style="text-align:center; margin-top: 16px; font-size: 10px; color: var(--textDim);">
+          Pentru testing: contacteaza GO PAMPA S.R.L.
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg></div>
+          <span class="nav-label">ACASA</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+          <span class="nav-label">TRACKER</span>
+        </div>
+        <div class="nav-item active">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+          <span class="nav-label">PLAN</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zm-4 7a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
+          <span class="nav-label">PROFIL</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <span class="nav-label">SETARI</span>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">UPGRADE -- TIER SELECTION</div>
+    <div class="phone-label-sub">Lunar / Anual / Lifetime cu founding member</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     6. PROFILE
+     ============================================================ -->
+<div class="section-title">6. PROFIL SOFER</div>
+<div class="frames-row">
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="status-bar">
+        <span class="status-time">14:32</span>
+        <div class="notch-pill"></div>
+        <div class="status-icons">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+        </div>
+      </div>
+      <div class="screen">
+        <!-- Profile header -->
+        <div class="profile-header">
+          <div class="profile-avatar">A</div>
+          <div class="profile-name">Alex Popescu</div>
+          <div class="profile-email">alex.popescu@gmail.com</div>
+          <div class="profile-badge">
+            <span class="pill pill-accent">PRO</span>
+          </div>
+        </div>
+
+        <!-- Vehicle -->
+        <div class="profile-section">
+          <div class="profile-section-title">VEHICUL</div>
+          <div class="profile-field">
+            <span class="profile-field-label">Placuta</span>
+            <span class="profile-field-value"><span class="pill pill-neutral">MM13VNV</span></span>
+          </div>
+          <div class="profile-field">
+            <span class="profile-field-label">Model</span>
+            <span class="profile-field-value">Dacia Sandero 2023</span>
+          </div>
+          <div class="profile-field">
+            <span class="profile-field-label">Carburant</span>
+            <span class="profile-field-value">Benzina + GPL</span>
+          </div>
+          <div class="profile-field">
+            <span class="profile-field-label">Cost total/km</span>
+            <span class="profile-field-value" style="color: var(--accent);">0.99 RON</span>
+          </div>
+        </div>
+
+        <!-- Obiectiv -->
+        <div class="profile-section">
+          <div class="profile-section-title">OBIECTIV ZILNIC</div>
+          <div class="profile-field">
+            <span class="profile-field-label">Target</span>
+            <span class="profile-field-value" style="color: var(--accent);">350 lei/zi</span>
+          </div>
+        </div>
+
+        <!-- Platforme -->
+        <div class="profile-section">
+          <div class="profile-section-title">PLATFORME AUTO-DETECT</div>
+          <div class="profile-field">
+            <span class="profile-field-label">Bolt Driver</span>
+            <span class="pill pill-accent" style="font-size: 8px;">ACTIV</span>
+          </div>
+          <div class="profile-field">
+            <span class="profile-field-label">Uber Driver</span>
+            <span class="pill pill-accent" style="font-size: 8px;">ACTIV</span>
+          </div>
+        </div>
+
+        <!-- Lifetime stats -->
+        <div class="profile-section">
+          <div class="profile-section-title">STATISTICI TOTALE</div>
+          <div class="lifetime-grid">
+            <div class="lifetime-card">
+              <div class="lifetime-val">127</div>
+              <div class="lifetime-lbl">CURSE TOTAL</div>
+            </div>
+            <div class="lifetime-card">
+              <div class="lifetime-val" style="color: var(--go);">1,847</div>
+              <div class="lifetime-lbl">VENIT NET RON</div>
+            </div>
+            <div class="lifetime-card">
+              <div class="lifetime-val">342</div>
+              <div class="lifetime-lbl">KM PARCURSI</div>
+            </div>
+            <div class="lifetime-card">
+              <div class="lifetime-val" style="color: var(--textMuted);">DPP-001</div>
+              <div class="lifetime-lbl">LICENTA</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div style="margin-top: 8px;">
+          <div class="btn-danger">Schimba cod / Logout</div>
+        </div>
+
+        <div class="settings-version">DRUMIQ v1.0.0 &mdash; GO PAMPA S.R.L.</div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg></div>
+          <span class="nav-label">ACASA</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+          <span class="nav-label">TRACKER</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+          <span class="nav-label">PLAN</span>
+        </div>
+        <div class="nav-item active">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zm-4 7a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
+          <span class="nav-label">PROFIL</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <span class="nav-label">SETARI</span>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">PROFIL SOFER</div>
+    <div class="phone-label-sub">Vehicul, platforme, stats lifetime</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     7. SETTINGS
+     ============================================================ -->
+<div class="section-title">7. SETARI</div>
+<div class="frames-row">
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="status-bar">
+        <span class="status-time">14:32</span>
+        <div class="notch-pill"></div>
+        <div class="status-icons">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+        </div>
+      </div>
+      <div class="screen">
+        <div class="page-title" style="margin-bottom: 16px;">Setari</div>
+
+        <!-- Plan group -->
+        <div class="settings-group">
+          <div class="settings-group-title">PLAN</div>
+          <div class="settings-item single">
+            <div class="settings-icon green">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--go)" stroke-width="2"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 10v1"/></svg>
+            </div>
+            <div class="settings-content">
+              <div class="settings-label">Plan PRO</div>
+              <div class="settings-desc">Expira: 18.06.2026</div>
+            </div>
+            <span class="settings-arrow">&#8250;</span>
+          </div>
+        </div>
+
+        <!-- Vehicul group -->
+        <div class="settings-group">
+          <div class="settings-group-title">VEHICUL</div>
+          <div class="settings-item" style="border-radius: var(--r-md) var(--r-md) 0 0;">
+            <div class="settings-icon yellow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--think)" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </div>
+            <div class="settings-content">
+              <div class="settings-label">Carburant</div>
+              <div class="settings-desc">Benzina + GPL, 0.99 RON/km</div>
+            </div>
+            <span class="settings-arrow">&#8250;</span>
+          </div>
+          <div class="settings-item" style="border-radius: 0 0 var(--r-md) var(--r-md);">
+            <div class="settings-icon yellow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--think)" stroke-width="2"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <div class="settings-content">
+              <div class="settings-label">Consum adaptiv</div>
+              <div class="settings-desc">Manual din bord: 9 l/100km</div>
+            </div>
+            <div class="settings-toggle on"><div class="settings-toggle-knob"></div></div>
+          </div>
+        </div>
+
+        <!-- Profitabilitate group -->
+        <div class="settings-group">
+          <div class="settings-group-title">PROFITABILITATE</div>
+          <div class="settings-item" style="border-radius: var(--r-md) var(--r-md) 0 0;">
+            <div class="settings-icon green">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--go)" stroke-width="2"><path d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/></svg>
+            </div>
+            <div class="settings-content">
+              <div class="settings-label">Praguri profitabilitate</div>
+              <div class="settings-desc">Lei/km minim: 2.00, Zona galbena: 20%</div>
+            </div>
+            <span class="settings-arrow">&#8250;</span>
+          </div>
+          <div class="settings-item">
+            <div class="settings-icon gray">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--textMuted)" stroke-width="2"><path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01"/></svg>
+            </div>
+            <div class="settings-content">
+              <div class="settings-label">Mod de lucru</div>
+              <div class="settings-desc">Individual / PFA / SRL</div>
+            </div>
+            <span class="settings-arrow">&#8250;</span>
+          </div>
+          <div class="settings-item" style="border-radius: 0 0 var(--r-md) var(--r-md);">
+            <div class="settings-icon gray">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--textMuted)" stroke-width="2"><path d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
+            </div>
+            <div class="settings-content">
+              <div class="settings-label">Taxe</div>
+              <div class="settings-desc">0% taxe, Comision Bolt 0%</div>
+            </div>
+            <span class="settings-arrow">&#8250;</span>
+          </div>
+        </div>
+
+        <!-- Overlay group -->
+        <div class="settings-group">
+          <div class="settings-group-title">OVERLAY</div>
+          <div class="settings-item" style="border-radius: var(--r-md) var(--r-md) 0 0;">
+            <div class="settings-icon green">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--go)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+            </div>
+            <div class="settings-content">
+              <div class="settings-label">Card complet PRO</div>
+              <div class="settings-desc">Overlay detaliat cu toate datele</div>
+            </div>
+            <div class="settings-toggle on"><div class="settings-toggle-knob"></div></div>
+          </div>
+          <div class="settings-item" style="border-radius: 0 0 var(--r-md) var(--r-md);">
+            <div class="settings-icon blue">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4285F4" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <div class="settings-content">
+              <div class="settings-label">Overlay permission</div>
+              <div class="settings-desc">Display over other apps</div>
+            </div>
+            <span class="settings-arrow">&#8250;</span>
+          </div>
+        </div>
+
+        <!-- System group -->
+        <div class="settings-group">
+          <div class="settings-group-title">SISTEM</div>
+          <div class="settings-item" style="border-radius: var(--r-md) var(--r-md) 0 0;">
+            <div class="settings-icon red">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--stop)" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </div>
+            <div class="settings-content">
+              <div class="settings-label">Diagnostic</div>
+              <div class="settings-desc">Accessibility test + debug</div>
+            </div>
+            <span class="settings-arrow">&#8250;</span>
+          </div>
+          <div class="settings-item" style="border-radius: 0 0 var(--r-md) var(--r-md);">
+            <div class="settings-icon gray">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--textMuted)" stroke-width="2"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+            </div>
+            <div class="settings-content">
+              <div class="settings-label">Tema</div>
+              <div class="settings-desc">Dark (recomandat pt soferi)</div>
+            </div>
+            <span class="settings-arrow">&#8250;</span>
+          </div>
+        </div>
+
+        <div class="settings-version">DRUMIQ v1.0.0 &mdash; GO PAMPA S.R.L.</div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg></div>
+          <span class="nav-label">ACASA</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+          <span class="nav-label">TRACKER</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+          <span class="nav-label">PLAN</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zm-4 7a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
+          <span class="nav-label">PROFIL</span>
+        </div>
+        <div class="nav-item active">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <span class="nav-label">SETARI</span>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">SETARI</div>
+    <div class="phone-label-sub">Grupuri: plan, vehicul, profitabilitate, overlay, sistem</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     8. FILTER / THRESHOLD SETTINGS
+     ============================================================ -->
+<div class="section-title">8. PRAGURI PROFITABILITATE</div>
+<div class="frames-row">
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="status-bar">
+        <span class="status-time">14:32</span>
+        <div class="notch-pill"></div>
+        <div class="status-icons">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+        </div>
+      </div>
+      <div class="screen">
+
+        <!-- Header -->
+        <div class="filter-header">
+          <div class="filter-header-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--go)" stroke-width="2"><path d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/></svg>
+          </div>
+          <div>
+            <h3>Praguri Profitabilitate</h3>
+            <p>O singura sursa de adevar pentru verdicte</p>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="filter-legend">
+          <div class="filter-legend-item">
+            <div class="filter-legend-dot" style="background: var(--stop);">X</div>
+            <span>Sub minim</span>
+          </div>
+          <div class="filter-legend-item">
+            <div class="filter-legend-dot" style="background: var(--think);">?</div>
+            <span>Zona galbena</span>
+          </div>
+          <div class="filter-legend-item">
+            <div class="filter-legend-dot" style="background: var(--go);">$</div>
+            <span>Profitabil</span>
+          </div>
+        </div>
+
+        <!-- Prag profit section -->
+        <div class="filter-section">
+          <div class="section-hdr">
+            <span class="section-hdr-label">PRAG PROFIT (ALEGE UNUL)</span>
+          </div>
+
+          <div class="filter-radio selected">
+            <div class="filter-radio-circle"><div class="filter-radio-dot"></div></div>
+            <div class="filter-radio-text">
+              <div class="filter-radio-label">Lei/km minim</div>
+              <div class="filter-radio-desc">Pragul principal de profitabilitate</div>
+            </div>
+            <div class="filter-radio-value">2.00</div>
+          </div>
+
+          <div class="filter-radio">
+            <div class="filter-radio-circle"><div class="filter-radio-dot"></div></div>
+            <div class="filter-radio-text">
+              <div class="filter-radio-label">Lei/min minim</div>
+              <div class="filter-radio-desc">Bazat pe durata cursei</div>
+            </div>
+            <div class="filter-radio-value" style="color: var(--textDim);">--</div>
+          </div>
+
+          <div class="filter-radio">
+            <div class="filter-radio-circle"><div class="filter-radio-dot"></div></div>
+            <div class="filter-radio-text">
+              <div class="filter-radio-label">Lei/ora minim</div>
+              <div class="filter-radio-desc">Venit orar dorit</div>
+            </div>
+            <div class="filter-radio-value" style="color: var(--textDim);">50</div>
+          </div>
+        </div>
+
+        <!-- Yellow zone -->
+        <div class="yellow-zone">
+          <div class="yellow-zone-title">Zona galbena: 20%</div>
+          <div class="yellow-zone-desc">Ex: minim 2 RON/km &#8594; galben pana la 2.40 RON/km</div>
+        </div>
+
+        <!-- Hard filters -->
+        <div class="filter-section">
+          <div class="section-hdr">
+            <span class="section-hdr-label">FILTRE DURE (INDEPENDENT)</span>
+          </div>
+
+          <div class="filter-slider-row">
+            <div>
+              <div class="filter-slider-label">Raza pickup max</div>
+              <div class="filter-slider-desc">Distanta maxima pana la client</div>
+            </div>
+            <div class="filter-slider-right">
+              <div class="filter-slider-value">3.5 km</div>
+              <div class="settings-toggle on"><div class="settings-toggle-knob"></div></div>
+            </div>
+          </div>
+
+          <div class="filter-slider-row" style="margin-top: 4px;">
+            <div>
+              <div class="filter-slider-label">Rating pasager min</div>
+              <div class="filter-slider-desc">Sub acest rating: refuza</div>
+            </div>
+            <div class="filter-slider-right">
+              <div class="filter-slider-value">4.5 &#9733;</div>
+              <div class="settings-toggle on"><div class="settings-toggle-knob"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div style="margin-top: 20px;">
+          <div class="btn-primary">Salveaza pragurile</div>
+        </div>
+        <div style="margin-top: 8px;">
+          <div class="btn-secondary">Reseteaza la valori implicite</div>
+        </div>
+
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg></div>
+          <span class="nav-label">ACASA</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+          <span class="nav-label">TRACKER</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+          <span class="nav-label">PLAN</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zm-4 7a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
+          <span class="nav-label">PROFIL</span>
+        </div>
+        <div class="nav-item active">
+          <div class="nav-indicator"></div>
+          <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <span class="nav-label">SETARI</span>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">PRAGURI PROFITABILITATE</div>
+    <div class="phone-label-sub">Prag profit, zona galbena, filtre dure</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     IMPLEMENTATION NOTES
+     ============================================================ -->
+<div style="max-width: 800px; margin: 64px auto 32px; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg);">
+  <div style="font-size: 14px; font-weight: 900; letter-spacing: 3px; color: var(--accent); margin-bottom: 16px;">IMPLEMENTATION NOTES</div>
+
+  <div style="font-size: 12px; color: var(--textSoft); line-height: 1.8;">
+    <p style="margin-bottom: 12px;"><strong style="color: var(--text);">Typography:</strong> Inter for UI text, JetBrains Mono for numbers/data. Load via Google Fonts or bundle. Hero numbers at 48px weight 900, primary labels 10-13px weight 700, micro labels 8px weight 700 with 2-3px letter spacing.</p>
+
+    <p style="margin-bottom: 12px;"><strong style="color: var(--text);">Overlay (CRITICAL):</strong> The verdict symbol (44px circle) and RON/km value (20px mono bold) must be readable from 50cm at a glance in under 0.5 seconds. The colored top bar (4px) provides instant color coding. Glow effect on verdict circle reinforces the signal. Keep contrast maximum -- verdict color on near-black background.</p>
+
+    <p style="margin-bottom: 12px;"><strong style="color: var(--text);">Animations to implement:</strong>
+    <br>-- Splash: logo breathing glow (3s ease), progress bar shimmer
+    <br>-- Overlay appear: slide-in from left + fade (200ms cubic-bezier)
+    <br>-- Verdict circle: subtle pulse glow on appear (glowPulse keyframe)
+    <br>-- Cards: fadeInUp on mount (staggered 50ms per card)
+    <br>-- Progress bar: smooth width transition (600ms ease)
+    <br>-- Tab switch: cross-fade content (150ms)
+    <br>-- Pull-to-refresh: custom green spinner
+    </p>
+
+    <p style="margin-bottom: 12px;"><strong style="color: var(--text);">Glassmorphism:</strong> Use backdrop-filter: blur(10-20px) on overlay card and bottom nav. Background opacity 0.94-0.96 for readability. Border 1px rgba(255,255,255,0.05) for glass edge.</p>
+
+    <p style="margin-bottom: 12px;"><strong style="color: var(--text);">Gradients:</strong> Green accent gradient (accentDeep to accent, 135deg) for primary buttons and active states. Radial glow gradients on hero cards. Never flat solid green -- always gradient or glow.</p>
+
+    <p style="margin-bottom: 12px;"><strong style="color: var(--text);">Spacing system:</strong> 4/8/12/16/20/24/32px scale. Card padding 12-16px. Screen horizontal padding 16px. Gap between cards 8px. Section margin-bottom 16px.</p>
+
+    <p style="margin-bottom: 12px;"><strong style="color: var(--text);">Bottom navigation:</strong> 5 tabs with SVG stroke icons (20px). Active state: accent color + glow + top indicator line (2px). Backdrop blur for depth. Home padding accounts for safe area (24px bottom).</p>
+
+    <p><strong style="color: var(--text);">One-handed use:</strong> All primary actions in bottom 60% of screen. Overlay CTA is large touch target (56px height). Bottom sheet pattern for secondary settings. Tab buttons have min 44px touch target. Verdict list items have generous padding.</p>
+  </div>
+</div>
+
+<div style="text-align: center; padding: 24px 0 48px; font-size: 10px; color: var(--textDim); letter-spacing: 2px;">
+  DRUMIQ DESIGN SYSTEM v1.0 &mdash; GO PAMPA S.R.L. &mdash; 2026
+</div>
+
+</body>
+</html>

@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRUMIQ Design 2 — Earnings Tracker</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg: #0A0E0B;
+  --surface: #141A15;
+  --surfaceAlt: #1A2218;
+  --text: #E8FFE8;
+  --textMuted: #7A8A7C;
+  --textDim: #4A5A4C;
+  --border: #1E2A1F;
+  --accent: #00FF88;
+  --accentDim: #00CC6A;
+  --stop: #FF3366;
+  --think: #FFB800;
+  --go: #00FF88;
+  --font: -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+}
+body {
+  background: #000;
+  font-family: var(--font);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 20px;
+  gap: 40px;
+}
+.phone-frame {
+  width: 390px;
+  min-height: 844px;
+  background: var(--bg);
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 60px rgba(0,255,136,0.12), 0 0 0 2px #222;
+  display: flex;
+  flex-direction: column;
+}
+.notch {
+  width: 100%;
+  height: 50px;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.notch-pill {
+  width: 80px;
+  height: 26px;
+  background: #000;
+  border-radius: 20px;
+}
+.screen-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  padding: 0 16px 20px;
+}
+.screen-area::-webkit-scrollbar { display: none; }
+.bottom-tabs {
+  display: flex;
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: 8px 0 20px;
+}
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+.tab-item .indicator {
+  position: absolute;
+  top: -8px;
+  left: 25%;
+  right: 25%;
+  height: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  display: none;
+}
+.tab-item.active .indicator { display: block; }
+.tab-icon { font-size: 18px; opacity: 0.55; }
+.tab-item.active .tab-icon { opacity: 1; }
+.tab-label { font-size: 9px; font-weight: 700; letter-spacing: 1.2px; color: var(--textMuted); }
+.tab-item.active .tab-label { color: var(--accent); }
+
+/* Hero earnings card */
+.hero-card {
+  background: linear-gradient(135deg, #0F1A12 0%, #141A15 50%, #1A2218 100%);
+  border: 1px solid var(--accent);
+  border-radius: 16px;
+  padding: 24px 20px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 30px rgba(0,255,136,0.08);
+}
+.hero-card::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+  background: radial-gradient(circle, rgba(0,255,136,0.08) 0%, transparent 70%);
+}
+.hero-label {
+  font-size: 10px;
+  letter-spacing: 3px;
+  font-weight: 700;
+  color: var(--textMuted);
+  margin-bottom: 4px;
+}
+.hero-amount {
+  font-size: 48px;
+  font-weight: 900;
+  font-family: var(--mono);
+  color: var(--go);
+  line-height: 1;
+}
+.hero-unit {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--textMuted);
+  margin-left: 4px;
+}
+.hero-sub {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--textDim);
+  margin-top: 6px;
+}
+.hero-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(0,255,136,0.12);
+  border: 1px solid rgba(0,255,136,0.3);
+}
+.hero-badge-txt {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--go);
+  letter-spacing: 1px;
+}
+
+/* Daily goal */
+.goal-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.goal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.goal-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.goal-icon { font-size: 16px; }
+.goal-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: var(--textMuted);
+}
+.goal-value {
+  font-size: 16px;
+  font-weight: 900;
+  font-family: var(--mono);
+  color: var(--text);
+}
+.goal-value-unit {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--textMuted);
+}
+.goal-bar-bg {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surfaceAlt);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.goal-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(0,255,136,0.4);
+  transition: width 0.6s ease;
+}
+.goal-sub {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--textDim);
+  text-align: right;
+}
+
+/* Period tabs */
+.tabs-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--textMuted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.tab-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+
+/* Stats grid */
+.stat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.stat-card {
+  width: calc(50% - 4px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+.stat-lbl {
+  font-size: 8px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: var(--textMuted);
+  margin-bottom: 4px;
+}
+.stat-val {
+  font-size: 22px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--text);
+}
+.stat-val.green { color: var(--go); }
+.stat-val.yellow { color: var(--think); }
+.stat-unit { font-size: 11px; font-weight: 500; color: var(--textMuted); }
+
+/* 7-day bar chart */
+.chart-section {
+  margin-bottom: 16px;
+}
+.chart-label {
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  font-weight: 900;
+  color: var(--textMuted);
+  margin-bottom: 12px;
+}
+.chart-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 12px 12px;
+}
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 100px;
+  margin-bottom: 8px;
+}
+.chart-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+.chart-bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  transition: height 0.4s ease;
+  position: relative;
+}
+.chart-bar-value {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 8px;
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--textMuted);
+  white-space: nowrap;
+}
+.chart-bar-day {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--textDim);
+  margin-top: 6px;
+  letter-spacing: 0.5px;
+}
+.chart-bar-wrap.today .chart-bar-day { color: var(--accent); }
+.chart-avg-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+.chart-avg-lbl {
+  font-size: 9px;
+  font-family: var(--mono);
+  color: var(--textDim);
+}
+.chart-avg-val {
+  font-size: 11px;
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--think);
+}
+
+/* Ride list */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.section-lbl {
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  font-weight: 900;
+  color: var(--textMuted);
+}
+.section-link {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--accent);
+  cursor: pointer;
+}
+.ride-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  border-left: 3px solid var(--go);
+}
+.ride-card.think { border-left-color: var(--think); }
+.ride-card.stop { border-left-color: var(--stop); }
+.ride-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.ride-time {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--textMuted);
+}
+.ride-price {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--text);
+}
+.ride-addr {
+  font-size: 9px;
+  font-family: var(--mono);
+  color: var(--textMuted);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ride-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ride-meta {
+  font-size: 9px;
+  font-family: var(--mono);
+  color: var(--textMuted);
+}
+.ride-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ride-status {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.ride-verdict {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--mono);
+}
+
+/* Acceptance rate */
+.acceptance-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.acceptance-strip.ok { background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.2); }
+.acceptance-strip.warn { background: rgba(255,184,0,0.08); border: 1px solid rgba(255,184,0,0.25); }
+.acceptance-rate-txt {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--mono);
+}
+.acceptance-rate-sub {
+  font-size: 9px;
+  color: var(--textDim);
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: var(--text);
+  margin-top: 4px;
+}
+.page-title .accent { color: var(--accent); }
+.page-sub {
+  font-size: 10px;
+  font-family: var(--mono);
+  letter-spacing: 1px;
+  color: var(--textMuted);
+  margin-top: 2px;
+  margin-bottom: 14px;
+}
+
+.annotation {
+  position: absolute;
+  background: #1a1a2e;
+  border: 1px solid #4a4ae0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 10px;
+  color: #a0a0ff;
+  font-family: var(--mono);
+  z-index: 100;
+  pointer-events: none;
+  white-space: nowrap;
+}
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="notch"><div class="notch-pill"></div></div>
+  <div class="screen-area">
+
+    <!-- Title -->
+    <div class="page-title">TRACKER<span class="accent"> CASTIGURI</span></div>
+    <div class="page-sub">auto-detectate la accept Bolt</div>
+
+    <!-- Hero earnings card -->
+    <div class="hero-card">
+      <div class="hero-badge"><span class="hero-badge-txt">AZI</span></div>
+      <div class="hero-label">CASTIGURI NETE</div>
+      <div class="hero-amount">247<span class="hero-unit">lei</span></div>
+      <div class="hero-sub">12 curse finalizate din 17 oferte</div>
+    </div>
+
+    <!-- Daily goal -->
+    <div class="goal-card">
+      <div class="goal-row">
+        <div class="goal-left">
+          <span class="goal-icon">&#127919;</span>
+          <span class="goal-label">TARGET AZI</span>
+        </div>
+        <div class="goal-value">247 / 300<span class="goal-value-unit"> RON</span></div>
+      </div>
+      <div class="goal-bar-bg">
+        <div class="goal-bar-fill" style="width: 82%"></div>
+      </div>
+      <div class="goal-sub">Mai ai 53 RON</div>
+    </div>
+
+    <!-- Period tabs -->
+    <div class="tabs-row">
+      <div class="tab-btn active">AZI</div>
+      <div class="tab-btn">SAPTAMANAL</div>
+      <div class="tab-btn">TOTAL</div>
+    </div>
+
+    <!-- Acceptance rate strip -->
+    <div class="acceptance-strip ok">
+      <span class="acceptance-rate-txt" style="color: var(--go)">71%</span>
+      <span class="acceptance-rate-sub">Rata acceptare &mdash; OK</span>
+    </div>
+
+    <!-- Stats grid (4 cards) -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-lbl">FINALIZATE / OFERTE</div>
+        <div class="stat-val">12<span class="stat-unit"> / 17</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">DISTANTA TOTALA</div>
+        <div class="stat-val">48<span class="stat-unit"> km</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">MEDIE LEI/KM</div>
+        <div class="stat-val green">5.14</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">MEDIE LEI/MIN</div>
+        <div class="stat-val yellow">1.82</div>
+      </div>
+    </div>
+
+    <!-- 7-day bar chart -->
+    <div class="chart-section">
+      <div class="chart-label">CASTIGURI 7 ZILE</div>
+      <div class="chart-container">
+        <div class="chart-bars">
+          <div class="chart-bar-wrap">
+            <div class="chart-bar" style="height: 45%; background: var(--accentDim);">
+              <span class="chart-bar-value">89</span>
+            </div>
+            <span class="chart-bar-day">LU</span>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-bar" style="height: 72%; background: var(--accentDim);">
+              <span class="chart-bar-value">178</span>
+            </div>
+            <span class="chart-bar-day">MA</span>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-bar" style="height: 55%; background: var(--accentDim);">
+              <span class="chart-bar-value">135</span>
+            </div>
+            <span class="chart-bar-day">MI</span>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-bar" style="height: 88%; background: var(--accentDim);">
+              <span class="chart-bar-value">217</span>
+            </div>
+            <span class="chart-bar-day">JO</span>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-bar" style="height: 62%; background: var(--accentDim);">
+              <span class="chart-bar-value">153</span>
+            </div>
+            <span class="chart-bar-day">VI</span>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-bar" style="height: 95%; background: var(--accentDim);">
+              <span class="chart-bar-value">264</span>
+            </div>
+            <span class="chart-bar-day">SA</span>
+          </div>
+          <div class="chart-bar-wrap today">
+            <div class="chart-bar" style="height: 78%; background: var(--accent); box-shadow: 0 0 12px rgba(0,255,136,0.3);">
+              <span class="chart-bar-value" style="color: var(--accent)">247</span>
+            </div>
+            <span class="chart-bar-day">DU</span>
+          </div>
+        </div>
+        <div class="chart-avg-line">
+          <span class="chart-avg-lbl">Medie saptamana</span>
+          <span class="chart-avg-val">183 lei/zi</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ride list -->
+    <div class="section-header">
+      <span class="section-lbl">CURSE INDIVIDUALE</span>
+    </div>
+
+    <div class="ride-card">
+      <div class="ride-top">
+        <span class="ride-time">14:32</span>
+        <span class="ride-price">31.12 lei</span>
+      </div>
+      <div class="ride-addr">Spitalul Judetean &rarr; Kaufland Vasile Lucaciu</div>
+      <div class="ride-bottom">
+        <span class="ride-meta">2.0km &middot; 7min &middot; &#10003; Google</span>
+        <div class="ride-right">
+          <span class="ride-status" style="color: var(--go)">finalizata</span>
+          <span class="ride-verdict" style="color: var(--go)">$ 4.68</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ride-card think">
+      <div class="ride-top">
+        <span class="ride-time">14:15</span>
+        <span class="ride-price">15.15 lei</span>
+      </div>
+      <div class="ride-addr">Str. Vasile Alecsandri &rarr; Gara Baia Mare</div>
+      <div class="ride-bottom">
+        <span class="ride-meta">~2.0km &middot; 5min &middot; ~ est</span>
+        <div class="ride-right">
+          <span class="ride-status" style="color: var(--think)">finalizata</span>
+          <span class="ride-verdict" style="color: var(--think)">? 2.10</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ride-card stop">
+      <div class="ride-top">
+        <span class="ride-time">13:48</span>
+        <span class="ride-price">9.75 lei</span>
+      </div>
+      <div class="ride-addr">Bulevardul Unirii &rarr; Sat Firiza</div>
+      <div class="ride-bottom">
+        <span class="ride-meta">11.0km &middot; 15min &middot; &#10003; Google</span>
+        <div class="ride-right">
+          <span class="ride-status" style="color: var(--textMuted)">oferita</span>
+          <span class="ride-verdict" style="color: var(--stop)">X 0.07</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ride-card">
+      <div class="ride-top">
+        <span class="ride-time">13:22</span>
+        <span class="ride-price">28.50 lei</span>
+      </div>
+      <div class="ride-addr">Metro Baia Mare &rarr; Parcul Central</div>
+      <div class="ride-bottom">
+        <span class="ride-meta">3.2km &middot; 9min &middot; &#10003; Google</span>
+        <div class="ride-right">
+          <span class="ride-status" style="color: var(--go)">finalizata</span>
+          <span class="ride-verdict" style="color: var(--go)">$ 3.89</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ride-card think">
+      <div class="ride-top">
+        <span class="ride-time">12:55</span>
+        <span class="ride-price">18.90 lei</span>
+      </div>
+      <div class="ride-addr">Piata Libertatii &rarr; Dedeman Baia Mare</div>
+      <div class="ride-bottom">
+        <span class="ride-meta">~2.0km &middot; 6min &middot; ~ est</span>
+        <div class="ride-right">
+          <span class="ride-status" style="color: var(--go)">finalizata</span>
+          <span class="ride-verdict" style="color: var(--think)">? 2.45</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom tabs -->
+  <div class="bottom-tabs">
+    <div class="tab-item">
+      <span class="tab-icon">&#127968;</span>
+      <span class="tab-label">HOME</span>
+    </div>
+    <div class="tab-item">
+      <span class="tab-icon">&#128065;</span>
+      <span class="tab-label">OVERLAY</span>
+    </div>
+    <div class="tab-item active">
+      <div class="indicator"></div>
+      <span class="tab-icon">&#128200;</span>
+      <span class="tab-label">TRACKER</span>
+    </div>
+    <div class="tab-item">
+      <span class="tab-icon">&#9881;</span>
+      <span class="tab-label">SETARI</span>
+    </div>
+    <div class="tab-item">
+      <span class="tab-icon">&#128100;</span>
+      <span class="tab-label">PROFIL</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

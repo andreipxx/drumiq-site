@@ -1,0 +1,128 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
+import { loadRides, computeStats, filterRidesByPeriod } from './tracker';
+import { getFuelSettings, getVehicleInfo, getDailyGoal, fuelCostPerKm, totalCostPerKm } from './userSettings';
+import { getAdaptiveConsumption, getTaxSettings } from './extendedSettings';
+import { loadThresholds } from './filterEngine';
+import { getLicenseState } from './licenseManager';
+import { getDpEvents, getDebugStats } from './dpDebug';
+import { Accessibility } from '../native/accessibility';
+
+export async function generateFullExport(): Promise<string> {
+  const now = new Date();
+
+  const [
+    rides, fuel, vehicle, dailyGoal,
+    license, thresholds, adaptive, tax,
+  ] = await Promise.all([
+    loadRides(),
+    getFuelSettings(),
+    getVehicleInfo(),
+    getDailyGoal(),
+    getLicenseState(),
+    loadThresholds(),
+    getAdaptiveConsumption(),
+    getTaxSettings(),
+  ]);
+
+  const statsToday = computeStats(filterRidesByPeriod(rides, 'today'));
+  const statsWeek = computeStats(filterRidesByPeriod(rides, 'week'));
+  const statsTotal = computeStats(rides);
+
+  const debugStats = getDebugStats();
+  const debugEvents = getDpEvents();
+
+  let routesCache: any = null;
+  try {
+    const raw = await AsyncStorage.getItem('@dp_routes_cache_v1');
+    if (raw) routesCache = JSON.parse(raw);
+  } catch {}
+
+  let nativeLogStats: any = null;
+  try { nativeLogStats = await Accessibility.getLogStats(); } catch {}
+
+  const apiKeyRaw = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY || '';
+
+  const report = {
+    _exportedAt: now.toISOString(),
+    _platform: Platform.OS,
+    _appVersion: require('../../app.json').expo.version,
+    _package: 'ro.gopampa.drumiq',
+
+    license: {
+      plan: license.license?.plan ?? 'none',
+      expirationReason: license.expirationReason,
+      ridesUsed: license.ridesUsed,
+      ridesRemaining: license.ridesRemaining,
+      expiresAt: license.license?.expiresAt
+        ? new Date(license.license.expiresAt).toISOString()
+        : null,
+    },
+
+    settings: {
+      fuel,
+      fuelCostPerKm: fuelCostPerKm(fuel),
+      totalCostPerKm: totalCostPerKm(fuel),
+      vehicle,
+      dailyGoal,
+      thresholds,
+      adaptiveConsumption: adaptive,
+      tax,
+    },
+
+    apiKey: {
+      length: apiKeyRaw.length,
+      prefix: apiKeyRaw.slice(0, 6),
+      valid: apiKeyRaw.length >= 30,
+    },
+
+    stats: {
+      today: statsToday,
+      week: statsWeek,
+      total: statsTotal,
+    },
+
+    ridesCount: rides.length,
+    rides: anonymizeRides(dedupeRides(rides)).sort((a, b) => b.timestamp - a.timestamp),
+
+    debug: {
+      stats: debugStats,
+      eventsCount: debugEvents.length,
+      events: debugEvents.slice(0, 1000),
+    },
+
+    routesCacheEntries: routesCache ? Object.keys(routesCache).length : 0,
+    routesCache,
+    nativeLogStats,
+  };
+
+  try {
+    return JSON.stringify(report, null, 2);
+  } catch (e: any) {
+    return JSON.stringify({ error: 'stringify_failed', message: String(e?.message || e) });
+  }
+}
+
+function anonymizeAddress(addr?: string): string | undefined {
+  if (!addr) return addr;
+  const firstWord = addr.split(/[\s,]+/)[0];
+  return firstWord ? `${firstWord}...` : '...';
+}
+
+function anonymizeRides(rides: any[]): any[] {
+  return rides.map((r, i) => ({
+    ...r,
+    passengerLabel: `Pasager ${i + 1}`,
+    pickupAddress: anonymizeAddress(r.pickupAddress),
+    destinationAddress: anonymizeAddress(r.destinationAddress),
+  }));
+}
+
+function dedupeRides(rides: any[]): any[] {
+  const seen = new Set<string>();
+  return rides.filter(r => {
+    if (seen.has(r.id)) return false;
+    seen.add(r.id);
+    return true;
+  });
+}

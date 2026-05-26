@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="220dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/dp_overlay_bg"
+    android:padding="0dp">
+
+    <View
+        android:id="@+id/dp_border"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#00FF88" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="4dp">
+
+        <FrameLayout
+            android:id="@+id/dp_symbol_wrap"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/dp_symbol_circle">
+
+            <TextView
+                android:id="@+id/dp_symbol"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="$"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/dp_net"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="—"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#00FF88" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/dp_profitkm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="—"
+        android:textSize="11sp"
+        android:textColor="#7A8A7C"
+        android:paddingBottom="2dp" />
+
+    <TextView
+        android:id="@+id/dp_daily"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingBottom="8dp"
+        android:text=""
+        android:textSize="11sp"
+        android:textColor="#FFB800"
+        android:visibility="gone" />
+
+</LinearLayout>

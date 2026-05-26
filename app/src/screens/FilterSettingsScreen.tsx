@@ -1,7 +1,11 @@
+// DRUMIQ v2.0.0 — Praguri profitabilitate (Aurora theme)
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Switch, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
+import { FONT, SIZE, RADIUS, GAP } from '../constants/typography';
 import {
   loadThresholds,
   saveThresholds,
@@ -31,8 +35,28 @@ const HARD_FIELDS: { field: ThresholdField; toggle: ToggleField; prefix: string 
   { field: 'minRating',   toggle: 'ratingEnabled', prefix: 'Sub' },
 ];
 
+/* ── Section label ── */
+function SectionLabel({ text, colors, ff }: { text: string; colors: any; ff: boolean }) {
+  return (
+    <View style={st.sectionRow}>
+      <Text style={[st.sectionText, {
+        color: colors.textMuted,
+        fontFamily: ff ? FONT.mono : FONT.systemMono,
+      }]}>
+        {'// '}{text}
+      </Text>
+      <LinearGradient
+        colors={colors.gradPrimary}
+        start={{ x: 0, y: 0.5 }}
+        end={{ x: 1, y: 0.5 }}
+        style={st.sectionLine}
+      />
+    </View>
+  );
+}
+
 export default function FilterSettingsScreen({ onBack }: Props) {
-  const { colors } = useTheme();
+  const { colors, fontsLoaded: ff } = useTheme();
   const insets = useSafeAreaInsets();
   const [thresholds, setThresholds] = useState<UnifiedThresholds | null>(null);
   const [dirty, setDirty] = useState(false);
@@ -99,29 +123,53 @@ export default function FilterSettingsScreen({ onBack }: Props) {
   };
 
   if (!thresholds) {
-    return <View style={[s.root, { backgroundColor: colors.bg }]} />;
+    return <View style={[st.root, { backgroundColor: colors.bg }]} />;
   }
 
   return (
-    <View style={[s.root, { backgroundColor: colors.bg }]}>
-      <TouchableOpacity onPress={onBack} style={[s.backBtn, { paddingTop: insets.top + 8 }]}>
-        <Text style={[s.backTxt, { color: colors.accent }]}>‹ Back</Text>
+    <View style={[st.root, { backgroundColor: colors.bg }]}>
+      {/* Aurora blobs */}
+      <View style={[st.blob, st.blob1, { backgroundColor: colors.aurora1 }]} />
+      <View style={[st.blob, st.blob2, { backgroundColor: colors.aurora2 }]} />
+      <View style={[st.blob, st.blob3, { backgroundColor: colors.aurora3 }]} />
+
+      {/* Back button */}
+      <TouchableOpacity onPress={onBack} style={[st.backBtn, { paddingTop: insets.top + 8 }]}>
+        <Text style={[st.backTxt, {
+          color: colors.cyan,
+          fontFamily: ff ? FONT.bodySB : FONT.system,
+        }]}>‹ Back</Text>
       </TouchableOpacity>
 
-      <ScrollView contentContainerStyle={s.content}>
-        <Text style={[s.title, { color: colors.text }]}>PRAGURI<Text style={{ color: colors.accent }}> PROFITABILITATE</Text></Text>
-        <Text style={[s.sub, { color: colors.textMuted }]}>O singură sursă de adevăr pentru verdicte</Text>
+      <ScrollView contentContainerStyle={st.content} showsVerticalScrollIndicator={false}>
+        {/* Title */}
+        <Text style={[st.title, {
+          color: colors.text,
+          fontFamily: ff ? FONT.display : FONT.system,
+        }]}>
+          Praguri{' '}
+          <Text style={{ fontFamily: ff ? FONT.serifItalic : FONT.system, color: colors.cyan }}>
+            profitabilitate
+          </Text>
+        </Text>
+        <Text style={[st.sub, {
+          color: colors.textMuted,
+          fontFamily: ff ? FONT.mono : FONT.systemMono,
+        }]}>
+          {'// o singură sursă de adevăr pentru verdicte'}
+        </Text>
 
-        <View style={[s.infoCard, { backgroundColor: colors.surface, borderColor: colors.borderAccent }]}>
-          <Text style={[s.infoTxt, { color: colors.textMuted }]}>
-            <Text style={{ color: '#FF3366', fontWeight: '700' }}>X</Text> sub minim ·{' '}
-            <Text style={{ color: '#FFB800', fontWeight: '700' }}>?</Text> zona galbenă ·{' '}
+        {/* Legend card */}
+        <View style={[st.legendCard, { backgroundColor: colors.bgCard, borderColor: colors.borderSoft }]}>
+          <Text style={[st.legendTxt, { color: colors.textMuted, fontFamily: ff ? FONT.mono : FONT.systemMono }]}>
+            <Text style={{ color: colors.stop, fontWeight: '700' }}>X</Text> sub minim ·{' '}
+            <Text style={{ color: colors.think, fontWeight: '700' }}>?</Text> zona galbenă ·{' '}
             <Text style={{ color: colors.go, fontWeight: '700' }}>$</Text> profitabil
           </Text>
         </View>
 
-        {/* PROFIT THRESHOLDS — un singur filtru activ (radio) */}
-        <Text style={[s.sectionTitle, { color: colors.textMuted }]}>PRAG PROFIT (alege unul)</Text>
+        {/* ═══ PROFIT THRESHOLDS ═══ */}
+        <SectionLabel text="Prag profit (alege unul)" colors={colors} ff={ff} />
         {PROFIT_FIELDS.map(({ field, toggle }) => {
           const isActive = !!(thresholds as any)[toggle];
           return (
@@ -135,23 +183,41 @@ export default function FilterSettingsScreen({ onBack }: Props) {
                 };
                 update(patch);
               }}
-              style={[s.card, {
-                backgroundColor: colors.surface,
-                borderColor: isActive ? colors.go : colors.border,
+              style={[st.card, {
+                backgroundColor: colors.bgCard,
+                borderColor: isActive ? colors.go : colors.borderSoft,
                 borderWidth: isActive ? 2 : 1,
               }]}
             >
-              <View style={s.cardHeader}>
-                <Text style={[s.cardTitle, { color: isActive ? colors.go : colors.text }]}>
+              {/* Active glow */}
+              {isActive && (
+                <View style={[st.cardGlow, { backgroundColor: colors.goGlow }]} />
+              )}
+              <View style={st.cardHeader}>
+                <Text style={[st.cardTitle, {
+                  color: isActive ? colors.go : colors.text,
+                  fontFamily: ff ? FONT.bodySB : FONT.system,
+                }]}>
                   {isActive ? '◉' : '○'}  {THRESHOLD_ICONS[field]}  {THRESHOLD_LABELS[field]}
                 </Text>
               </View>
-              <Text style={[s.hint, { color: colors.textDim }]}>{THRESHOLD_HINTS[field]}</Text>
+              <Text style={[st.hint, {
+                color: colors.textFaint,
+                fontFamily: ff ? FONT.mono : FONT.systemMono,
+              }]}>{THRESHOLD_HINTS[field]}</Text>
               {isActive && (
-                <View style={s.inputRow}>
-                  <Text style={[s.prefix, { color: colors.textMuted }]}>Minim</Text>
+                <View style={st.inputRow}>
+                  <Text style={[st.prefix, {
+                    color: colors.textMuted,
+                    fontFamily: ff ? FONT.mono : FONT.systemMono,
+                  }]}>Minim</Text>
                   <TextInput
-                    style={[s.input, { backgroundColor: colors.surfaceAlt, borderColor: colors.border, color: colors.text }]}
+                    style={[st.input, {
+                      backgroundColor: colors.bgInput,
+                      borderColor: colors.border,
+                      color: colors.text,
+                      fontFamily: ff ? FONT.monoBold : FONT.systemMono,
+                    }]}
                     value={inputText[field]}
                     onChangeText={txt => {
                       const cleaned = txt.replace(/[^0-9.,]/g, '');
@@ -160,25 +226,41 @@ export default function FilterSettingsScreen({ onBack }: Props) {
                       if (!isNaN(n) && isFinite(n)) update({ [field]: n });
                     }}
                     keyboardType="decimal-pad"
+                    selectionColor={colors.cyan}
                   />
-                  <Text style={[s.unit, { color: colors.textMuted }]}>{THRESHOLD_UNITS[field]}</Text>
+                  <Text style={[st.unit, {
+                    color: colors.textMuted,
+                    fontFamily: ff ? FONT.mono : FONT.systemMono,
+                  }]}>{THRESHOLD_UNITS[field]}</Text>
                 </View>
               )}
             </TouchableOpacity>
           );
         })}
 
-        {/* YELLOW ZONE */}
-        <View style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <View style={s.cardHeader}>
-            <Text style={[s.cardTitle, { color: colors.text }]}>
+        {/* ═══ YELLOW ZONE ═══ */}
+        <SectionLabel text="Zona galbenă" colors={colors} ff={ff} />
+        <View style={[st.card, { backgroundColor: colors.bgCard, borderColor: colors.borderSoft }]}>
+          <View style={st.cardHeader}>
+            <Text style={[st.cardTitle, {
+              color: colors.text,
+              fontFamily: ff ? FONT.bodySB : FONT.system,
+            }]}>
               {THRESHOLD_ICONS.yellowZone}  {THRESHOLD_LABELS.yellowZone}
             </Text>
           </View>
-          <Text style={[s.hint, { color: colors.textDim }]}>{THRESHOLD_HINTS.yellowZone}</Text>
-          <View style={s.inputRow}>
+          <Text style={[st.hint, {
+            color: colors.textFaint,
+            fontFamily: ff ? FONT.mono : FONT.systemMono,
+          }]}>{THRESHOLD_HINTS.yellowZone}</Text>
+          <View style={st.inputRow}>
             <TextInput
-              style={[s.input, { backgroundColor: colors.surfaceAlt, borderColor: colors.border, color: colors.text }]}
+              style={[st.input, {
+                backgroundColor: colors.bgInput,
+                borderColor: colors.border,
+                color: colors.text,
+                fontFamily: ff ? FONT.monoBold : FONT.systemMono,
+              }]}
               value={inputText.yellowZone}
               onChangeText={txt => {
                 const cleaned = txt.replace(/[^0-9.,]/g, '');
@@ -187,36 +269,57 @@ export default function FilterSettingsScreen({ onBack }: Props) {
                 if (!isNaN(n) && isFinite(n)) update({ yellowZone: n });
               }}
               keyboardType="decimal-pad"
+              selectionColor={colors.cyan}
             />
-            <Text style={[s.unit, { color: colors.textMuted }]}>{THRESHOLD_UNITS.yellowZone}</Text>
+            <Text style={[st.unit, {
+              color: colors.textMuted,
+              fontFamily: ff ? FONT.mono : FONT.systemMono,
+            }]}>{THRESHOLD_UNITS.yellowZone}</Text>
           </View>
-          <View style={[s.preview, { borderColor: colors.border }]}>
-            <Text style={[s.previewTxt, { color: colors.textDim }]}>
+          <View style={[st.preview, { borderColor: colors.borderSoft }]}>
+            <Text style={[st.previewTxt, {
+              color: colors.textFaint,
+              fontFamily: ff ? FONT.mono : FONT.systemMono,
+            }]}>
               Ex: minim {thresholds.kmValue} RON/km → galben până la {(thresholds.kmValue * (1 + thresholds.yellowZone / 100)).toFixed(2)} RON/km
             </Text>
           </View>
         </View>
 
-        {/* HARD FILTERS */}
-        <Text style={[s.sectionTitle, { color: colors.textMuted }]}>FILTRE DURE (independent de profit)</Text>
+        {/* ═══ HARD FILTERS ═══ */}
+        <SectionLabel text="Filtre dure (independent de profit)" colors={colors} ff={ff} />
         {HARD_FIELDS.map(({ field, toggle, prefix }) => (
-          <View key={field} style={[s.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <View style={s.cardHeader}>
-              <Text style={[s.cardTitle, { color: colors.text }]}>
+          <View key={field} style={[st.card, { backgroundColor: colors.bgCard, borderColor: colors.borderSoft }]}>
+            <View style={st.cardHeader}>
+              <Text style={[st.cardTitle, {
+                color: colors.text,
+                fontFamily: ff ? FONT.bodySB : FONT.system,
+              }]}>
                 {THRESHOLD_ICONS[field]}  {THRESHOLD_LABELS[field]}
               </Text>
               <Switch
                 value={(thresholds as any)[toggle]}
                 onValueChange={v => update({ [toggle]: v })}
-                thumbColor={colors.surface}
-                trackColor={{ true: colors.go, false: colors.border }}
+                thumbColor={colors.bgCardStrong}
+                trackColor={{ true: colors.cyan, false: colors.border }}
               />
             </View>
-            <Text style={[s.hint, { color: colors.textDim }]}>{THRESHOLD_HINTS[field]}</Text>
-            <View style={s.inputRow}>
-              <Text style={[s.prefix, { color: colors.textMuted }]}>{prefix}</Text>
+            <Text style={[st.hint, {
+              color: colors.textFaint,
+              fontFamily: ff ? FONT.mono : FONT.systemMono,
+            }]}>{THRESHOLD_HINTS[field]}</Text>
+            <View style={st.inputRow}>
+              <Text style={[st.prefix, {
+                color: colors.textMuted,
+                fontFamily: ff ? FONT.mono : FONT.systemMono,
+              }]}>{prefix}</Text>
               <TextInput
-                style={[s.input, { backgroundColor: colors.surfaceAlt, borderColor: colors.border, color: colors.text }]}
+                style={[st.input, {
+                  backgroundColor: colors.bgInput,
+                  borderColor: colors.border,
+                  color: colors.text,
+                  fontFamily: ff ? FONT.monoBold : FONT.systemMono,
+                }]}
                 value={inputText[field]}
                 onChangeText={txt => {
                   const cleaned = txt.replace(/[^0-9.,]/g, '');
@@ -225,53 +328,102 @@ export default function FilterSettingsScreen({ onBack }: Props) {
                   if (!isNaN(n) && isFinite(n)) update({ [field]: n });
                 }}
                 keyboardType="decimal-pad"
+                selectionColor={colors.cyan}
               />
-              <Text style={[s.unit, { color: colors.textMuted }]}>{THRESHOLD_UNITS[field]}</Text>
+              <Text style={[st.unit, {
+                color: colors.textMuted,
+                fontFamily: ff ? FONT.mono : FONT.systemMono,
+              }]}>{THRESHOLD_UNITS[field]}</Text>
             </View>
           </View>
         ))}
 
-        <TouchableOpacity
-          style={[s.saveBtn, { backgroundColor: dirty ? colors.accent : colors.surfaceAlt }]}
-          onPress={handleSave}
-          disabled={!dirty}
-          activeOpacity={0.8}
-        >
-          <Text style={[s.saveTxt, { color: dirty ? '#000' : colors.textDim }]}>
-            {dirty ? 'SALVEAZĂ PRAGURILE' : 'SALVAT'}
-          </Text>
-        </TouchableOpacity>
+        {/* Save button */}
+        {dirty ? (
+          <TouchableOpacity onPress={handleSave} activeOpacity={0.8} style={st.saveBtnWrap}>
+            <LinearGradient
+              colors={colors.gradButton}
+              start={{ x: 0, y: 0.5 }}
+              end={{ x: 1, y: 0.5 }}
+              style={st.saveBtn}
+            >
+              <Text style={[st.saveTxt, { color: '#fff', fontFamily: ff ? FONT.monoBold : FONT.systemMono }]}>
+                SALVEAZĂ PRAGURILE
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        ) : (
+          <View style={[st.saveBtn, { backgroundColor: colors.bgCardStrong }]}>
+            <Text style={[st.saveTxt, { color: colors.textFaint, fontFamily: ff ? FONT.monoBold : FONT.systemMono }]}>
+              SALVAT
+            </Text>
+          </View>
+        )}
 
-        <TouchableOpacity style={[s.resetBtn, { borderColor: colors.border }]} onPress={handleReset}>
-          <Text style={[s.resetTxt, { color: colors.textMuted }]}>RESETEAZĂ LA VALORI IMPLICITE</Text>
+        {/* Reset button */}
+        <TouchableOpacity style={[st.resetBtn, { borderColor: colors.borderSoft }]} onPress={handleReset}>
+          <Text style={[st.resetTxt, {
+            color: colors.textMuted,
+            fontFamily: ff ? FONT.mono : FONT.systemMono,
+          }]}>RESETEAZĂ LA VALORI IMPLICITE</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
   );
 }
 
-const s = StyleSheet.create({
+const st = StyleSheet.create({
   root: { flex: 1 },
-  backBtn: { paddingHorizontal: 16, paddingBottom: 8 },
-  backTxt: { fontSize: 17 },
-  content: { padding: 16, paddingTop: 0, paddingBottom: 40 },
-  title: { fontSize: 22, fontWeight: '900', letterSpacing: 1, marginTop: 4 },
-  sub: { fontSize: 10, fontFamily: 'monospace', letterSpacing: 1, marginTop: 2, marginBottom: 16 },
-  infoCard: { padding: 12, borderRadius: 10, borderWidth: 1, marginBottom: 16 },
-  infoTxt: { fontSize: 11, lineHeight: 17 },
-  sectionTitle: { fontSize: 10, fontWeight: '800', letterSpacing: 1.5, marginTop: 16, marginBottom: 8 },
-  card: { padding: 14, borderRadius: 10, borderWidth: 1, marginBottom: 8 },
+
+  // Aurora blobs
+  blob:  { position: 'absolute', borderRadius: 300 },
+  blob1: { width: 260, height: 260, top: -60, left: -80 },
+  blob2: { width: 200, height: 200, top: 200, right: -60 },
+  blob3: { width: 160, height: 160, bottom: 120, left: 30 },
+
+  // Back
+  backBtn: { paddingHorizontal: 20, paddingBottom: 8, zIndex: 2 },
+  backTxt: { fontSize: SIZE.lg },
+
+  // Content
+  content: { paddingHorizontal: 20, paddingTop: 0, paddingBottom: 40 },
+
+  // Title
+  title: { fontSize: SIZE.xl, letterSpacing: -0.5, marginTop: 4 },
+  sub: { fontSize: SIZE.xs, letterSpacing: 6, textTransform: 'uppercase', marginTop: 4, marginBottom: GAP.lg },
+
+  // Section label
+  sectionRow: { flexDirection: 'row', alignItems: 'center', marginTop: GAP.xl, marginBottom: GAP.sm, gap: 10 },
+  sectionText: { fontSize: SIZE.xs, letterSpacing: 6, textTransform: 'uppercase' },
+  sectionLine: { flex: 1, height: 1, borderRadius: 1, opacity: 0.4 },
+
+  // Legend
+  legendCard: { padding: 14, borderRadius: RADIUS.md, borderWidth: 1, marginBottom: 4 },
+  legendTxt: { fontSize: SIZE.sm, lineHeight: 17 },
+
+  // Card
+  card: { padding: 16, borderRadius: RADIUS.lg, borderWidth: 1, marginBottom: GAP.sm, overflow: 'hidden', position: 'relative' },
+  cardGlow: { position: 'absolute', top: -20, right: -20, width: 60, height: 60, borderRadius: 30, opacity: 0.5 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
-  cardTitle: { fontSize: 13, fontWeight: '700' },
-  hint: { fontSize: 9, fontFamily: 'monospace', marginBottom: 8, lineHeight: 13 },
+  cardTitle: { fontSize: SIZE.base },
+  hint: { fontSize: SIZE.xs, letterSpacing: 3, marginBottom: GAP.sm, lineHeight: 14 },
+
+  // Input row
   inputRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  prefix: { fontSize: 10, fontFamily: 'monospace' },
-  input: { width: 90, padding: 8, borderWidth: 1, borderRadius: 6, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', fontSize: 14, fontWeight: '700', textAlign: 'center' },
-  unit: { fontSize: 10, fontFamily: 'monospace' },
-  preview: { marginTop: 8, padding: 8, borderWidth: 1, borderStyle: 'dashed', borderRadius: 6 },
-  previewTxt: { fontSize: 9, fontFamily: 'monospace' },
-  saveBtn: { padding: 14, borderRadius: 8, alignItems: 'center', marginTop: 16 },
-  saveTxt: { fontSize: 13, fontWeight: '900', letterSpacing: 1.5 },
-  resetBtn: { padding: 12, borderRadius: 8, borderWidth: 1, borderStyle: 'dashed', alignItems: 'center', marginTop: 8 },
-  resetTxt: { fontSize: 10, fontWeight: '700', letterSpacing: 1.5 },
+  prefix: { fontSize: SIZE.xs, letterSpacing: 3 },
+  input: { width: 90, padding: 8, borderWidth: 1, borderRadius: RADIUS.sm, fontSize: 14, fontWeight: '700', textAlign: 'center' },
+  unit: { fontSize: SIZE.xs, letterSpacing: 3 },
+
+  // Preview
+  preview: { marginTop: GAP.sm, padding: 8, borderWidth: 1, borderStyle: 'dashed', borderRadius: RADIUS.sm },
+  previewTxt: { fontSize: SIZE.xs, letterSpacing: 2 },
+
+  // Save
+  saveBtnWrap: { marginTop: GAP.xl },
+  saveBtn: { padding: 16, borderRadius: RADIUS.md, alignItems: 'center', marginTop: GAP.xl },
+  saveTxt: { fontSize: SIZE.sm, letterSpacing: 6 },
+
+  // Reset
+  resetBtn: { padding: 14, borderRadius: RADIUS.md, borderWidth: 1, borderStyle: 'dashed', alignItems: 'center', marginTop: GAP.sm },
+  resetTxt: { fontSize: SIZE.xs, letterSpacing: 6 },
 });

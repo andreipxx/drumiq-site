@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
+import { FONT } from '../constants/typography';
 import carsData from '../data/cars.json';
 
 interface Engine {
@@ -20,7 +21,7 @@ interface Props {
 }
 
 export default function CarSelector({ onSelect }: Props) {
-  const { colors } = useTheme();
+  const { colors, fontsLoaded } = useTheme();
   const cars = carsData as CarModel[];
 
   const [search, setSearch] = useState('');
@@ -50,9 +51,9 @@ export default function CarSelector({ onSelect }: Props) {
         <TouchableOpacity
           key={item}
           onPress={() => onPress(item)}
-          style={[s.pill, { borderColor: item === selected ? colors.accent : colors.border, backgroundColor: item === selected ? colors.accent + '20' : colors.surface }]}
+          style={[s.pill, { borderColor: item === selected ? colors.cyan : colors.border, backgroundColor: item === selected ? colors.cyan + '20' : colors.bgCard }]}
         >
-          <Text style={[s.pillTxt, { color: item === selected ? colors.accent : colors.text }]}>{item}</Text>
+          <Text style={[s.pillTxt, { color: item === selected ? colors.cyan : colors.text, fontFamily: fontsLoaded ? FONT.bodySB : FONT.system }]}>{item}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -60,9 +61,9 @@ export default function CarSelector({ onSelect }: Props) {
 
   return (
     <View style={s.container}>
-      <Text style={[s.label, { color: colors.textMuted }]}>MARCĂ</Text>
+      <Text style={[s.label, { color: colors.textMuted, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>MARCĂ</Text>
       <TextInput
-        style={[s.searchInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.surface }]}
+        style={[s.searchInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.bgInput }]}
         placeholder="Caută marca..."
         placeholderTextColor={colors.textMuted}
         value={search}
@@ -72,7 +73,7 @@ export default function CarSelector({ onSelect }: Props) {
 
       {selectedBrand && (
         <>
-          <Text style={[s.label, { color: colors.textMuted }]}>MODEL</Text>
+          <Text style={[s.label, { color: colors.textMuted, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>MODEL</Text>
           {renderPills(models.map(m => m.model), selectedModel, setSelectedModel)}
         </>
       )}
@@ -84,18 +85,18 @@ export default function CarSelector({ onSelect }: Props) {
          Userul trebuie sa confirme selectia — la tap se apeleaza onSelect(). */}
       {engines.length > 0 && (
         <>
-          <Text style={[s.label, { color: colors.textMuted }]}>MOTOR</Text>
+          <Text style={[s.label, { color: colors.textMuted, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>MOTOR</Text>
           {engines.map(eng => (
             <TouchableOpacity
               key={eng.name}
               onPress={() => onSelect(selectedBrand!, selectedModel!, eng)}
-              style={[s.engineRow, { backgroundColor: colors.surface, borderColor: colors.border }]}
+              style={[s.engineRow, { backgroundColor: colors.bgCard, borderColor: colors.border }]}
             >
               <View style={{ flex: 1 }}>
                 <Text style={[s.engineName, { color: colors.text }]}>{eng.name}</Text>
                 <Text style={[s.engineFuel, { color: colors.textMuted }]}>{eng.fuel}</Text>
               </View>
-              <Text style={[s.engineWear, { color: colors.accent }]}>{eng.wear} RON/km</Text>
+              <Text style={[s.engineWear, { color: colors.cyan, fontFamily: fontsLoaded ? FONT.mono : FONT.systemMono }]}>{eng.wear} RON/km</Text>
             </TouchableOpacity>
           ))}
         </>
@@ -117,5 +118,5 @@ const s = StyleSheet.create({
   engineRow: { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 10, borderWidth: 1, marginBottom: 8 },
   engineName: { fontSize: 14, fontWeight: '600' },
   engineFuel: { fontSize: 11, marginTop: 2 },
-  engineWear: { fontSize: 14, fontWeight: '700', fontFamily: 'monospace' },
+  engineWear: { fontSize: 14, fontWeight: '700' },
 });

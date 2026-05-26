@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { FONT } from '../constants/typography';
 
 interface DecimalFieldProps {
   label: string;
@@ -57,7 +58,7 @@ export default function DecimalField({
     <View style={[s.fieldRow, containerStyle]}>
       <View style={{ flex: 1 }}>
         <Text style={[s.fieldLabel, { color: colors.text }]}>{label}</Text>
-        {hint && <Text style={[s.fieldHint, { color: colors.textTertiary }]}>{hint}</Text>}
+        {hint && <Text style={[s.fieldHint, { color: colors.textMuted }]}>{hint}</Text>}
       </View>
       <View style={s.fieldRight}>
         <TextInput
@@ -65,11 +66,11 @@ export default function DecimalField({
           onChangeText={handleChange}
           keyboardType="decimal-pad"
           style={[s.input, { color: colors.text, backgroundColor: colors.bg, borderColor: colors.border }]}
-          selectionColor={colors.accent}
+          selectionColor={colors.cyan}
         />
-        <Text style={[s.suffix, { color: colors.textTertiary }]}>{suffix}</Text>
+        <Text style={[s.suffix, { color: colors.textMuted }]}>{suffix}</Text>
       </View>
-      {error && <Text style={[s.error, { color: '#FF3366' }]}>{error}</Text>}
+      {error && <Text style={[s.error, { color: '#ef4444' }]}>{error}</Text>}
     </View>
   );
 }
@@ -79,7 +80,7 @@ const s = StyleSheet.create({
   fieldLabel: { fontSize: 15, fontWeight: '500' },
   fieldHint:  { fontSize: 12, marginTop: 4, lineHeight: 16 },
   fieldRight: { flexDirection: 'row', alignItems: 'center', marginLeft: 12 },
-  input:      { borderWidth: StyleSheet.hairlineWidth, borderRadius: 8, paddingVertical: 6, paddingHorizontal: 10, minWidth: 70, textAlign: 'right', fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', fontSize: 15 },
+  input:      { borderWidth: StyleSheet.hairlineWidth, borderRadius: 8, paddingVertical: 6, paddingHorizontal: 10, minWidth: 70, textAlign: 'right', fontFamily: FONT.systemMono, fontSize: 15 },
   suffix:     { fontSize: 14, marginLeft: 6, minWidth: 30 },
   error:      { fontSize: 11, marginTop: 2, marginLeft: 16 },
 });

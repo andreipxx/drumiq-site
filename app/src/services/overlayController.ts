@@ -17,6 +17,7 @@ import { getRoute } from './routesApi';
 import { loadThresholds } from './filterEngine';
 import { addRide, updateRide, getRide, generateRideId, detectLifecycleEvent, autoCompleteStaleRides } from './tracker';
 import { trackPackageSeen } from './platformDetector';
+import { isSessionActive, initSession } from './sessionManager';
 import { VERDICT_DISPLAY } from '../types';
 import { logDpEvent } from './dpDebug';
 import type { PlanTier, Ride, RouteSource, UnifiedThresholds } from '../types';
@@ -166,15 +167,18 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
   logDpEvent('CTRL_START', { plan, mode: 'dynamic' });
 
   Accessibility.startListening();
+  initSession().catch(() => {});
   autoCompleteStaleRides().then(n => { if (n > 0) logDpEvent('AUTO_COMPLETE', { count: n }); }).catch(() => {});
 
-  // M5 FIX: busy guard — drop incoming captures while handler is still processing
-  // the previous one, preventing unbounded queue buildup
   let _handlerBusy = false;
+  let _pendingCapture: AccessibilityCapture | null = null;
 
   const handler = async (cap: AccessibilityCapture) => {
     if (!cap || !cap.text) return;
-    if (_handlerBusy) return;
+    if (_handlerBusy) {
+      _pendingCapture = cap;
+      return;
+    }
     _handlerBusy = true;
     try {
       try { trackPackageSeen(cap.package); } catch {}
@@ -204,12 +208,15 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
           await updateRide(lastOfferRideId, { accepted: true });
           acceptedRideId = lastOfferRideId;
           logDpEvent('TRACKER_ACCEPT', lastOfferRideId.slice(-8));
-        } else if (lifecycle === 'completed' && acceptedRideId) {
-          await updateRide(acceptedRideId, { completed: true, completedAt: Date.now() });
-          logDpEvent('TRACKER_DONE', acceptedRideId.slice(-8));
-          postTripSyncId = acceptedRideId;
-          postTripSyncExpiry = Date.now() + 60000;
-          acceptedRideId = null;
+        } else if (lifecycle === 'completed') {
+          const rideToComplete = acceptedRideId || lastOfferRideId;
+          if (rideToComplete) {
+            await updateRide(rideToComplete, { completed: true, completedAt: Date.now() });
+            logDpEvent('TRACKER_DONE', rideToComplete.slice(-8));
+            postTripSyncId = rideToComplete;
+            postTripSyncExpiry = Date.now() + 180000;
+            acceptedRideId = null;
+          }
         }
       }
     } catch (e: any) {
@@ -248,12 +255,6 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
 
     if (parsed.screen === 'ride_offer') {
       try {
-        logDpEvent('OFFER', {
-          net: parsed.grossNet, pickupKm: parsed.pickupKm,
-          rating: parsed.passengerRating, payment: parsed.paymentMethod,
-          surge: parsed.surgeMultiplier ?? null,
-        });
-
         lastTripDestination = parsed.destinationAddress ?? null;
         destChangeShown = false;
         destChangeCandidate = null;
@@ -268,15 +269,20 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
           lastOfferGross = parsed.grossNet ?? null;
           lastOfferPickup = parsed.pickupKm ?? null;
           lastOfferApiResolved = false;
+          lastLifecycle = '';
         } else if (lastOfferApiResolved) {
-          // BUG3-v2: API already resolved this offer — don't re-render with fallback
-          logDpEvent('SKIP', 'api_resolved');
           return;
         } else if (lastShownAt > 0 && Date.now() - lastShownAt < 2000) {
-          logDpEvent('SKIP', 'offer_debounce');
           return;
         }
         const myOfferGen = offerGen;
+
+        logDpEvent('OFFER', {
+          net: parsed.grossNet, pickupKm: parsed.pickupKm,
+          rating: parsed.passengerRating, payment: parsed.paymentMethod,
+          surge: parsed.surgeMultiplier ?? null,
+          isNew: isNewOffer,
+        });
 
         // Start API fetch IMMEDIATELY — runs in parallel with settings load below
         const canFetchRoute = (plan === 'pro' || plan === 'root') && !!parsed.pickupAddress && !!parsed.destinationAddress;
@@ -327,8 +333,10 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
           return;
         }
 
-        // Log ride to tracker immediately (fallback data) — accept/complete lifecycle updates follow
-        try {
+        // Log ride to tracker (only when session is active)
+        if (!isSessionActive()) {
+          logDpEvent('SKIP_TRACK', 'session_inactive');
+        } else try {
           const ts = Date.now();
           const rideId = generateRideId(ts, parsed.grossNet || 0, parsed.pickupKm);
           const ride: Ride = {
@@ -482,7 +490,14 @@ export async function startOverlayController(plan: PlanTier): Promise<void> {
         }
       }
     }
-    } finally { _handlerBusy = false; }
+    } finally {
+      _handlerBusy = false;
+      const next = _pendingCapture;
+      if (next) {
+        _pendingCapture = null;
+        handler(next);
+      }
+    }
   };
 
   const unsub = Accessibility.addCaptureListener(handler);

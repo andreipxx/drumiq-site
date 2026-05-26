@@ -10,7 +10,7 @@
         android:id="@+id/dp_border"
         android:layout_width="match_parent"
         android:layout_height="3dp"
-        android:background="#00FF88" />
+        android:background="#10b981" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -48,7 +48,7 @@
             android:text="—"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="#00FF88" />
+            android:textColor="#10b981" />
     </LinearLayout>
 
     <TextView
@@ -58,7 +58,7 @@
         android:gravity="center"
         android:text="—"
         android:textSize="11sp"
-        android:textColor="#7A8A7C"
+        android:textColor="#73FFFFFF"
         android:paddingBottom="2dp" />
 
     <TextView
@@ -69,7 +69,7 @@
         android:paddingBottom="8dp"
         android:text=""
         android:textSize="11sp"
-        android:textColor="#FFB800"
+        android:textColor="#f59e0b"
         android:visibility="gone" />
 
 </LinearLayout>

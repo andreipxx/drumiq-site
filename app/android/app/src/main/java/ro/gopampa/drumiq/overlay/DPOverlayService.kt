@@ -168,12 +168,12 @@ class DPOverlayService : Service() {
         val verdict = intent.getStringExtra(EXTRA_VERDICT) ?: "think"
         val dp = resources.displayMetrics.density
 
-        // === v2 verdict colors (matches theme.ts) ===
+        // === Aurora v2 verdict colors (matches theme.ts) ===
         val color = when (verdict) {
-            "stop"  -> 0xFFFF3366.toInt()  // red
-            "think" -> 0xFFFFB800.toInt()  // orange
-            "go"    -> 0xFF00FF88.toInt()  // green
-            else    -> 0xFF7A8A7C.toInt()  // muted
+            "stop"  -> 0xFFEF4444.toInt()  // red
+            "think" -> 0xFFF59E0B.toInt()  // amber
+            "go"    -> 0xFF10B981.toInt()  // green
+            else    -> 0x73FFFFFF.toInt()  // muted
         }
         val symbol = when (verdict) {
             "stop"  -> "X"
@@ -182,12 +182,12 @@ class DPOverlayService : Service() {
             else    -> "·"
         }
 
-        // === BORDER GLOW — card background stroke + fill per verdict ===
+        // === Card background — aurora dark base with subtle verdict tint ===
         val cardBgColor = when (verdict) {
-            "stop"  -> 0xB01A0808.toInt()  // dark red tint
-            "think" -> 0xB01A1508.toInt()  // dark amber tint
-            "go"    -> 0xB00A0E0B.toInt()  // dark green tint
-            else    -> 0xB00A0A0A.toInt()  // neutral
+            "stop"  -> 0xEB0C0416.toInt()  // aurora dark + red tint
+            "think" -> 0xEB0A0614.toInt()  // aurora dark + amber tint
+            "go"    -> 0xEB060E14.toInt()  // aurora dark + green tint
+            else    -> 0xEB080414.toInt()  // aurora dark base
         }
         (v.background as? android.graphics.drawable.GradientDrawable)?.apply {
             setColor(cardBgColor)
@@ -219,7 +219,7 @@ class DPOverlayService : Service() {
                 val parts = dailyStr.split("/")
                 val earned = parts.getOrNull(0)?.trim()?.toIntOrNull() ?: 0
                 val goalNum = parts.getOrNull(1)?.trim()?.replace(Regex("[^0-9]"), "")?.toIntOrNull() ?: 0
-                setTextColor(if (goalNum > 0 && earned >= goalNum) 0xFF00FF88.toInt() else 0xFFFFB800.toInt())
+                setTextColor(if (goalNum > 0 && earned >= goalNum) 0xFF10B981.toInt() else 0xFFF59E0B.toInt())
             } else {
                 visibility = View.GONE
             }
@@ -255,19 +255,19 @@ class DPOverlayService : Service() {
                 if (sanityError) {
                     visibility = View.VISIBLE
                     text = "⚠ km suspect"
-                    setTextColor(0xFFFF3366.toInt())
+                    setTextColor(0xFFEF4444.toInt())
                 } else {
                     visibility = if (shortRide) View.VISIBLE else View.GONE
                     text = "⚠ pickup lung"
-                    setTextColor(0xFFFFB800.toInt())
+                    setTextColor(0xFFF59E0B.toInt())
                 }
             }
             v.findViewById<TextView>(R.id.dp_source)?.apply {
                 val src = intent.getStringExtra(EXTRA_SOURCE) ?: "fallback"
                 when (src) {
-                    "api"   -> { text = "✓ Google trafic real"; setTextColor(0xFF00FF88.toInt()) }
-                    "cache" -> { text = "✓ Google (cache)";     setTextColor(0xFF7A8A7C.toInt()) }
-                    else    -> { text = "~ estimat";            setTextColor(0xFF7A8A7C.toInt()) }
+                    "api"   -> { text = "✓ Google trafic real"; setTextColor(0xFF10B981.toInt()) }
+                    "cache" -> { text = "✓ Google (cache)";     setTextColor(0x73FFFFFF.toInt()) }
+                    else    -> { text = "~ estimat";            setTextColor(0x73FFFFFF.toInt()) }
                 }
             }
         }
