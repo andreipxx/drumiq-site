@@ -17,3 +17,8 @@ Thumbs.db
 assets/date firma/
 **/date firma/
 *.cui
+
+# Documente interne de planificare/roadmap — NU pe repo public
+0?_*.txt
+*ROADMAP*
+*roadmap*
