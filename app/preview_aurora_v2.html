@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRUMIQ Aurora Preview — Toate Ecranele</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap');
+
+:root {
+  --bg: #0a0118;
+  --bgPage: #050010;
+  --bgCard: rgba(255,255,255,0.05);
+  --bgCardStrong: rgba(255,255,255,0.08);
+  --bgInput: rgba(255,255,255,0.04);
+  --bgNav: rgba(10,1,24,0.7);
+  --border: rgba(255,255,255,0.12);
+  --borderSoft: rgba(255,255,255,0.08);
+  --text: #ffffff;
+  --textSoft: rgba(255,255,255,0.6);
+  --textMuted: rgba(255,255,255,0.4);
+  --textFaint: rgba(255,255,255,0.25);
+  --cyan: #06b6d4;
+  --pink: #ec4899;
+  --violet: #7c3aed;
+  --green: #10b981;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --aurora1: rgba(124,58,237,0.55);
+  --aurora2: rgba(6,182,212,0.5);
+  --aurora3: rgba(236,72,153,0.4);
+  /* Full-screen aurora wash — identic cu app (gradAurora) */
+  --auroraGrad: linear-gradient(135deg, rgba(124,58,237,0.30) 0%, rgba(10,1,24,0) 50%, rgba(6,182,212,0.22) 100%);
+}
+
+/* ── LIGHT THEME (identic cu app LIGHT) ── */
+body.light {
+  --bg: #fafaff;
+  --bgPage: #f0f0f7;
+  --bgCard: rgba(255,255,255,0.7);
+  --bgCardStrong: rgba(255,255,255,0.9);
+  --bgInput: rgba(255,255,255,0.6);
+  --bgNav: rgba(255,255,255,0.75);
+  --border: rgba(20,10,40,0.12);
+  --borderSoft: rgba(20,10,40,0.08);
+  --text: #14102a;
+  --textSoft: rgba(20,16,42,0.65);
+  --textMuted: rgba(20,16,42,0.45);
+  --textFaint: rgba(20,16,42,0.25);
+  --cyan: #0891b2;
+  --pink: #db2777;
+  --violet: #7c3aed;
+  --green: #059669;
+  --amber: #d97706;
+  --red: #dc2626;
+  --auroraGrad: linear-gradient(135deg, rgba(167,139,250,0.35) 0%, rgba(240,240,247,0) 50%, rgba(103,232,249,0.32) 100%);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  background: var(--bgPage);
+  color: var(--text);
+  min-height:100vh;
+  transition: background 0.3s;
+}
+
+.container {
+  max-width:420px; margin:0 auto; padding:20px;
+}
+
+/* Navigation */
+.nav-bar {
+  display:flex; gap:6px; flex-wrap:wrap; padding:12px 16px;
+  background:var(--bgNav); border-radius:14px; margin-bottom:20px;
+  backdrop-filter:blur(20px); border:1px solid var(--borderSoft);
+  position:sticky; top:10px; z-index:100;
+}
+.nav-btn {
+  padding:6px 12px; border-radius:20px; border:1px solid var(--border);
+  background:transparent; color:var(--textSoft); cursor:pointer;
+  font-size:11px; font-family:'JetBrains Mono',monospace;
+  transition:all 0.2s;
+}
+.nav-btn:hover { border-color:var(--cyan); color:var(--cyan); }
+.nav-btn.active {
+  background:linear-gradient(135deg,var(--violet),var(--pink),var(--cyan));
+  color:#fff; border-color:transparent;
+}
+
+/* Screen frame */
+.screen {
+  display:none; position:relative; overflow:hidden;
+  background:var(--auroraGrad), var(--bg); border-radius:24px; min-height:680px;
+  border:1px solid var(--borderSoft);
+}
+.screen.active { display:block; }
+
+/* Aurora blobs — DEZACTIVATE (app foloseste gradient pe tot ecranul, nu bile) */
+.aurora { display:none !important; }
+.aurora-old { position:absolute; border-radius:300px; filter:blur(60px); pointer-events:none; }
+.aurora-1 { top:-80px; left:-60px; width:260px; height:260px; background:var(--aurora1); }
+.aurora-2 { top:120px; right:-80px; width:220px; height:220px; background:var(--aurora2); }
+.aurora-3 { bottom:100px; left:40px; width:180px; height:180px; background:var(--aurora3); }
+
+.screen-content { position:relative; z-index:1; padding:24px; }
+
+/* Typography */
+.title { font-size:28px; font-weight:800; letter-spacing:-0.5px; }
+.subtitle { font-size:13px; color:var(--textSoft); margin-top:4px; }
+.section-label {
+  font-family:'JetBrains Mono',monospace; font-size:10px;
+  color:var(--textMuted); letter-spacing:2px; margin-top:20px; margin-bottom:10px;
+  display:flex; align-items:center; gap:8px;
+}
+.section-label::after {
+  content:''; flex:1; height:1px;
+  background:linear-gradient(90deg,var(--cyan)33,transparent);
+}
+
+/* Cards */
+.card {
+  background:var(--bgCard); border:1px solid var(--border);
+  border-radius:14px; padding:16px; margin-bottom:12px;
+  backdrop-filter:blur(12px);
+}
+.card-strong {
+  background:var(--bgCardStrong); border:1px solid var(--border);
+  border-radius:14px; padding:16px; margin-bottom:12px;
+}
+
+/* Buttons */
+.btn-gradient {
+  background:linear-gradient(90deg,var(--violet),var(--pink),var(--cyan));
+  border:none; color:#fff; padding:16px 24px; border-radius:14px;
+  font-size:15px; font-weight:700; cursor:pointer; width:100%;
+  text-align:center; margin-top:12px; transition:transform 0.2s;
+}
+.btn-gradient:hover { transform:scale(1.02); }
+.btn-outline {
+  background:transparent; border:1px dashed var(--border);
+  color:var(--textSoft); padding:14px 20px; border-radius:10px;
+  font-size:14px; cursor:pointer; width:100%; text-align:center;
+  margin-top:8px; transition:border-color 0.2s;
+}
+.btn-outline:hover { border-color:var(--cyan); color:var(--cyan); }
+
+/* Verdict */
+.verdict-circle {
+  width:64px; height:64px; border-radius:50%; display:flex;
+  align-items:center; justify-content:center; font-size:28px;
+  font-weight:900; border:2px solid;
+}
+.verdict-go { background:rgba(16,185,129,0.15); border-color:var(--green); color:var(--green); box-shadow:0 0 24px rgba(16,185,129,0.4); }
+.verdict-think { background:rgba(245,158,11,0.15); border-color:var(--amber); color:var(--amber); box-shadow:0 0 24px rgba(245,158,11,0.4); }
+.verdict-stop { background:rgba(239,68,68,0.15); border-color:var(--red); color:var(--red); box-shadow:0 0 24px rgba(239,68,68,0.4); }
+
+/* Stats grid */
+.stats-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin:16px 0; }
+.stat-cell { text-align:center; padding:8px 0; }
+.stat-value { font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; }
+.stat-label { font-size:10px; color:var(--textMuted); margin-top:2px; }
+
+/* Rows */
+.row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--borderSoft); }
+.row:last-child { border-bottom:none; }
+.row-label { font-size:13px; color:var(--textMuted); }
+.row-value { font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:600; }
+
+/* Bottom tabs */
+.bottom-tabs {
+  display:flex; justify-content:space-around; padding:12px 0;
+  background:var(--bgNav); border-top:1px solid var(--borderSoft);
+  border-radius:0 0 24px 24px; backdrop-filter:blur(20px);
+}
+.tab { text-align:center; cursor:pointer; padding:4px 12px; }
+.tab-icon { font-size:20px; margin-bottom:2px; }
+.tab-label { font-size:9px; font-family:'JetBrains Mono',monospace; letter-spacing:1px; }
+.tab.active .tab-label { color:var(--cyan); }
+.tab.active::after { content:''; display:block; width:20px; height:2px; margin:4px auto 0; background:linear-gradient(90deg,var(--cyan),var(--pink)); border-radius:2px; }
+
+/* Input */
+.input-field {
+  width:100%; padding:14px; border-radius:10px; border:1px solid var(--border);
+  background:var(--bgInput); color:var(--text); font-size:14px; outline:none;
+  font-family:'Bricolage Grotesque',sans-serif;
+}
+.input-field:focus { border-color:var(--cyan); }
+.input-mono {
+  font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:600;
+  text-align:center; letter-spacing:2px; padding:18px;
+}
+
+/* Overlay mock */
+.overlay-card {
+  background:rgba(8,4,20,0.92); border-radius:16px; overflow:hidden;
+  border:2px solid var(--green); width:220px; margin:12px auto;
+}
+.overlay-bar { height:3px; }
+.overlay-header { display:flex; align-items:center; padding:10px 12px 4px; gap:8px; }
+.symbol-circle {
+  width:36px; height:36px; border-radius:50%; display:flex;
+  align-items:center; justify-content:center; font-size:18px; font-weight:900; color:#000;
+}
+.overlay-rows { padding:6px 12px; }
+.overlay-row { display:flex; justify-content:space-between; padding:2px 0; font-size:10px; }
+.overlay-label { color:rgba(255,255,255,0.45); }
+.overlay-value { color:#fff; }
+
+/* Misc */
+.badge {
+  display:inline-block; padding:4px 12px; border-radius:8px;
+  font-size:10px; font-weight:800; letter-spacing:1.5px;
+  background:linear-gradient(90deg,var(--cyan),var(--pink));
+  color:#fff;
+}
+.dot-row { display:flex; gap:8px; justify-content:center; margin-bottom:20px; }
+.dot { width:8px; height:8px; border-radius:50%; }
+.check-row {
+  display:flex; align-items:center; gap:12px; padding:14px;
+  border-radius:10px; border:1px solid var(--border);
+  background:var(--bgCard); cursor:pointer; margin-top:16px;
+}
+.checkbox {
+  width:22px; height:22px; border-radius:4px; border:2px solid var(--cyan);
+  background:var(--cyan); display:flex; align-items:center;
+  justify-content:center; color:#fff; font-size:14px; font-weight:700;
+}
+.plan-card {
+  background:var(--bgCard); border:1px solid var(--border);
+  border-radius:14px; padding:16px; margin-bottom:14px;
+  cursor:pointer; position:relative; transition:border-color 0.2s;
+}
+.plan-card.selected { border-color:var(--cyan); border-width:2px; }
+.plan-card:hover { border-color:var(--cyan); }
+.pill {
+  display:inline-block; padding:4px 10px; border-radius:100px;
+  font-size:10px; font-weight:700; letter-spacing:1px;
+  font-family:'JetBrains Mono',monospace;
+}
+.perm-row {
+  display:flex; align-items:center; gap:14px; padding:16px;
+  border-radius:12px; border:1px solid; margin-bottom:8px;
+}
+.perm-check {
+  width:28px; height:28px; border-radius:50%; border:2px solid;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; font-weight:900;
+}
+.serif-italic { font-family:'Instrument Serif',serif; font-style:italic; }
+.mono { font-family:'JetBrains Mono',monospace; }
+
+/* Header */
+header {
+  text-align:center; padding:40px 20px 20px;
+}
+header h1 {
+  font-size:36px; font-weight:800;
+  background:linear-gradient(90deg,var(--cyan),var(--pink),var(--violet));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+header p { color:var(--textSoft); font-size:13px; margin-top:8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>DRUMIQ Aurora Preview v2</h1>
+  <p>Fundal gradient pe tot ecranul (ca in app) — fara bile</p>
+  <button onclick="toggleTheme()" id="themeBtn" style="margin-top:14px;padding:10px 24px;border-radius:100px;border:1px solid var(--border);background:var(--bgCard);color:var(--text);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:1px;">☀️ Comuta pe LIGHT</button>
+</header>
+
+<div class="container">
+  <!-- Navigation -->
+  <div class="nav-bar" id="nav">
+    <button class="nav-btn active" data-screen="home">Home</button>
+    <button class="nav-btn" data-screen="tracker">Tracker</button>
+    <button class="nav-btn" data-screen="plan">Plan</button>
+    <button class="nav-btn" data-screen="profil">Profil</button>
+    <button class="nav-btn" data-screen="settings">Setari</button>
+    <button class="nav-btn" data-screen="filter">Filtre</button>
+    <button class="nav-btn" data-screen="fuel">Carburant</button>
+    <button class="nav-btn" data-screen="overlay">Overlay</button>
+    <button class="nav-btn" data-screen="terms">Termeni</button>
+    <button class="nav-btn" data-screen="auth">Auth</button>
+    <button class="nav-btn" data-screen="login">Login</button>
+    <button class="nav-btn" data-screen="license">Licenta</button>
+    <button class="nav-btn" data-screen="paywall">Paywall</button>
+    <button class="nav-btn" data-screen="upgrade">Upgrade</button>
+    <button class="nav-btn" data-screen="onboarding">Onboarding</button>
+    <button class="nav-btn" data-screen="geofence">Geofence</button>
+    <button class="nav-btn" data-screen="workmode">WorkMode</button>
+    <button class="nav-btn" data-screen="costs">Costuri</button>
+    <button class="nav-btn" data-screen="debug">Debug</button>
+  </div>
+
+  <!-- ═══ HOME ═══ -->
+  <div class="screen active" id="screen-home">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="aurora aurora-3"></div>
+    <div class="screen-content">
+      <div style="text-align:center;margin-bottom:24px;">
+        <div style="font-size:10px;letter-spacing:4px;color:var(--textMuted)" class="mono">// Home</div>
+        <div class="title" style="margin-top:8px">Bun venit!</div>
+        <div class="subtitle">DRUMIQ analizeaza cursele tale Bolt</div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:center;margin:32px 0;">
+        <div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--cyan),var(--pink));display:flex;align-items:center;justify-content:center;box-shadow:0 0 60px rgba(124,58,237,0.4);">
+          <span style="font-size:36px;font-weight:900;color:#fff">GO</span>
+        </div>
+      </div>
+
+      <button class="btn-gradient" onclick="switchScreen('tracker')">Incepe sesiunea</button>
+
+      <div class="section-label">STATISTICI RAPIDE</div>
+      <div class="stats-grid">
+        <div class="stat-cell"><div class="stat-value" style="color:var(--green)">247</div><div class="stat-label">lei azi</div></div>
+        <div class="stat-cell"><div class="stat-value" style="color:var(--cyan)">12</div><div class="stat-label">curse</div></div>
+        <div class="stat-cell"><div class="stat-value" style="color:var(--pink)">3.2</div><div class="stat-label">lei/km</div></div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="color:var(--textSoft);font-size:12px">Ultima cursa</span>
+          <span class="mono" style="font-size:12px;color:var(--green)">+18.50 lei</span>
+        </div>
+        <div style="margin-top:8px;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--green),var(--cyan));width:75%"></div>
+      </div>
+    </div>
+    <div class="bottom-tabs">
+      <div class="tab active" onclick="switchScreen('home')"><div class="tab-icon">🏠</div><div class="tab-label">HOME</div></div>
+      <div class="tab" onclick="switchScreen('tracker')"><div class="tab-icon">📊</div><div class="tab-label">TRACKER</div></div>
+      <div class="tab" onclick="switchScreen('plan')"><div class="tab-icon">💎</div><div class="tab-label">PLAN</div></div>
+      <div class="tab" onclick="switchScreen('profil')"><div class="tab-icon">👤</div><div class="tab-label">PROFIL</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ TRACKER ═══ -->
+  <div class="screen" id="screen-tracker">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content">
+      <div class="section-label">// Tracker</div>
+      <div class="title">Sesiune activa</div>
+
+      <div style="display:flex;gap:8px;margin:16px 0;">
+        <button style="flex:1;padding:10px;border-radius:10px;background:linear-gradient(90deg,var(--cyan),var(--pink));border:none;color:#fff;font-weight:700;cursor:pointer">Azi</button>
+        <button style="flex:1;padding:10px;border-radius:10px;background:var(--bgCard);border:1px solid var(--border);color:var(--textSoft);cursor:pointer">Sapt.</button>
+        <button style="flex:1;padding:10px;border-radius:10px;background:var(--bgCard);border:1px solid var(--border);color:var(--textSoft);cursor:pointer">Total</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-cell"><div class="stat-value" style="color:var(--green)">247</div><div class="stat-label">lei</div></div>
+        <div class="stat-cell"><div class="stat-value" style="color:var(--cyan)">12</div><div class="stat-label">curse</div></div>
+        <div class="stat-cell"><div class="stat-value" style="color:var(--pink)">3.20</div><div class="stat-label">lei/km</div></div>
+      </div>
+
+      <div class="section-label">GRAFIC 7 ZILE</div>
+      <div style="display:flex;align-items:flex-end;gap:6px;height:100px;padding:8px 0;">
+        <div style="flex:1;background:linear-gradient(to top,var(--violet),var(--cyan));border-radius:6px 6px 0 0;height:40%"></div>
+        <div style="flex:1;background:linear-gradient(to top,var(--violet),var(--cyan));border-radius:6px 6px 0 0;height:65%"></div>
+        <div style="flex:1;background:linear-gradient(to top,var(--violet),var(--cyan));border-radius:6px 6px 0 0;height:30%"></div>
+        <div style="flex:1;background:linear-gradient(to top,var(--violet),var(--cyan));border-radius:6px 6px 0 0;height:80%"></div>
+        <div style="flex:1;background:linear-gradient(to top,var(--violet),var(--cyan));border-radius:6px 6px 0 0;height:55%"></div>
+        <div style="flex:1;background:linear-gradient(to top,var(--violet),var(--cyan));border-radius:6px 6px 0 0;height:90%"></div>
+        <div style="flex:1;background:linear-gradient(to top,var(--cyan),var(--pink));border-radius:6px 6px 0 0;height:70%;border:1px solid var(--cyan)"></div>
+      </div>
+
+      <div class="section-label">CURSE RECENTE</div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="verdict-circle verdict-go" style="width:32px;height:32px;font-size:14px">$</div>
+          <div style="flex:1"><div style="font-weight:600">+22.40 lei</div><div style="font-size:11px;color:var(--textMuted)">Bd. Unirii → Kaufland</div></div>
+          <div class="mono" style="font-size:12px;color:var(--green)">3.8 lei/km</div>
+        </div>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="verdict-circle verdict-think" style="width:32px;height:32px;font-size:14px">?</div>
+          <div style="flex:1"><div style="font-weight:600">+15.15 lei</div><div style="font-size:11px;color:var(--textMuted)">Gara → Centru</div></div>
+          <div class="mono" style="font-size:12px;color:var(--amber)">2.1 lei/km</div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-tabs">
+      <div class="tab" onclick="switchScreen('home')"><div class="tab-icon">🏠</div><div class="tab-label">HOME</div></div>
+      <div class="tab active" onclick="switchScreen('tracker')"><div class="tab-icon">📊</div><div class="tab-label">TRACKER</div></div>
+      <div class="tab" onclick="switchScreen('plan')"><div class="tab-icon">💎</div><div class="tab-label">PLAN</div></div>
+      <div class="tab" onclick="switchScreen('profil')"><div class="tab-icon">👤</div><div class="tab-label">PROFIL</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ PLAN ═══ -->
+  <div class="screen" id="screen-plan">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content">
+      <div class="section-label">// Plan</div>
+      <div class="title">Alege planul</div>
+      <div class="subtitle">Deblocheaza tot potentialul DRUMIQ</div>
+
+      <div class="card" style="margin-top:20px;border-color:var(--cyan);border-width:2px;position:relative">
+        <div class="badge" style="position:absolute;top:-10px;right:16px">RECOMANDAT</div>
+        <div style="font-size:18px;font-weight:700">PRO Anual</div>
+        <div class="mono" style="font-size:24px;font-weight:700;color:var(--cyan);margin:8px 0">149 RON<span style="font-size:12px;color:var(--textMuted)">/an</span></div>
+        <div style="font-size:13px;color:var(--green);margin-bottom:4px">✓ Google trafic real</div>
+        <div style="font-size:13px;color:var(--green);margin-bottom:4px">✓ Overlay detaliat draggable</div>
+        <div style="font-size:13px;color:var(--green)">✓ Toate filtrele personalizabile</div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:18px;font-weight:700">PRO Lunar</div>
+        <div class="mono" style="font-size:20px;font-weight:700;color:var(--cyan);margin:8px 0">19 RON<span style="font-size:12px;color:var(--textMuted)">/luna</span></div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:18px;font-weight:700">PRO Lifetime</div>
+        <div class="mono" style="font-size:20px;font-weight:700;color:var(--cyan);margin:8px 0">299 RON<span style="font-size:12px;color:var(--textMuted)"> o data</span></div>
+      </div>
+    </div>
+    <div class="bottom-tabs">
+      <div class="tab" onclick="switchScreen('home')"><div class="tab-icon">🏠</div><div class="tab-label">HOME</div></div>
+      <div class="tab" onclick="switchScreen('tracker')"><div class="tab-icon">📊</div><div class="tab-label">TRACKER</div></div>
+      <div class="tab active" onclick="switchScreen('plan')"><div class="tab-icon">💎</div><div class="tab-label">PLAN</div></div>
+      <div class="tab" onclick="switchScreen('profil')"><div class="tab-icon">👤</div><div class="tab-label">PROFIL</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ PROFIL ═══ -->
+  <div class="screen" id="screen-profil">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content">
+      <div class="section-label">// Profil</div>
+      <div style="text-align:center;margin:20px 0">
+        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--pink));margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800">A</div>
+        <div class="title" style="font-size:22px">Andrei</div>
+        <div style="margin-top:6px"><span class="pill" style="background:var(--violet);color:#fff">PRO</span></div>
+      </div>
+      <div class="card">
+        <div class="row"><span class="row-label">Email</span><span class="row-value" style="font-size:12px">gopampa35@gmail.com</span></div>
+        <div class="row"><span class="row-label">Plan</span><span class="row-value" style="color:var(--violet)">PRO</span></div>
+        <div class="row"><span class="row-label">Curse</span><span class="row-value" style="color:var(--green)">247</span></div>
+      </div>
+      <div class="section-label">PLATFORME</div>
+      <div style="display:flex;gap:8px">
+        <span class="pill" style="background:var(--green)22;color:var(--green);border:1px solid var(--green)44">Bolt ✓</span>
+        <span class="pill" style="background:var(--textFaint);color:var(--textMuted);border:1px solid var(--border)">Uber SOON</span>
+      </div>
+      <button class="btn-outline" style="margin-top:20px" onclick="switchScreen('settings')">Setari</button>
+    </div>
+    <div class="bottom-tabs">
+      <div class="tab" onclick="switchScreen('home')"><div class="tab-icon">🏠</div><div class="tab-label">HOME</div></div>
+      <div class="tab" onclick="switchScreen('tracker')"><div class="tab-icon">📊</div><div class="tab-label">TRACKER</div></div>
+      <div class="tab" onclick="switchScreen('plan')"><div class="tab-icon">💎</div><div class="tab-label">PLAN</div></div>
+      <div class="tab active" onclick="switchScreen('profil')"><div class="tab-icon">👤</div><div class="tab-label">PROFIL</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ SETTINGS ═══ -->
+  <div class="screen" id="screen-settings">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content">
+      <div style="color:var(--cyan);cursor:pointer;margin-bottom:12px;font-size:15px" onclick="switchScreen('profil')">‹ Inapoi</div>
+      <div class="title">Setari <span class="serif-italic" style="color:var(--pink)">app</span></div>
+
+      <div class="section-label">GENERAL</div>
+      <div class="card">
+        <div class="row" style="cursor:pointer" onclick="switchScreen('filter')"><span>🎯 Filtre profit</span><span style="color:var(--textMuted)">›</span></div>
+        <div class="row" style="cursor:pointer" onclick="switchScreen('fuel')"><span>⛽ Carburant & cost</span><span style="color:var(--textMuted)">›</span></div>
+        <div class="row" style="cursor:pointer" onclick="switchScreen('overlay')"><span>📱 Overlay</span><span style="color:var(--textMuted)">›</span></div>
+        <div class="row" style="cursor:pointer" onclick="switchScreen('workmode')"><span>🔒 Mod de lucru</span><span style="color:var(--textMuted)">›</span></div>
+      </div>
+
+      <div class="section-label">TEMA</div>
+      <div class="card">
+        <div style="display:flex;gap:8px">
+          <div style="flex:1;padding:10px;text-align:center;border-radius:10px;border:1px solid var(--border);cursor:pointer;color:var(--textMuted)">☀️ Light</div>
+          <div style="flex:1;padding:10px;text-align:center;border-radius:10px;background:linear-gradient(90deg,var(--violet)44,var(--cyan)44);border:1px solid var(--cyan);cursor:pointer;color:var(--cyan)">🌙 Dark</div>
+          <div style="flex:1;padding:10px;text-align:center;border-radius:10px;border:1px solid var(--border);cursor:pointer;color:var(--textMuted)">📱 Auto</div>
+        </div>
+      </div>
+
+      <div class="section-label">CONT</div>
+      <div class="card">
+        <div class="row" style="cursor:pointer" onclick="switchScreen('debug')"><span>🔧 Debug Accessibility</span><span style="color:var(--textMuted)">›</span></div>
+      </div>
+
+      <div class="card" style="margin-top:16px;text-align:center">
+        <span class="mono" style="font-size:11px;color:var(--textFaint)">DRUMIQ v2.0.0 · GO PAMPA S.R.L.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ FILTER ═══ -->
+  <div class="screen" id="screen-filter">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content">
+      <div style="color:var(--cyan);cursor:pointer;margin-bottom:12px" onclick="switchScreen('settings')">‹ Setari</div>
+      <div class="title">Filtre <span class="serif-italic" style="color:var(--green)">profit</span></div>
+
+      <div class="card" style="margin-top:16px;">
+        <div style="display:flex;gap:12px;align-items:center">
+          <div class="verdict-circle verdict-go" style="width:28px;height:28px;font-size:12px">$</div>
+          <span style="font-size:13px;font-weight:600">GO = profit/km ≥ prag</span>
+        </div>
+      </div>
+
+      <div class="card" style="border-color:var(--green);box-shadow:0 0 20px rgba(16,185,129,0.15)">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-weight:700">Profit/km</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="mono" style="font-size:18px;font-weight:700;color:var(--green)">3.0</span>
+            <span style="font-size:12px;color:var(--textMuted)">lei/km</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-gradient" style="margin-top:20px">Salveaza filtrele</button>
+      <button class="btn-outline">Resetare implicite</button>
+    </div>
+  </div>
+
+  <!-- ═══ FUEL ═══ -->
+  <div class="screen" id="screen-fuel">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content">
+      <div style="color:var(--cyan);cursor:pointer;margin-bottom:12px" onclick="switchScreen('settings')">‹ Setari</div>
+      <div class="title">Carburant <span class="serif-italic" style="color:var(--amber)">& cost</span></div>
+
+      <div style="display:flex;align-items:center;gap:8px;margin-top:16px">
+        <span class="pill" style="background:linear-gradient(90deg,var(--green),var(--cyan));color:#fff">LIVE</span>
+        <span style="font-size:11px;color:var(--textMuted)">Preturi actualizate automat</span>
+      </div>
+
+      <div class="section-label">TIP COMBUSTIBIL</div>
+      <div class="card">
+        <div class="row" style="cursor:pointer"><span>⛽ Benzina</span><div style="width:14px;height:14px;border-radius:50%;border:2px solid var(--border)"></div></div>
+        <div class="row" style="cursor:pointer"><span>🛢️ Diesel</span><div style="width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--cyan));border:none"></div></div>
+        <div class="row" style="cursor:pointer"><span>🔋 GPL</span><div style="width:14px;height:14px;border-radius:50%;border:2px solid var(--border)"></div></div>
+      </div>
+
+      <div class="section-label">PRETURI LIVE</div>
+      <div class="card">
+        <div class="row"><span class="row-label">Diesel</span><span class="mono" style="font-weight:700;color:var(--green)">7.45 RON/L</span></div>
+        <div class="row"><span class="row-label">Consum</span><span class="mono" style="font-weight:700">7.0 L/100km</span></div>
+        <div class="row"><span class="row-label">Uzura</span><span class="mono" style="font-weight:700">0.15 RON/km</span></div>
+      </div>
+
+      <button class="btn-gradient">Aplica si salveaza</button>
+    </div>
+  </div>
+
+  <!-- ═══ OVERLAY ═══ -->
+  <div class="screen" id="screen-overlay">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content">
+      <div style="color:var(--cyan);cursor:pointer;margin-bottom:12px" onclick="switchScreen('settings')">‹ Setari</div>
+      <div class="title">Overlay <span class="serif-italic" style="color:var(--cyan)">preview</span></div>
+
+      <div class="card" style="margin-top:16px">
+        <div style="font-size:13px;color:var(--textSoft);line-height:20px">Overlay-ul apare peste Bolt cand primesti o oferta. Arata verdictul GO/THINK/STOP si profitul estimat.</div>
+      </div>
+
+      <div class="section-label">VERDICT PREVIEW</div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-bottom:16px">
+        <div class="verdict-circle verdict-go" style="cursor:pointer" onclick="updateOverlay('go')">$</div>
+        <div class="verdict-circle verdict-think" style="cursor:pointer" onclick="updateOverlay('think')">?</div>
+        <div class="verdict-circle verdict-stop" style="cursor:pointer" onclick="updateOverlay('stop')">X</div>
+      </div>
+
+      <div class="overlay-card" id="overlay-preview">
+        <div class="overlay-bar" style="background:var(--green)"></div>
+        <div class="overlay-header">
+          <div class="symbol-circle" style="background:var(--green)">$</div>
+          <div class="mono" style="font-size:16px;font-weight:700;color:var(--green);flex:1;text-align:center">+18.50 lei</div>
+        </div>
+        <div style="height:1px;background:rgba(255,255,255,0.08);margin:0 12px"></div>
+        <div class="overlay-rows">
+          <div class="overlay-row"><span class="overlay-label">Pickup</span><span class="overlay-value">1.2 km / 3 min</span></div>
+          <div class="overlay-row"><span class="overlay-label">Cursa</span><span class="overlay-value">~5.8 km</span></div>
+          <div class="overlay-row"><span class="overlay-label">Durata</span><span class="overlay-value">12 min</span></div>
+          <div class="overlay-row"><span class="overlay-label">Profit/km</span><span class="mono" style="font-weight:700;color:var(--green)">3.80 lei/km</span></div>
+        </div>
+        <div style="text-align:center;padding-bottom:8px;font-size:9px;color:rgba(255,255,255,0.45)">✓ Google trafic real</div>
+      </div>
+
+      <div class="section-label">MOD OVERLAY</div>
+      <div style="display:flex;gap:8px">
+        <button style="flex:1;padding:10px;border-radius:10px;background:linear-gradient(90deg,var(--cyan),var(--pink));border:none;color:#fff;font-weight:700;cursor:pointer;font-size:13px">Full</button>
+        <button style="flex:1;padding:10px;border-radius:10px;background:var(--bgCard);border:1px solid var(--border);color:var(--textSoft);cursor:pointer;font-size:13px">Simple</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TERMS ═══ -->
+  <div class="screen" id="screen-terms">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content">
+      <div class="title">Termeni si conditii</div>
+      <div class="mono" style="font-size:13px;color:var(--textMuted);margin:4px 0 20px">Versiunea 1.0 · GO PAMPA S.R.L.</div>
+
+      <div style="margin-bottom:16px"><div style="font-weight:700;margin-bottom:4px">1. Neutralitate</div><div style="font-size:13px;color:var(--textSoft);line-height:20px">DRUMIQ este independenta, neasociata cu Bolt/Uber.</div></div>
+      <div style="margin-bottom:16px"><div style="font-weight:700;margin-bottom:4px">2. Limitarea raspunderii</div><div style="font-size:13px;color:var(--textSoft);line-height:20px">Informatii orientative. Decizia apartine utilizatorului.</div></div>
+      <div style="margin-bottom:16px"><div style="font-weight:700;margin-bottom:4px">3. Accessibility Service</div><div style="font-size:13px;color:var(--textSoft);line-height:20px">Citeste text local, zero date externe.</div></div>
+
+      <div class="check-row">
+        <div class="checkbox">✓</div>
+        <span style="font-size:14px">Am citit si sunt de acord</span>
+      </div>
+      <button class="btn-gradient" onclick="switchScreen('auth')">Continua la activare</button>
+    </div>
+  </div>
+
+  <!-- ═══ AUTH ═══ -->
+  <div class="screen" id="screen-auth">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content" style="text-align:center">
+      <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--cyan));margin:0 auto 12px;display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:24px">🤖</span>
+      </div>
+      <div style="font-size:28px;font-weight:800;color:var(--cyan)">DRUMIQ</div>
+      <div class="mono" style="font-size:10px;color:var(--textMuted);letter-spacing:3px;margin-bottom:24px">ROMANIA · RIDESHARE INTEL</div>
+
+      <div style="font-size:22px;font-weight:700;text-align:left;margin-bottom:16px">Autentificare</div>
+
+      <button style="width:100%;padding:14px;border-radius:8px;border:1px solid var(--border);background:var(--bgCard);color:var(--text);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">
+        <span style="font-size:18px;font-weight:700;color:#4285F4">G</span> Google
+      </button>
+
+      <div style="display:flex;align-items:center;margin:20px 0;gap:16px">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <span style="font-size:13px;color:var(--textFaint)">sau</span>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+
+      <div style="text-align:left">
+        <div style="font-size:14px;font-weight:600;margin-bottom:6px">Email</div>
+        <input class="input-field" placeholder="email@exemplu.ro" style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between"><div style="font-size:14px;font-weight:600;margin-bottom:6px">Parola</div><span style="font-size:13px;color:var(--cyan);cursor:pointer">Ai uitat parola?</span></div>
+        <input class="input-field" type="password" placeholder="minim 6 caractere">
+      </div>
+
+      <button class="btn-gradient" style="margin-top:20px" onclick="switchScreen('home')">Intra</button>
+      <div style="margin-top:16px;font-size:14px;color:var(--textMuted)">Nu ai cont? <span style="color:var(--cyan);cursor:pointer">Inregistreaza-te</span></div>
+    </div>
+  </div>
+
+  <!-- ═══ LOGIN (License key) ═══ -->
+  <div class="screen" id="screen-login">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content" style="text-align:center;padding-top:60px">
+      <div style="font-size:32px;font-weight:800">DRUMIQ</div>
+      <div class="mono" style="font-size:14px;color:var(--textMuted);margin:8px 0 40px">Analiza profitabilitate curse Bolt/Uber</div>
+
+      <div class="mono" style="font-size:11px;color:var(--textSoft);letter-spacing:1px;text-align:left;margin-bottom:8px">CHEIE LICENTA</div>
+      <input class="input-field input-mono" placeholder="DPX-XXXX-XXXX-XXXX" value="DPR-PR0A-2026-XXXX">
+
+      <div class="card" style="margin-top:12px;display:flex;align-items:flex-start;gap:10px;text-align:left">
+        <span style="font-size:18px">💡</span>
+        <span style="font-size:14px;color:var(--textSoft)">Atentie: cheia contine cifra <span class="mono" style="font-weight:700;color:var(--text)">0 (zero)</span>, nu litera <span class="mono" style="font-weight:700;color:var(--text)">O</span>.</span>
+      </div>
+
+      <button class="btn-gradient" style="margin-top:28px">Activeaza licenta</button>
+      <div style="margin-top:16px;font-size:15px;color:var(--cyan);cursor:pointer">Nu am cheie — incerc gratuit 1 zi</div>
+    </div>
+  </div>
+
+  <!-- ═══ LICENSE (Code input) ═══ -->
+  <div class="screen" id="screen-license">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content" style="text-align:center;padding-top:40px">
+      <div style="width:120px;height:120px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
+        <span style="font-size:64px">🤖</span>
+      </div>
+      <div style="font-size:32px;font-weight:900">DRUM<span style="color:var(--cyan)">IQ</span></div>
+      <div class="mono" style="font-size:10px;color:var(--textMuted);letter-spacing:4px;margin:4px 0 24px">ROMANIA · RIDESHARE INTEL</div>
+
+      <div class="mono" style="font-size:10px;color:var(--cyan);letter-spacing:3px;text-align:left;margin-bottom:8px">COD LICENTA</div>
+      <div style="position:relative;border:1px solid rgba(6,182,212,0.4);border-radius:6px;background:rgba(0,0,0,0.4)">
+        <input class="input-field input-mono" style="border:none;background:transparent" placeholder="DPT-TRIAL-2026">
+      </div>
+      <div class="mono" style="font-size:9px;color:var(--textFaint);margin-top:10px">0 (cifra) ≠ O (litera) · case-insensitive</div>
+
+      <button class="btn-gradient" style="margin-top:16px">ACTIVEAZA ▸</button>
+      <div class="mono" style="font-size:10px;color:var(--textFaint);margin-top:16px;line-height:14px">Codul activeaza planul respectiv (TRIAL = 7 zile/100 curse).</div>
+    </div>
+  </div>
+
+  <!-- ═══ PAYWALL ═══ -->
+  <div class="screen" id="screen-paywall">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content" style="padding-top:80px">
+      <div class="card" style="border-color:var(--red);border-width:2px;text-align:center;padding:24px">
+        <div style="font-size:24px;font-weight:700;color:var(--red);margin-bottom:12px">🚗 Trial epuizat</div>
+        <div style="font-size:15px;line-height:22px;color:var(--textSoft)">Ai folosit toate cursele incluse in perioada de testare. Pentru a continua, introdu un cod Pro.</div>
+        <div class="mono" style="font-size:14px;color:var(--textMuted);margin-top:14px">Curse efectuate: 100/100</div>
+      </div>
+      <button class="btn-gradient" onclick="switchScreen('license')">Activeaza cod nou</button>
+      <div class="mono" style="font-size:12px;color:var(--textFaint);text-align:center;margin-top:24px">Pentru asistenta contacteaza GO PAMPA S.R.L.</div>
+    </div>
+  </div>
+
+  <!-- ═══ UPGRADE ═══ -->
+  <div class="screen" id="screen-upgrade">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content">
+      <div style="color:var(--cyan);cursor:pointer;margin-bottom:12px" onclick="switchScreen('plan')">‹ Inapoi</div>
+      <div class="title">Upgrade la PRO</div>
+      <div style="font-size:14px;color:var(--textMuted);margin-bottom:24px">Alege planul potrivit pentru tine</div>
+
+      <div class="plan-card"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px"><span style="font-size:20px;font-weight:700">Pro Lunar</span><span class="mono" style="font-size:20px;font-weight:700;color:var(--cyan)">19 RON<span style="font-size:12px;color:var(--textMuted)">/luna</span></span></div><div style="font-size:14px;color:var(--green);margin-bottom:4px">✓ Calcul cursa cu trafic real</div><div style="font-size:14px;color:var(--green)">✓ Overlay draggable detaliat</div></div>
+
+      <div class="plan-card selected" style="position:relative"><div class="badge" style="position:absolute;top:-10px;right:16px">RECOMANDAT</div><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px"><span style="font-size:20px;font-weight:700">Pro Anual</span><span class="mono" style="font-size:20px;font-weight:700;color:var(--cyan)">149 RON<span style="font-size:12px;color:var(--textMuted)">/an</span></span></div><div style="font-size:14px;color:var(--green);margin-bottom:4px">✓ TOT din Pro Lunar</div><div style="font-size:14px;color:var(--green)">✓ Pret blocat pentru totdeauna</div></div>
+
+      <div style="border:1px solid #E8B27A40;background:#E8B27A10;border-radius:12px;padding:14px;text-align:center;margin-bottom:12px"><div style="font-size:14px;font-weight:700;color:#E8B27A;margin-bottom:4px">⭐ Founding Member</div><div style="font-size:12px;color:var(--textMuted)">Primii 100 utilizatori: Anual 149 RON · Lifetime 299 RON</div></div>
+
+      <button class="btn-gradient">Cumpara Pro Anual — 149 RON/an</button>
+      <button class="btn-outline" onclick="switchScreen('license')">Am deja un cod de activare</button>
+    </div>
+  </div>
+
+  <!-- ═══ ONBOARDING ═══ -->
+  <div class="screen" id="screen-onboarding">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content" style="text-align:center;padding-top:40px">
+      <div class="dot-row">
+        <div class="dot" style="background:var(--cyan)"></div>
+        <div class="dot" style="background:var(--border)"></div>
+        <div class="dot" style="background:var(--border)"></div>
+        <div class="dot" style="background:var(--border)"></div>
+      </div>
+      <div style="font-size:24px;font-weight:800">Salut!</div>
+      <div style="font-size:24px;font-weight:800;color:var(--cyan)">Hai sa configuram DRUMIQ</div>
+      <div style="height:32px"></div>
+      <div style="display:flex;flex-direction:column;gap:16px;text-align:left;padding:0 8px;margin-bottom:32px">
+        <div style="display:flex;align-items:center;gap:14px"><div style="width:36px;height:36px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#000;flex-shrink:0">$</div><span style="font-size:15px;font-weight:600">GO = cursa profitabila</span></div>
+        <div style="display:flex;align-items:center;gap:14px"><div style="width:36px;height:36px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#000;flex-shrink:0">?</div><span style="font-size:15px;font-weight:600">THINK = analizeaza</span></div>
+        <div style="display:flex;align-items:center;gap:14px"><div style="width:36px;height:36px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#000;flex-shrink:0">X</div><span style="font-size:15px;font-weight:600">STOP = evita</span></div>
+      </div>
+      <button class="btn-gradient">CONTINUA →</button>
+    </div>
+  </div>
+
+  <!-- ═══ GEOFENCE ═══ -->
+  <div class="screen" id="screen-geofence">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content" style="text-align:center;padding-top:60px">
+      <div style="font-size:56px;margin-bottom:16px">🔒</div>
+      <div style="font-size:22px;font-weight:800">DRUMIQ nu este disponibil aici</div>
+      <div style="font-size:14px;color:var(--textMuted);margin-top:8px;line-height:21px">Aplicatia este disponibila momentan doar in Baia Mare.</div>
+
+      <div class="card" style="margin-top:20px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:12px;color:var(--textMuted)">Oras detectat:</span>
+        <span style="font-size:14px;font-weight:700">Cluj-Napoca</span>
+      </div>
+
+      <div style="font-size:15px;font-weight:700;color:var(--green);margin-top:16px">Disponibil in: Baia Mare, Romania</div>
+      <button class="btn-gradient" style="margin-top:24px">VERIFICA DIN NOU LOCATIA</button>
+
+      <div style="border-top:1px solid var(--border);margin-top:28px;padding-top:20px">
+        <div style="font-size:14px;font-weight:600;margin-bottom:12px">Anunta-ma cand DRUMIQ ajunge in orasul meu</div>
+        <input class="input-field" placeholder="Email" style="margin-bottom:10px">
+        <input class="input-field" placeholder="Orasul tau" style="margin-bottom:10px">
+        <button class="btn-outline" style="border-color:var(--cyan);color:var(--cyan)">TRIMITE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ WORKMODE ═══ -->
+  <div class="screen" id="screen-workmode">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content" style="text-align:center;padding-top:100px">
+      <div style="color:var(--cyan);cursor:pointer;position:absolute;top:24px;left:24px" onclick="switchScreen('settings')">‹ Setari</div>
+      <div style="font-size:48px;margin-bottom:16px">🔒</div>
+      <div style="font-size:22px;font-weight:800;letter-spacing:1px">MOD DE LUCRU</div>
+      <div class="badge" style="margin:12px 0 20px;background:linear-gradient(90deg,var(--cyan),var(--pink))">COMING SOON</div>
+      <div style="font-size:14px;color:var(--textFaint);line-height:20px;padding:0 20px">Costuri fixe (rate, asigurare, telefon) vor fi incluse automat in calculul profitului.</div>
+    </div>
+  </div>
+
+  <!-- ═══ COSTS ═══ -->
+  <div class="screen" id="screen-costs">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content">
+      <div style="color:var(--cyan);cursor:pointer;margin-bottom:12px" onclick="switchScreen('tracker')">‹ Inapoi</div>
+      <div class="title">Detalii costuri</div>
+
+      <div class="section-label">ADRESE BOLT</div>
+      <div class="card">
+        <div class="row"><span class="row-label">Preluare</span><span class="row-value" style="font-size:12px">Bd. Unirii 15</span></div>
+        <div class="row"><span class="row-label">Destinatie</span><span class="row-value" style="font-size:12px">Kaufland Baia Mare</span></div>
+      </div>
+      <div class="section-label">PROFIT</div>
+      <div class="card">
+        <div class="row"><span class="row-label">Profit estimat</span><span class="row-value" style="color:var(--green)">18.50 lei</span></div>
+        <div class="row"><span class="row-label">Profit/km</span><span class="row-value">3.80 lei/km</span></div>
+        <div class="row"><span class="row-label">Profit/ora</span><span class="row-value">55.50 lei/ora</span></div>
+      </div>
+      <div class="section-label">DISTANTA SI TIMP</div>
+      <div class="card">
+        <div class="row"><span class="row-label">Km preluare</span><span class="row-value">1.2 km</span></div>
+        <div class="row"><span class="row-label">Km cursa</span><span class="row-value">5.8 km</span></div>
+        <div class="row"><span class="row-label">Km total</span><span class="row-value">7.0 km</span></div>
+        <div class="row"><span class="row-label">Timp total</span><span class="row-value">12 min</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DEBUG ═══ -->
+  <div class="screen" id="screen-debug">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="screen-content">
+      <div style="color:var(--cyan);cursor:pointer;margin-bottom:12px" onclick="switchScreen('settings')">‹ Back</div>
+      <div class="title">Accessibility Test</div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="mono" style="font-size:12px;color:var(--textFaint);margin-bottom:8px">PLAN ACTIV</div>
+        <div class="row"><span class="row-label">Plan</span><span class="row-value" style="color:var(--cyan)">PRO</span></div>
+        <div class="row"><span class="row-label">Curse ramase</span><span class="row-value">∞</span></div>
+      </div>
+      <div class="card">
+        <div class="mono" style="font-size:12px;color:var(--textFaint);margin-bottom:8px">STATUS</div>
+        <div class="row"><span class="row-label">Platform</span><span class="row-value">android</span></div>
+        <div class="row"><span class="row-label">Native module</span><span class="row-value" style="color:var(--green)">detected ✓</span></div>
+        <div class="row"><span class="row-label">Service enabled</span><span class="row-value" style="color:var(--green)">YES ✓</span></div>
+      </div>
+      <button class="btn-gradient">Deschide Settings Accessibility</button>
+      <button style="width:100%;padding:14px;border-radius:10px;background:linear-gradient(90deg,var(--green),var(--cyan));border:none;color:#fff;font-weight:700;cursor:pointer;margin-top:12px">EXPORT TOT (JSON)</button>
+      <button class="btn-outline" style="border-color:var(--red);color:var(--red);margin-top:10px">STERGE TOATE DATELE</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function switchScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.screen === id);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchScreen(btn.dataset.screen));
+});
+
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  const isLight = document.body.classList.contains('light');
+  const btn = document.getElementById('themeBtn');
+  btn.textContent = isLight ? '🌙 Comuta pe DARK' : '☀️ Comuta pe LIGHT';
+  document.querySelector('header p').textContent =
+    'Fundal gradient pe tot ecranul (ca in app) — ' + (isLight ? 'LIGHT theme' : 'DARK theme');
+}
+
+function updateOverlay(verdict) {
+  const card = document.getElementById('overlay-preview');
+  const colors = { go: 'var(--green)', think: 'var(--amber)', stop: 'var(--red)' };
+  const symbols = { go: '$', think: '?', stop: 'X' };
+  const nets = { go: '+18.50 lei', think: '+8.40 lei', stop: '+0.85 lei' };
+  const pkms = { go: '3.80 lei/km', think: '2.10 lei/km', stop: '0.07 lei/km' };
+  const c = colors[verdict];
+  card.style.borderColor = c;
+  card.querySelector('.overlay-bar').style.background = c;
+  card.querySelector('.symbol-circle').style.background = c;
+  card.querySelector('.symbol-circle').textContent = symbols[verdict];
+  card.querySelectorAll('.mono')[0].style.color = c;
+  card.querySelectorAll('.mono')[0].textContent = nets[verdict];
+  const rows = card.querySelectorAll('.overlay-rows .overlay-row');
+  rows[3].querySelector('.mono').style.color = c;
+  rows[3].querySelector('.mono').textContent = pkms[verdict];
+}
+</script>
+
+</body>
+</html>

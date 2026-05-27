@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, StatusBar, TouchableOpacity, ScrollView, Platfo
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
+import AuroraBg from '../components/AuroraBg';
 import { FONT, SIZE, RADIUS, GAP } from '../constants/typography';
 import { VERDICT_DISPLAY, type ProfitVerdict } from '../types';
 import type { OverlayMode } from '../native/overlay';
@@ -81,11 +82,8 @@ export default function OverlayScreen({ onOpenSettings, onOpenAccessibility }: P
 
   return (
     <View style={[st.root, { backgroundColor: colors.bg }]}>
+      <AuroraBg />
       <StatusBar barStyle="light-content" backgroundColor={colors.bg} />
-
-      {/* Aurora blobs */}
-      <View style={[st.blob, st.blob1, { backgroundColor: colors.aurora1 }]} />
-      <View style={[st.blob, st.blob2, { backgroundColor: colors.aurora2 }]} />
 
       {/* Header */}
       <View style={[st.header, { paddingTop: insets.top + 8 }]}>
@@ -402,23 +400,18 @@ function ProOverlay({ verdict, data, ff }: { verdict: ProfitVerdict; data: DemoD
 const st = StyleSheet.create({
   root: { flex: 1 },
 
-  // Aurora
-  blob:  { position: 'absolute', borderRadius: 300 },
-  blob1: { width: 260, height: 260, top: -60, left: -80 },
-  blob2: { width: 200, height: 200, top: 300, right: -60 },
-
   // Header
   header:    { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingBottom: 8, zIndex: 2 },
   headerBtn: { width: 70 },
   backTxt:   { fontSize: SIZE.lg },
   title:     { fontSize: SIZE.xl, letterSpacing: -0.5 },
-  sub:       { fontSize: SIZE.xs, letterSpacing: 6, textTransform: 'uppercase', marginTop: 2 },
+  sub:       { fontSize: SIZE.xs, letterSpacing: 1.5, textTransform: 'uppercase', marginTop: 2 },
 
   scroll: { paddingHorizontal: 20, paddingBottom: 40 },
 
   // Section label
   sectionRow:  { flexDirection: 'row', alignItems: 'center', marginTop: GAP.xl, marginBottom: GAP.sm, gap: 10 },
-  sectionText: { fontSize: SIZE.xs, letterSpacing: 6, textTransform: 'uppercase' },
+  sectionText: { fontSize: SIZE.xs, letterSpacing: 1.5, textTransform: 'uppercase' },
   sectionLine: { flex: 1, height: 1, borderRadius: 1, opacity: 0.4 },
 
   // Info card
@@ -460,14 +453,14 @@ const st = StyleSheet.create({
   modeRow: { flexDirection: 'row', gap: 4, borderRadius: RADIUS.md, borderWidth: 1, padding: 4 },
   modeBtn: { padding: 14, borderRadius: RADIUS.sm, alignItems: 'center' },
   modeBtnTxt: { fontSize: SIZE.base, letterSpacing: 2 },
-  modeBtnSub: { fontSize: SIZE.xs, letterSpacing: 3, marginTop: 2 },
+  modeBtnSub: { fontSize: SIZE.xs, letterSpacing: 0.5, marginTop: 2 },
 
   // Verdict tabs
   verdictRow: { flexDirection: 'row', gap: 8 },
   verdictBtn: { flex: 1, padding: 12, borderRadius: RADIUS.md, alignItems: 'center' },
   verdictIcon: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
   verdictSym: { fontSize: 14 },
-  verdictLbl: { fontSize: SIZE.xs, letterSpacing: 4 },
+  verdictLbl: { fontSize: SIZE.xs, letterSpacing: 1 },
 
   // Tip cards
   tipCard:  { flexDirection: 'row', padding: 12, gap: 10, borderRadius: RADIUS.md, borderWidth: 1, marginBottom: GAP.sm, alignItems: 'flex-start' },
@@ -477,11 +470,11 @@ const st = StyleSheet.create({
 
   // Diagnostic
   diagBtn: { padding: 14, borderRadius: RADIUS.md, borderWidth: 1, borderStyle: 'dashed', alignItems: 'center', marginTop: GAP.lg },
-  diagTxt: { fontSize: SIZE.sm, letterSpacing: 6 },
+  diagTxt: { fontSize: SIZE.sm, letterSpacing: 1.5 },
 
   // Note
   noteCard: { borderRadius: RADIUS.md, borderWidth: 1, borderStyle: 'dashed', padding: 14, marginTop: GAP.xl },
-  note: { fontSize: SIZE.xs, textAlign: 'center', lineHeight: 16, letterSpacing: 3 },
+  note: { fontSize: SIZE.xs, textAlign: 'center', lineHeight: 16, letterSpacing: 0.5 },
 });
 
 const sov = StyleSheet.create({
@@ -511,7 +504,7 @@ const sov = StyleSheet.create({
   daily: { fontSize: 10 },
   divider: { height: 1, marginVertical: 7 },
   statsRow: { flexDirection: 'row', marginVertical: 4 },
-  statLbl: { fontSize: 8, color: 'rgba(255,255,255,0.45)', letterSpacing: 4 },
+  statLbl: { fontSize: 8, color: 'rgba(255,255,255,0.45)', letterSpacing: 1 },
   statVal: { fontSize: 12, color: '#E8FFE8', marginTop: 2 },
   sourceRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   proSrc: { fontSize: 9 },

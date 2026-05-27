@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
+import AuroraBg from '../components/AuroraBg';
 import { checkCityEligibility, getEligibleCityNames, type GeofenceResult } from '../services/geofence';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FONT, SIZE, RADIUS } from '../constants/typography';
@@ -50,19 +51,10 @@ export default function GeofenceScreen({ onAllowed }: Props) {
     setWaitSaved(true);
   };
 
-  // ═══ AURORA BLOBS ═══
-  const AuroraBlobs = () => (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      <View style={{ position: 'absolute', top: -80, left: -60, width: 260, height: 260, borderRadius: 300, backgroundColor: colors.aurora1 }} />
-      <View style={{ position: 'absolute', top: 120, right: -80, width: 220, height: 220, borderRadius: 300, backgroundColor: colors.aurora2 }} />
-      <View style={{ position: 'absolute', bottom: 100, left: 40, width: 180, height: 180, borderRadius: 300, backgroundColor: colors.aurora3 }} />
-    </View>
-  );
-
   if (checking) {
     return (
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <AuroraBlobs />
+        <AuroraBg />
         <View style={[s.root, { backgroundColor: 'transparent' }]}>
           <Text style={[s.checkIcon, { color: colors.cyan }]}>{'📍'}</Text>
           <Text style={[s.title, { color: colors.text, fontFamily: fontsLoaded ? FONT.display : FONT.system }]}>Se verifică locația</Text>
@@ -87,7 +79,7 @@ export default function GeofenceScreen({ onAllowed }: Props) {
 
     return (
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <AuroraBlobs />
+        <AuroraBg />
         <View style={[s.root, { backgroundColor: 'transparent' }]}>
           <Text style={[s.lockIcon]}>{'🔒'}</Text>
           <Text style={[s.title, { color: colors.text, fontFamily: fontsLoaded ? FONT.display : FONT.system }]}>DRUMIQ nu este disponibil aici</Text>

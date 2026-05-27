@@ -7,6 +7,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
+import AuroraBg from '../components/AuroraBg';
 import { FONT, SIZE, RADIUS, GAP } from '../constants/typography';
 import {
   getFuelSettings, setFuelSettings, DEFAULTS, totalCostPerKm, type FuelType, type FuelSettings,
@@ -130,11 +131,7 @@ export default function FuelSettingsScreen({ onBack }: Props) {
 
   return (
     <View style={[st.root, { backgroundColor: colors.bg }]}>
-      {/* Aurora blobs */}
-      <View style={[st.blob, st.blob1, { backgroundColor: colors.aurora1 }]} />
-      <View style={[st.blob, st.blob2, { backgroundColor: colors.aurora2 }]} />
-      <View style={[st.blob, st.blob3, { backgroundColor: colors.aurora3 }]} />
-
+      <AuroraBg />
       {/* Back */}
       <TouchableOpacity onPress={onBack} style={[st.backBtn, { paddingTop: insets.top + 8 }]} activeOpacity={0.6}>
         <Text style={[st.backText, {
@@ -463,12 +460,6 @@ function Field({ label, suffix, value, onChange, colors, ff }: any) {
 const st = StyleSheet.create({
   root: { flex: 1 },
 
-  // Aurora blobs
-  blob:  { position: 'absolute', borderRadius: 300 },
-  blob1: { width: 260, height: 260, top: -60, left: -80 },
-  blob2: { width: 200, height: 200, top: 220, right: -60 },
-  blob3: { width: 160, height: 160, bottom: 100, left: 30 },
-
   // Back
   backBtn:  { paddingHorizontal: 20, paddingBottom: 8, zIndex: 2 },
   backText: { fontSize: SIZE.lg },
@@ -480,11 +471,11 @@ const st = StyleSheet.create({
   titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: GAP.lg },
   title:    { fontSize: SIZE['2xl'], letterSpacing: -0.5 },
   liveBtn:  { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.pill },
-  liveBtnText: { color: '#fff', fontSize: SIZE.sm, letterSpacing: 4 },
+  liveBtnText: { color: '#fff', fontSize: SIZE.sm, letterSpacing: 1 },
 
   // Section label
   sectionRow:  { flexDirection: 'row', alignItems: 'center', marginTop: GAP.xl, marginBottom: GAP.sm, gap: 10 },
-  sectionText: { fontSize: SIZE.xs, letterSpacing: 6, textTransform: 'uppercase' },
+  sectionText: { fontSize: SIZE.xs, letterSpacing: 1.5, textTransform: 'uppercase' },
   sectionLine: { flex: 1, height: 1, borderRadius: 1, opacity: 0.4 },
 
   // Group
@@ -501,18 +492,18 @@ const st = StyleSheet.create({
   fieldLabel: { fontSize: SIZE.base },
   fieldRight: { flexDirection: 'row', alignItems: 'center' },
   input:      { borderWidth: StyleSheet.hairlineWidth, borderRadius: RADIUS.sm, paddingVertical: 6, paddingHorizontal: 10, minWidth: 80, textAlign: 'right', fontSize: 15 },
-  suffix:     { fontSize: SIZE.xs, letterSpacing: 3, marginLeft: 8, minWidth: 60 },
+  suffix:     { fontSize: SIZE.xs, letterSpacing: 0.5, marginLeft: 8, minWidth: 60 },
 
   // Hints
   costHint:     { fontSize: SIZE.sm, paddingHorizontal: 4, paddingTop: 12, lineHeight: 17, letterSpacing: 2 },
-  adaptiveHint: { fontSize: SIZE.xs, letterSpacing: 3, marginTop: 2 },
+  adaptiveHint: { fontSize: SIZE.xs, letterSpacing: 0.5, marginTop: 2 },
 
   // Live prices
   livePrice:   { fontSize: SIZE.lg },
   liveCtaWrap: { paddingHorizontal: 16, paddingVertical: 12 },
   liveCta:     { paddingVertical: 14, borderRadius: RADIUS.md, alignItems: 'center' },
-  liveCtaText: { color: '#fff', fontSize: SIZE.sm, letterSpacing: 4 },
-  liveUpdate:  { fontSize: SIZE.xs, letterSpacing: 3, textAlign: 'center', marginTop: 6, marginBottom: 4 },
+  liveCtaText: { color: '#fff', fontSize: SIZE.sm, letterSpacing: 1 },
+  liveUpdate:  { fontSize: SIZE.xs, letterSpacing: 0.5, textAlign: 'center', marginTop: 6, marginBottom: 4 },
 
   // Info box
   infoBox:  { flexDirection: 'row', borderRadius: RADIUS.lg, borderWidth: 1, padding: 14, marginTop: GAP.xl, gap: 10 },
@@ -522,5 +513,5 @@ const st = StyleSheet.create({
   // CTA
   ctaWrap: { marginTop: GAP.xl },
   cta:     { paddingVertical: 16, borderRadius: RADIUS.md, alignItems: 'center' },
-  ctaText: { color: '#fff', fontSize: SIZE.lg, letterSpacing: 4 },
+  ctaText: { color: '#fff', fontSize: SIZE.lg, letterSpacing: 1 },
 });

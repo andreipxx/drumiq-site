@@ -47,6 +47,7 @@ export interface ThemeColors {
   gradButton: [string, string, ...string[]];
   gradTextNum: [string, string, ...string[]];
   gradSuccess: [string, string, ...string[]];
+  gradAurora: [string, string, ...string[]];
 
   // Verdict: GO
   go: string;
@@ -134,6 +135,9 @@ export const DARK: ThemeColors = {
   gradTextNum:    ['#ffffff', '#c4b5fd', '#f0abfc'],
   gradSuccess:    ['#10b981', '#06b6d4'],
 
+  // Full-screen aurora background wash (violet → dark → cyan diagonal)
+  gradAurora:     ['rgba(124,58,237,0.30)', 'rgba(10,1,24,0)', 'rgba(6,182,212,0.22)'],
+
   // Verdict: GO ($)
   go:             '#10b981',
   goGlow:         'rgba(16,185,129,0.5)',
@@ -217,6 +221,9 @@ export const LIGHT: ThemeColors = {
   gradButton:     ['#7c3aed', '#db2777', '#0891b2'],
   gradTextNum:    ['#14102a', '#7c3aed', '#db2777'],
   gradSuccess:    ['#059669', '#0891b2'],
+
+  // Full-screen aurora background wash (violet → light → cyan diagonal)
+  gradAurora:     ['rgba(167,139,250,0.35)', 'rgba(240,240,247,0)', 'rgba(103,232,249,0.32)'],
 
   // Verdict: GO ($)
   go:             '#059669',

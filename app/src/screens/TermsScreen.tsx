@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
+import AuroraBg from '../components/AuroraBg';
 import { acceptToS } from '../services/licenseManager';
 import { FONT, SIZE, RADIUS } from '../constants/typography';
 
@@ -21,13 +22,7 @@ export default function TermsScreen({ onAccepted }: Props) {
 
   return (
     <SafeAreaView style={[s.container, { backgroundColor: colors.bg }]}>
-      {/* Aurora blobs */}
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <View style={{ position:'absolute', top:-80, left:-60, width:260, height:260, borderRadius:300, backgroundColor:colors.aurora1 }} />
-        <View style={{ position:'absolute', top:120, right:-80, width:220, height:220, borderRadius:300, backgroundColor:colors.aurora2 }} />
-        <View style={{ position:'absolute', bottom:100, left:40, width:180, height:180, borderRadius:300, backgroundColor:colors.aurora3 }} />
-      </View>
-
+      <AuroraBg />
       <ScrollView contentContainerStyle={s.scroll}>
         <Text style={[s.title, { color: colors.text, fontFamily: ff ? FONT.displayXB : FONT.system }]}>Termeni și condiții</Text>
         <Text style={[s.version, { color: colors.textMuted, fontFamily: ff ? FONT.mono : FONT.systemMono }]}>Versiunea 1.0 · GO PAMPA S.R.L.</Text>

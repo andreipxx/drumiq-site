@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
+import AuroraBg from '../components/AuroraBg';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FONT, SIZE, RADIUS } from '../constants/typography';
 import { Accessibility, type AccessibilityCapture } from '../native/accessibility';
@@ -104,13 +105,7 @@ export default function AccessibilityTestScreen({ onBack }: Props) {
 
   return (
     <SafeAreaView style={[s.container, { backgroundColor: colors.bg }]}>
-      {/* Aurora blobs */}
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <View style={{ position:'absolute', top:-80, left:-60, width:260, height:260, borderRadius:300, backgroundColor:colors.aurora1 }} />
-        <View style={{ position:'absolute', top:120, right:-80, width:220, height:220, borderRadius:300, backgroundColor:colors.aurora2 }} />
-        <View style={{ position:'absolute', bottom:100, left:40, width:180, height:180, borderRadius:300, backgroundColor:colors.aurora3 }} />
-      </View>
-
+      <AuroraBg />
       <TouchableOpacity onPress={onBack} style={[s.backBtn, { paddingTop: insets.top + 8 }]} activeOpacity={0.6}>
         <Text style={[s.backText, { color: colors.cyan }]}>{'‹ Back'}</Text>
       </TouchableOpacity>

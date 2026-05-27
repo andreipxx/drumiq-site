@@ -4,6 +4,7 @@ import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, DeviceEventEmitter, TextInput, Animated, Easing } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
+import AuroraBg from '../components/AuroraBg';
 import { getProfile, onAuthStateChange } from '../services/auth';
 import { getLicenseState } from '../services/licenseManager';
 import { confirmChangeCode, confirmLogout } from '../services/accountActions';
@@ -41,13 +42,6 @@ export default function ProfilScreen({ onOpenLicense }: ScreenProps) {
   }), [completedRides]);
   const [editingGoal, setEditingGoal] = useState<string>('');
 
-  const orbPulse = useRef(new Animated.Value(0.6)).current;
-  useEffect(() => {
-    Animated.loop(Animated.sequence([
-      Animated.timing(orbPulse, { toValue: 1, duration: 2000, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
-      Animated.timing(orbPulse, { toValue: 0.6, duration: 2000, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
-    ])).start();
-  }, []);
 
   const fetchProfile = async () => {
     try {
@@ -151,9 +145,7 @@ export default function ProfilScreen({ onOpenLicense }: ScreenProps) {
 
   return (
     <View style={[st.root, { backgroundColor: colors.bg }]}>
-      <View style={[st.auroraBlob, st.aurora1, { backgroundColor: colors.aurora1 }]} />
-      <View style={[st.auroraBlob, st.aurora2, { backgroundColor: colors.aurora2 }]} />
-      <View style={[st.auroraBlob, st.aurora3, { backgroundColor: colors.aurora3 }]} />
+      <AuroraBg />
 
       <ScrollView style={st.scroll} contentContainerStyle={st.content} showsVerticalScrollIndicator={false}>
         {/* Title */}
@@ -167,7 +159,6 @@ export default function ProfilScreen({ onOpenLicense }: ScreenProps) {
 
         {/* Profile hero card */}
         <View style={[st.heroCard, { backgroundColor: colors.bgCard, borderColor: colors.border }]}>
-          <Animated.View style={[st.heroOrb, { backgroundColor: colors.violet, opacity: orbPulse }]} />
           <View style={{ position: 'relative', zIndex: 2, alignItems: 'center' }}>
             {/* Avatar */}
             <View style={st.avatarWrap}>
@@ -302,7 +293,6 @@ export default function ProfilScreen({ onOpenLicense }: ScreenProps) {
             { label: 'LICENȚĂ', value: licKey || '—', color: colors.violet, glow: colors.violet },
           ].map((s, i) => (
             <View key={i} style={[st.statCard, { backgroundColor: colors.bgCard, borderColor: colors.borderSoft }]}>
-              <View style={[st.statGlow, { backgroundColor: s.glow }]} />
               <Text style={[st.statLbl, { color: colors.textMuted, fontFamily: ff ? FONT.mono : FONT.systemMono }]}>{s.label}</Text>
               <Text style={[st.statVal, { color: s.color, fontFamily: ff ? FONT.displayXB : FONT.system }]}>
                 {s.value}
@@ -401,28 +391,23 @@ const st = StyleSheet.create({
   scroll: { flex: 1 },
   content: { padding: 16, paddingBottom: 40 },
 
-  auroraBlob: { position: 'absolute', borderRadius: 300, opacity: 0.7 },
-  aurora1: { width: 500, height: 500, top: -200, left: -150 },
-  aurora2: { width: 400, height: 400, bottom: -150, right: -120 },
-  aurora3: { width: 350, height: 350, top: '40%' as any, right: -100 },
 
   title: { fontSize: SIZE.xl, letterSpacing: -0.5, marginTop: 4 },
-  sub: { fontSize: SIZE.sm, letterSpacing: 8, marginTop: 4, marginBottom: 16 },
+  sub: { fontSize: SIZE.sm, letterSpacing: 1.5, marginTop: 4, marginBottom: 16 },
 
   // Hero card
   heroCard: { borderWidth: 1, borderRadius: RADIUS['2xl'], padding: 24, marginBottom: 18, alignItems: 'center', position: 'relative', overflow: 'hidden' },
-  heroOrb: { position: 'absolute', width: 300, height: 300, borderRadius: 150, top: -80, left: '50%' as any, marginLeft: -150 },
   avatarWrap: { marginBottom: 12, shadowColor: '#7c3aed', shadowOpacity: 0.5, shadowRadius: 16, elevation: 10 },
   avatar: { width: 80, height: 80, borderRadius: 40, alignItems: 'center', justifyContent: 'center' },
   avatarTxt: { fontSize: 32, color: '#fff' },
   heroName: { fontSize: SIZE.xl, letterSpacing: -0.5, marginBottom: 4 },
-  heroEmail: { fontSize: 11, letterSpacing: 3, marginBottom: 12 },
+  heroEmail: { fontSize: 11, letterSpacing: 0.5, marginBottom: 12 },
   planPill: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: RADIUS.pill, borderWidth: 1 },
-  planPillTxt: { fontSize: 11, letterSpacing: 4 },
+  planPillTxt: { fontSize: 11, letterSpacing: 1 },
 
   // Section
   sectionRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 4, marginBottom: 10 },
-  sectionLabel: { fontSize: SIZE.sm, letterSpacing: 10, textTransform: 'uppercase' },
+  sectionLabel: { fontSize: SIZE.sm, letterSpacing: 2, textTransform: 'uppercase' },
   sectionLine: { flex: 1, height: 1, opacity: 0.5 },
 
   // Field card
@@ -436,7 +421,7 @@ const st = StyleSheet.create({
   inputWide: { flex: 1, marginLeft: 16, paddingVertical: 6, paddingHorizontal: 12, borderWidth: 1, borderRadius: 8, fontSize: 12, textAlign: 'right' },
 
   saveBtn: { padding: 10, borderRadius: RADIUS.sm, alignItems: 'center', marginHorizontal: 12 },
-  saveBtnTxt: { color: '#fff', fontSize: 11, letterSpacing: 3, textTransform: 'uppercase' },
+  saveBtnTxt: { color: '#fff', fontSize: 11, letterSpacing: 0.5, textTransform: 'uppercase' },
 
   // Goal
   goalRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 14, paddingHorizontal: 18 },
@@ -449,28 +434,27 @@ const st = StyleSheet.create({
   platformName: { fontSize: SIZE.base },
   platformSub: { fontSize: 9, marginTop: 2, letterSpacing: 2 },
   statusPill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.pill, borderWidth: 1 },
-  statusTxt: { fontSize: 9, letterSpacing: 4 },
+  statusTxt: { fontSize: 9, letterSpacing: 1 },
 
   // Stats grid
   statGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 14 },
   statCard: { flexBasis: '47%', flexGrow: 1, borderWidth: 1, borderRadius: RADIUS.lg, padding: 14, position: 'relative', overflow: 'hidden' },
-  statGlow: { position: 'absolute', top: -10, left: -10, width: 40, height: 40, borderRadius: 20, opacity: 0.5 },
-  statLbl: { fontSize: 8, letterSpacing: 6, textTransform: 'uppercase', marginBottom: 8, position: 'relative' },
+  statLbl: { fontSize: 8, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 8, position: 'relative' },
   statVal: { fontSize: SIZE['2xl'], lineHeight: 32, position: 'relative' },
 
   // Referral
   refCodeRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 18, paddingTop: 10 },
-  refCode: { fontSize: SIZE.lg, letterSpacing: 4 },
-  refTiersTitle: { fontSize: 8, letterSpacing: 6, textTransform: 'uppercase', marginTop: 4, marginBottom: 4, paddingHorizontal: 18 },
+  refCode: { fontSize: SIZE.lg, letterSpacing: 1 },
+  refTiersTitle: { fontSize: 8, letterSpacing: 1.5, textTransform: 'uppercase', marginTop: 4, marginBottom: 4, paddingHorizontal: 18 },
   refTierRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 4, paddingHorizontal: 18 },
   refTierLabel: { fontSize: 12 },
   refTierVal: { fontSize: 11, letterSpacing: 2 },
   comingSoonPill: { padding: 12, borderRadius: RADIUS.md, borderWidth: 1, borderStyle: 'dashed', alignItems: 'center', marginTop: 12, marginHorizontal: 12, marginBottom: 4 },
-  comingSoonTxt: { fontSize: 11, letterSpacing: 6, textTransform: 'uppercase' },
+  comingSoonTxt: { fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase' },
 
   // Actions
   actionBtn: { padding: 14, borderRadius: RADIUS.md, borderWidth: 1, alignItems: 'center', marginTop: 8 },
-  actionBtnTxt: { fontSize: 12, letterSpacing: 4, textTransform: 'uppercase' },
+  actionBtnTxt: { fontSize: 12, letterSpacing: 1, textTransform: 'uppercase' },
 
   footer: { fontSize: 9, textAlign: 'center', marginTop: 20, lineHeight: 14, letterSpacing: 2 },
 });

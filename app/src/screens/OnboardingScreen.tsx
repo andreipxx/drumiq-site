@@ -6,6 +6,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
+import AuroraBg from '../components/AuroraBg';
 import { checkCityEligibility, type GeofenceResult } from '../services/geofence';
 import CarSelector from '../components/CarSelector';
 import { setFuelSettings, type FuelSettings, DEFAULTS } from '../services/userSettings';
@@ -129,20 +130,12 @@ export default function OnboardingScreen({ onComplete }: Props) {
 
   const dotIndex = DOT_STEPS.indexOf(step);
 
-  // ═══ AURORA BLOBS ═══
-  const AuroraBlobs = () => (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      <View style={{ position: 'absolute', top: -80, left: -60, width: 260, height: 260, borderRadius: 300, backgroundColor: colors.aurora1 }} />
-      <View style={{ position: 'absolute', top: 120, right: -80, width: 220, height: 220, borderRadius: 300, backgroundColor: colors.aurora2 }} />
-      <View style={{ position: 'absolute', bottom: 100, left: 40, width: 180, height: 180, borderRadius: 300, backgroundColor: colors.aurora3 }} />
-    </View>
-  );
-
   // ═══ STEP RENDERS ═══
 
   if (step === 'splash') {
     return (
       <View style={[s.center, { backgroundColor: colors.bg }]}>
+        <AuroraBg />
         <View style={[s.logoBg, { backgroundColor: colors.cyan }]}>
           <Text style={[s.logoTxt, { fontFamily: fontsLoaded ? FONT.displayXB : FONT.system }]}>D</Text>
         </View>
@@ -163,7 +156,7 @@ export default function OnboardingScreen({ onComplete }: Props) {
   if (step === 'welcome') {
     return (
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <AuroraBlobs />
+        <AuroraBg />
         <View style={[s.center, { backgroundColor: 'transparent' }]}>
           {dots}
           <Text style={[s.stepTitle, { color: colors.text, fontFamily: fontsLoaded ? FONT.display : FONT.system }]}>Salut!</Text>
@@ -187,6 +180,7 @@ export default function OnboardingScreen({ onComplete }: Props) {
   if (step === 'geofence') {
     return (
       <View style={[s.center, { backgroundColor: colors.bg }]}>
+        <AuroraBg />
         <Text style={{ fontSize: 40, marginBottom: 16 }}>{'📍'}</Text>
         <Text style={[s.stepTitle, { color: colors.text, fontFamily: fontsLoaded ? FONT.display : FONT.system }]}>Se verifică locația</Text>
         <ActivityIndicator size="large" color={colors.cyan} style={{ marginTop: 24 }} />
@@ -200,6 +194,7 @@ export default function OnboardingScreen({ onComplete }: Props) {
       ? geoResult.detectedCity : 'Necunoscut';
     return (
       <View style={[s.center, { backgroundColor: colors.bg }]}>
+        <AuroraBg />
         <Text style={{ fontSize: 48, marginBottom: 16 }}>{'🔒'}</Text>
         <Text style={[s.stepTitle, { color: colors.text, fontFamily: fontsLoaded ? FONT.display : FONT.system }]}>DRUMIQ nu este disponibil aici</Text>
         <Text style={[s.hint, { color: colors.textMuted, fontFamily: fontsLoaded ? FONT.body : FONT.system }]}>Orașul detectat: {detected}</Text>
@@ -223,7 +218,7 @@ export default function OnboardingScreen({ onComplete }: Props) {
   if (step === 'car') {
     return (
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <AuroraBlobs />
+        <AuroraBg />
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 24, paddingTop: 48 }}>
           {dots}
           <Text style={[s.stepTitle, { color: colors.text, textAlign: 'center', fontFamily: fontsLoaded ? FONT.display : FONT.system }]}>Alege mașina ta</Text>
@@ -242,7 +237,7 @@ export default function OnboardingScreen({ onComplete }: Props) {
   if (step === 'permissions') {
     return (
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <AuroraBlobs />
+        <AuroraBg />
         <View style={[s.center, { backgroundColor: 'transparent' }]}>
           {dots}
           <Text style={[s.stepTitle, { color: colors.text, fontFamily: fontsLoaded ? FONT.display : FONT.system }]}>Permisiuni necesare</Text>
@@ -306,7 +301,7 @@ export default function OnboardingScreen({ onComplete }: Props) {
   if (step === 'ready') {
     return (
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <AuroraBlobs />
+        <AuroraBg />
         <View style={[s.center, { backgroundColor: 'transparent' }]}>
           {dots}
           <Text style={{ fontSize: 48, marginBottom: 16 }}>{'🎉'}</Text>
@@ -331,6 +326,7 @@ export default function OnboardingScreen({ onComplete }: Props) {
   if (step === 'bolt') {
     return (
       <View style={[s.center, { backgroundColor: colors.bg }]}>
+        <AuroraBg />
         <Text style={[s.stepTitle, { color: colors.text, fontFamily: fontsLoaded ? FONT.display : FONT.system }]}>Deschide Șofer partener</Text>
         <Text style={[s.hint, { color: colors.textMuted, fontFamily: fontsLoaded ? FONT.body : FONT.system }]}>
           Pornește aplicația Bolt Driver și acceptă o cursă.{'\n'}DRUMIQ va analiza automat oferta și îți va arăta verdictul.
@@ -393,7 +389,7 @@ const s = StyleSheet.create({
     width: 88, height: 88, borderRadius: 22, alignItems: 'center', justifyContent: 'center', marginBottom: 12,
   },
   logoTxt: { fontSize: 52, fontWeight: '900', color: '#000' },
-  brand: { fontSize: 34, fontWeight: '900', letterSpacing: 8 },
+  brand: { fontSize: 34, fontWeight: '900', letterSpacing: 1.5 },
   tagline: { fontSize: 14, marginTop: 8 },
   stepTitle: { fontSize: 24, fontWeight: '800', textAlign: 'center' },
   hint: { fontSize: 14, textAlign: 'center', marginTop: 12, lineHeight: 21 },

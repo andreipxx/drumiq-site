@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
+import AuroraBg from '../components/AuroraBg';
 import { FONT, SIZE, RADIUS } from '../constants/typography';
 import type { ProfitAnalysis } from '../services/profitCalculator';
 
@@ -18,7 +19,9 @@ export default function CostDetailsScreen({ analysis, pickupAddress, destination
   const monoBoldFont = fontsLoaded ? FONT.monoBold : FONT.systemMono;
 
   return (
-    <ScrollView style={[s.root, { backgroundColor: colors.bg }]} contentContainerStyle={s.content}>
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <AuroraBg />
+      <ScrollView style={[s.root, { backgroundColor: 'transparent' }]} contentContainerStyle={s.content}>
       <TouchableOpacity onPress={onBack} activeOpacity={0.6}>
         <Text style={[s.back, { color: colors.cyan }]}>{'‹ Înapoi'}</Text>
       </TouchableOpacity>
@@ -50,7 +53,8 @@ export default function CostDetailsScreen({ analysis, pickupAddress, destination
         <DetailRow label="Km total" value={`${analysis.totalKm.toFixed(1)} km`} colors={colors} monoFont={monoBoldFont} />
         <DetailRow label="Timp total" value={`${analysis.totalMinutes} min`} colors={colors} monoFont={monoBoldFont} last />
       </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 

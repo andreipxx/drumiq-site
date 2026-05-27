@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
+import AuroraBg from '../components/AuroraBg';
 import type { ExpirationReason } from '../services/licenseManager';
 import { TRIAL } from '../constants/config';
 import { FONT, SIZE, RADIUS } from '../constants/typography';
@@ -26,13 +27,7 @@ export default function PaywallScreen({ reason, ridesUsed, onActivateNew }: Prop
 
   return (
     <SafeAreaView style={[s.container, { backgroundColor: colors.bg }]}>
-      {/* Aurora blobs */}
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <View style={{ position:'absolute', top:-80, left:-60, width:260, height:260, borderRadius:300, backgroundColor:colors.aurora1 }} />
-        <View style={{ position:'absolute', top:120, right:-80, width:220, height:220, borderRadius:300, backgroundColor:colors.aurora2 }} />
-        <View style={{ position:'absolute', bottom:100, left:40, width:180, height:180, borderRadius:300, backgroundColor:colors.aurora3 }} />
-      </View>
-
+      <AuroraBg />
       <View style={[s.banner, { backgroundColor: colors.bgCard, borderColor: colors.stop, borderWidth: 2 }]}>
         <Text style={[s.title, { color: colors.stop, fontFamily: fontsLoaded ? FONT.display : FONT.system }]}>{t.title}</Text>
         <Text style={[s.body, { color: colors.text, fontFamily: fontsLoaded ? FONT.body : FONT.system }]}>{t.body}</Text>

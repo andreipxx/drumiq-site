@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
+import AuroraBg from '../components/AuroraBg';
 import { activateCode } from '../services/licenseManager';
 import { isValidFormat } from '../constants/licenses';
 import { APP_VERSION } from '../constants/config';
@@ -38,13 +39,7 @@ export default function LicenseScreen({ onActivated }: Props) {
 
   return (
     <SafeAreaView style={[s.root, { backgroundColor: colors.bg }]}>
-      {/* Aurora blobs */}
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <View style={{ position:'absolute', top:-80, left:-60, width:260, height:260, borderRadius:300, backgroundColor:colors.aurora1 }} />
-        <View style={{ position:'absolute', top:120, right:-80, width:220, height:220, borderRadius:300, backgroundColor:colors.aurora2 }} />
-        <View style={{ position:'absolute', bottom:100, left:40, width:180, height:180, borderRadius:300, backgroundColor:colors.aurora3 }} />
-      </View>
-
+      <AuroraBg />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -166,7 +161,7 @@ const s = StyleSheet.create({
   tagline: {
     fontSize: 10,
     fontWeight: '700',
-    letterSpacing: 4,
+    letterSpacing: 1,
     textAlign: 'center',
     marginTop: 4,
     marginBottom: 24,
@@ -181,7 +176,7 @@ const s = StyleSheet.create({
   inputLabel: {
     fontSize: 10,
     fontWeight: '900',
-    letterSpacing: 3,
+    letterSpacing: 0.5,
     marginBottom: 8,
   },
   inputWrap: {
@@ -219,7 +214,7 @@ const s = StyleSheet.create({
   btnTxt: {
     fontSize: 18,
     fontWeight: '900',
-    letterSpacing: 4,
+    letterSpacing: 1,
   },
 
   fineprint: {

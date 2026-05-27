@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
+import AuroraBg from '../components/AuroraBg';
 import { getLicenseState } from '../services/licenseManager';
 import { PLAN_PRICES_RON, FOUNDING_MEMBER, REFERRAL_TIERS } from '../constants/config';
 import type { PlanTier } from '../types';
@@ -110,10 +111,7 @@ export default function PlanScreen({ onOpenUpgrade, onOpenLicense }: Props) {
 
   return (
     <View style={[st.root, { backgroundColor: colors.bg }]}>
-      {/* Aurora blobs */}
-      <View style={[st.auroraBlob, st.aurora1, { backgroundColor: colors.aurora1 }]} />
-      <View style={[st.auroraBlob, st.aurora2, { backgroundColor: colors.aurora2 }]} />
-      <View style={[st.auroraBlob, st.aurora3, { backgroundColor: colors.aurora3 }]} />
+      <AuroraBg />
 
       <ScrollView
         style={st.scroll}
@@ -314,15 +312,10 @@ const st = StyleSheet.create({
   scroll: { flex: 1 },
   content: { padding: 16, paddingBottom: 40 },
 
-  // Aurora
-  auroraBlob: { position: 'absolute', borderRadius: 300, opacity: 0.7 },
-  aurora1: { width: 500, height: 500, top: -200, left: -150 },
-  aurora2: { width: 400, height: 400, bottom: -150, right: -120 },
-  aurora3: { width: 350, height: 350, top: '40%' as any, right: -100 },
 
   // Title
   title: { fontSize: SIZE.xl, letterSpacing: -0.5, marginTop: 4 },
-  sub: { fontSize: SIZE.sm, letterSpacing: 8, marginTop: 4, marginBottom: 16 },
+  sub: { fontSize: SIZE.sm, letterSpacing: 1.5, marginTop: 4, marginBottom: 16 },
 
   // Plan card
   card: {
@@ -333,15 +326,15 @@ const st = StyleSheet.create({
   // Recommended badge
   recBadgeWrap: { position: 'absolute', top: 14, right: 14, zIndex: 5 },
   recBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.pill, shadowColor: '#ec4899', shadowOpacity: 0.4, shadowRadius: 6, elevation: 4 },
-  recTxt: { fontSize: 9, color: '#fff', letterSpacing: 4, textTransform: 'uppercase' },
+  recTxt: { fontSize: 9, color: '#fff', letterSpacing: 1, textTransform: 'uppercase' },
 
   // Header
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 },
   cardName: { fontSize: 24, letterSpacing: -0.5, lineHeight: 28, marginBottom: 4 },
-  cardMeta: { fontSize: SIZE.sm, letterSpacing: 4, textTransform: 'uppercase' },
+  cardMeta: { fontSize: SIZE.sm, letterSpacing: 1, textTransform: 'uppercase' },
   cardPrice: { fontSize: 32, letterSpacing: -1, lineHeight: 36 },
   strikePrice: { fontSize: 11, textDecorationLine: 'line-through' as const, marginBottom: 2 },
-  cardPriceSub: { fontSize: SIZE.sm, letterSpacing: 3, marginTop: 4 },
+  cardPriceSub: { fontSize: SIZE.sm, letterSpacing: 0.5, marginTop: 4 },
 
   // Features
   features: { gap: 8, marginBottom: 14 },
@@ -352,23 +345,23 @@ const st = StyleSheet.create({
 
   // CTA buttons
   currentPill: { padding: 12, borderRadius: RADIUS.md, borderWidth: 1, alignItems: 'center' },
-  currentPillTxt: { fontSize: 13, letterSpacing: 4, textTransform: 'uppercase' },
+  currentPillTxt: { fontSize: 13, letterSpacing: 1, textTransform: 'uppercase' },
   ctaBtn: { padding: 12, borderRadius: RADIUS.md, alignItems: 'center', shadowColor: '#7c3aed', shadowOpacity: 0.4, shadowRadius: 8, elevation: 6 },
   ctaBtnTxt: { color: '#fff', fontSize: 13, letterSpacing: 2, textTransform: 'uppercase' },
 
   // Referral
   referralBox: { padding: 16, borderRadius: RADIUS['2xl'], borderWidth: 1, marginBottom: 12, marginTop: 4 },
-  referralTitle: { fontSize: 11, letterSpacing: 6, textTransform: 'uppercase', marginBottom: 6 },
+  referralTitle: { fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 6 },
   referralDesc: { fontSize: 12, marginBottom: 10, lineHeight: 18 },
   referralRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6, borderBottomWidth: 1 },
   referralTierLabel: { fontSize: 12 },
   referralTierValue: { fontSize: 12, letterSpacing: 2 },
   comingSoonPill: { padding: 12, borderRadius: RADIUS.md, borderWidth: 1, borderStyle: 'dashed', alignItems: 'center', marginTop: 10 },
-  comingSoonTxt: { fontSize: 12, letterSpacing: 6, textTransform: 'uppercase' },
+  comingSoonTxt: { fontSize: 12, letterSpacing: 1.5, textTransform: 'uppercase' },
 
   // Code button
   codeBtn: { padding: 14, borderRadius: RADIUS.md, borderWidth: 1, borderStyle: 'dashed', alignItems: 'center', marginTop: 8 },
-  codeBtnTxt: { fontSize: 12, letterSpacing: 3 },
+  codeBtnTxt: { fontSize: 12, letterSpacing: 0.5 },
 
   // Footer
   footer: { fontSize: 9, textAlign: 'center', marginTop: 16, lineHeight: 14, letterSpacing: 2 },

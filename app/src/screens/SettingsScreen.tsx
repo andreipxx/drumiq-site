@@ -8,6 +8,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
+import AuroraBg from '../components/AuroraBg';
 import type { ThemeMode } from '../constants/theme';
 import { FONT, SIZE, RADIUS, GAP } from '../constants/typography';
 import { getLicenseState } from '../services/licenseManager';
@@ -96,10 +97,7 @@ export default function SettingsScreen({ onOpenFuel, onOpenFilters, onOpenUpgrad
 
   return (
     <View style={[st.root, { backgroundColor: colors.bg }]}>
-      {/* Aurora blobs */}
-      <View style={[st.blob, st.blob1, { backgroundColor: colors.aurora1 }]} />
-      <View style={[st.blob, st.blob2, { backgroundColor: colors.aurora2 }]} />
-      <View style={[st.blob, st.blob3, { backgroundColor: colors.aurora3 }]} />
+      <AuroraBg />
 
       <ScrollView
         contentContainerStyle={[st.scroll, { paddingTop: Math.max(24, insets.top), paddingBottom: Math.max(32, insets.bottom + 16) }]}
@@ -402,22 +400,17 @@ function SettingsNumberInput({ value, onChange, suffix, colors }: {
 const st = StyleSheet.create({
   root: { flex: 1 },
 
-  // Aurora blobs
-  blob:  { position: 'absolute', borderRadius: 300 },
-  blob1: { width: 260, height: 260, top: -60, left: -80 },
-  blob2: { width: 200, height: 200, top: 180, right: -60 },
-  blob3: { width: 180, height: 180, bottom: 100, left: 20 },
 
   scroll: { paddingHorizontal: 20 },
 
   // Title
   titleWrap: { marginBottom: GAP.xl },
   title: { fontSize: SIZE['2xl'], letterSpacing: -0.5 },
-  subtitle: { fontSize: SIZE.xs, letterSpacing: 6, textTransform: 'uppercase', marginTop: 4 },
+  subtitle: { fontSize: SIZE.xs, letterSpacing: 1.5, textTransform: 'uppercase', marginTop: 4 },
 
   // Section label
   sectionRow: { flexDirection: 'row', alignItems: 'center', marginTop: GAP.xl, marginBottom: GAP.sm, gap: 10 },
-  sectionText: { fontSize: SIZE.xs, letterSpacing: 6, textTransform: 'uppercase' },
+  sectionText: { fontSize: SIZE.xs, letterSpacing: 1.5, textTransform: 'uppercase' },
   sectionLine: { flex: 1, height: 1, borderRadius: 1, opacity: 0.4 },
 
   // Groups
@@ -433,22 +426,22 @@ const st = StyleSheet.create({
   // Row content
   rowBody: { flex: 1 },
   rowTitle: { fontSize: SIZE.lg },
-  rowDesc: { fontSize: SIZE.xs, letterSpacing: 3, marginTop: 2 },
+  rowDesc: { fontSize: SIZE.xs, letterSpacing: 0.5, marginTop: 2 },
 
   // Chevron
   chevron: { fontSize: 22, marginLeft: 'auto' },
 
   // Pill
   pill: { borderRadius: RADIUS.pill, paddingHorizontal: 10, paddingVertical: 3, borderWidth: 1, marginLeft: 'auto' },
-  pillText: { fontSize: SIZE.xs, letterSpacing: 4 },
+  pillText: { fontSize: SIZE.xs, letterSpacing: 1 },
 
   // Coming soon
   comingSoonPill: { borderRadius: RADIUS.pill, paddingHorizontal: 10, paddingVertical: 3, borderWidth: 1, marginLeft: 8 },
-  comingSoonText: { fontSize: 8, letterSpacing: 4 },
+  comingSoonText: { fontSize: 8, letterSpacing: 1 },
 
   // Grant button
   grantBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADIUS.sm },
-  grantBtnText: { color: '#fff', fontSize: SIZE.sm, letterSpacing: 4 },
+  grantBtnText: { color: '#fff', fontSize: SIZE.sm, letterSpacing: 1 },
 
   // Radio
   radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, alignItems: 'center', justifyContent: 'center', marginLeft: 'auto' },
@@ -456,6 +449,6 @@ const st = StyleSheet.create({
 
   // App card
   appCard: { borderRadius: RADIUS.lg, borderWidth: 1, paddingVertical: 24, alignItems: 'center', marginTop: 0 },
-  appLogo: { fontSize: SIZE.xl, letterSpacing: 6 },
-  appVersion: { fontSize: SIZE.xs, letterSpacing: 4, marginTop: 6 },
+  appLogo: { fontSize: SIZE.xl, letterSpacing: 1.5 },
+  appVersion: { fontSize: SIZE.xs, letterSpacing: 1, marginTop: 6 },
 });

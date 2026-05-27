@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
+import AuroraBg from '../components/AuroraBg';
 import {
   getStatsForPeriod,
   getRidesForPeriod,
@@ -75,12 +76,6 @@ export default function TrackerScreen() {
   const selectedDayRef = useRef<DayEarnings | null>(null);
   selectedDayRef.current = selectedDay;
 
-  const orbAnim = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    Animated.loop(Animated.timing(orbAnim, {
-      toValue: 1, duration: 8000, easing: Easing.inOut(Easing.ease), useNativeDriver: true,
-    })).start();
-  }, []);
 
   const refresh = useCallback(async () => {
     try {
@@ -143,18 +138,10 @@ export default function TrackerScreen() {
   const goalPct = dailyGoal > 0 ? Math.min(100, (earningsToday / dailyGoal) * 100) : 0;
   const chartMax = Math.max(...chartData.map(d => d.earnings), 1);
 
-  const orbScale = orbAnim.interpolate({
-    inputRange: [0, 0.5, 1], outputRange: [1, 1.15, 1],
-  });
-  const orbX = orbAnim.interpolate({
-    inputRange: [0, 0.5, 1], outputRange: [0, -20, 0],
-  });
 
   return (
     <View style={[st.root, { backgroundColor: colors.bg }]}>
-      {/* Aurora blobs */}
-      <View style={[st.auroraBlob, st.aurora1, { backgroundColor: colors.aurora1 }]} />
-      <View style={[st.auroraBlob, st.aurora2, { backgroundColor: colors.aurora2 }]} />
+      <AuroraBg />
 
       <ScrollView
         style={st.scroll}
@@ -173,10 +160,6 @@ export default function TrackerScreen() {
 
         {/* Hero earnings card */}
         <View style={[st.heroCard, { backgroundColor: colors.bgCard, borderColor: colors.border }]}>
-          <Animated.View style={[st.heroOrb, {
-            backgroundColor: colors.green,
-            transform: [{ scale: orbScale }, { translateX: orbX }],
-          }]} />
           <View style={{ position: 'relative', zIndex: 2 }}>
             <View style={st.heroRow}>
               <Text style={[st.heroLabel, { color: colors.textMuted, fontFamily: ff ? FONT.mono : FONT.systemMono }]}>
@@ -401,7 +384,6 @@ function StatCell({ label, value, unit, glowColor, colors, ff, valueColor }: {
 }) {
   return (
     <View style={[st.statCard, { backgroundColor: colors.bgCard, borderColor: colors.borderSoft }]}>
-      <View style={[st.statGlow, { backgroundColor: glowColor }]} />
       <Text style={[st.statLbl, { color: colors.textMuted, fontFamily: ff ? FONT.mono : FONT.systemMono }]}>{label}</Text>
       <Text style={[st.statVal, { color: valueColor || colors.text, fontFamily: ff ? FONT.displayXB : FONT.system }]}>
         {value}
@@ -416,22 +398,17 @@ const st = StyleSheet.create({
   scroll: { flex: 1 },
   content: { padding: 16, paddingBottom: 40 },
 
-  // Aurora
-  auroraBlob: { position: 'absolute', borderRadius: 300, opacity: 0.7 },
-  aurora1: { width: 400, height: 400, top: -150, right: -100 },
-  aurora2: { width: 350, height: 350, bottom: -120, left: -100 },
 
   // Title
   title: { fontSize: SIZE.xl, letterSpacing: -0.5, marginTop: 4 },
-  sub: { fontSize: SIZE.sm, letterSpacing: 8, marginTop: 4, marginBottom: 14 },
+  sub: { fontSize: SIZE.sm, letterSpacing: 1.5, marginTop: 4, marginBottom: 14 },
 
   // Hero card
   heroCard: { borderWidth: 1, borderRadius: RADIUS['2xl'], padding: 20, marginBottom: 14, position: 'relative', overflow: 'hidden' },
-  heroOrb: { position: 'absolute', width: 200, height: 200, borderRadius: 100, top: -50, right: -50, opacity: 0.3 },
   heroRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  heroLabel: { fontSize: SIZE.sm, letterSpacing: 8, textTransform: 'uppercase' },
+  heroLabel: { fontSize: SIZE.sm, letterSpacing: 1.5, textTransform: 'uppercase' },
   heroPill: { paddingVertical: 3, paddingHorizontal: 10, borderRadius: RADIUS.pill, borderWidth: 1 },
-  heroPillTxt: { fontSize: SIZE.sm, letterSpacing: 3 },
+  heroPillTxt: { fontSize: SIZE.sm, letterSpacing: 0.5 },
   heroAmount: { fontSize: SIZE['4xl'], lineHeight: 68, letterSpacing: -3 },
   heroUnit: { fontSize: SIZE.xl, fontWeight: '400' },
   heroSub: { fontSize: 11, marginTop: 6 },
@@ -440,20 +417,19 @@ const st = StyleSheet.create({
   tabsWrap: { flexDirection: 'row', gap: 6, marginBottom: 14, borderWidth: 1, borderRadius: RADIUS.md, padding: 4 },
   tabOuter: { flex: 1 },
   tab: { padding: 10, borderRadius: RADIUS.sm, alignItems: 'center', shadowOpacity: 0.4, shadowRadius: 8, elevation: 4 },
-  tabLbl: { fontSize: SIZE.sm, letterSpacing: 6, textTransform: 'uppercase' },
+  tabLbl: { fontSize: SIZE.sm, letterSpacing: 1.5, textTransform: 'uppercase' },
 
   // Stats grid
   statGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 14 },
   statCard: { flexBasis: '47%', flexGrow: 1, borderWidth: 1, borderRadius: RADIUS.lg, padding: 14, paddingHorizontal: 16, position: 'relative', overflow: 'hidden' },
-  statGlow: { position: 'absolute', top: -10, left: -10, width: 40, height: 40, borderRadius: 20, opacity: 0.5 },
-  statLbl: { fontSize: 9, letterSpacing: 6, textTransform: 'uppercase', marginBottom: 8, position: 'relative' },
+  statLbl: { fontSize: 9, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 8, position: 'relative' },
   statVal: { fontSize: SIZE['2xl'], lineHeight: 32, position: 'relative' },
   statUnit: { fontSize: SIZE.sm },
 
   // Goal card
   goalCard: { borderWidth: 1, borderRadius: RADIUS.xl, padding: 14, marginBottom: 14 },
   goalRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  goalLabel: { fontSize: 9, letterSpacing: 6, textTransform: 'uppercase' },
+  goalLabel: { fontSize: 9, letterSpacing: 1.5, textTransform: 'uppercase' },
   goalValue: { fontSize: SIZE.lg },
   goalBarBg: { height: 6, borderRadius: RADIUS.pill, overflow: 'hidden', marginBottom: 6, borderWidth: 1 },
   goalBarFill: { height: '100%' as any, borderRadius: RADIUS.pill },
@@ -461,7 +437,7 @@ const st = StyleSheet.create({
 
   // Section label
   sectionRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 18, marginBottom: 10 },
-  sectionLabel: { fontSize: SIZE.sm, letterSpacing: 10, textTransform: 'uppercase' },
+  sectionLabel: { fontSize: SIZE.sm, letterSpacing: 2, textTransform: 'uppercase' },
   sectionLine: { flex: 1, height: 1, opacity: 0.5 },
 
   // Chart
@@ -469,7 +445,7 @@ const st = StyleSheet.create({
   chartBars: { flexDirection: 'row', alignItems: 'flex-end', gap: 8, height: 100, marginBottom: 8 },
   chartBarWrap: { flex: 1, alignItems: 'center', height: '100%' as any, justifyContent: 'flex-end' },
   chartBarValue: { fontSize: 8, fontWeight: '700', marginBottom: 2 },
-  chartBarDay: { fontSize: 9, letterSpacing: 4, marginTop: 6 },
+  chartBarDay: { fontSize: 9, letterSpacing: 1, marginTop: 6 },
   chartBarDot: { width: 5, height: 5, borderRadius: 3, marginTop: 3 },
 
   // Empty state
@@ -483,7 +459,7 @@ const st = StyleSheet.create({
   rideStripe: { width: 3 },
   rideInner: { flex: 1, padding: 12 },
   rideTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
-  rideTime: { fontSize: SIZE.sm, letterSpacing: 3 },
+  rideTime: { fontSize: SIZE.sm, letterSpacing: 0.5 },
   ridePrice: { fontSize: 16 },
   ridePriceUnit: { fontSize: 11 },
   rideAddr: { fontSize: 9, marginBottom: 4 },
@@ -494,15 +470,15 @@ const st = StyleSheet.create({
 
   // Danger button
   dangerBtn: { padding: 14, borderRadius: RADIUS.md, borderWidth: 1, alignItems: 'center', marginTop: 16 },
-  dangerTxt: { fontSize: 12, letterSpacing: 4, textTransform: 'uppercase' },
+  dangerTxt: { fontSize: 12, letterSpacing: 1, textTransform: 'uppercase' },
 
   // Day detail
   dayHeader: { borderWidth: 1, borderRadius: RADIUS.xl, padding: 14, marginTop: 12, marginBottom: 8 },
   dayHeaderTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
   dayHeaderTitle: { fontSize: 14, letterSpacing: 1 },
-  dayCloseBtn: { fontSize: SIZE.sm, letterSpacing: 4 },
+  dayCloseBtn: { fontSize: SIZE.sm, letterSpacing: 1 },
   dayStatsRow: { flexDirection: 'row', justifyContent: 'space-around' },
   dayStat: { alignItems: 'center' },
   dayStatVal: { fontSize: 20 },
-  dayStatLbl: { fontSize: 8, letterSpacing: 4, textTransform: 'uppercase', marginTop: 2 },
+  dayStatLbl: { fontSize: 8, letterSpacing: 1, textTransform: 'uppercase', marginTop: 2 },
 });

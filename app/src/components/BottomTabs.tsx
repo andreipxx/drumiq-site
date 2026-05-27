@@ -110,7 +110,7 @@ const st = StyleSheet.create({
   },
   label: {
     fontSize: SIZE.xs,
-    letterSpacing: 6,
+    letterSpacing: 1.5,
     textTransform: 'uppercase',
   },
 });

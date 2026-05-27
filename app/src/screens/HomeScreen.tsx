@@ -16,6 +16,7 @@ import { TRIAL } from '../constants/config';
 import type { PlanTier, Ride, TrackerStats } from '../types';
 import { FONT, SIZE, RADIUS, GAP } from '../constants/typography';
 import BetaDisclaimer from '../components/BetaDisclaimer';
+import AuroraBg from '../components/AuroraBg';
 import { isFoundingMember, FoundingBadge } from '../components/FoundingBadge';
 import { initSession, startSession, stopSession, isSessionActive, type SessionState } from '../services/sessionManager';
 
@@ -43,7 +44,7 @@ export default function HomeScreen({ onOpenOverlayDemo, onOpenTracker }: Props) 
   // Animations
   const shimmerAnim = useRef(new Animated.Value(0)).current;
   const pulseDotAnim = useRef(new Animated.Value(1)).current;
-  const orbAnim = useRef(new Animated.Value(0)).current;
+
   const blinkAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -55,10 +56,6 @@ export default function HomeScreen({ onOpenOverlayDemo, onOpenTracker }: Props) 
       Animated.timing(pulseDotAnim, { toValue: 1.4, duration: 750, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
       Animated.timing(pulseDotAnim, { toValue: 1, duration: 750, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
     ])).start();
-
-    Animated.loop(Animated.timing(orbAnim, {
-      toValue: 1, duration: 6000, easing: Easing.inOut(Easing.ease), useNativeDriver: true,
-    })).start();
 
     Animated.loop(Animated.sequence([
       Animated.timing(blinkAnim, { toValue: 0.3, duration: 750, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
@@ -143,18 +140,6 @@ export default function HomeScreen({ onOpenOverlayDemo, onOpenTracker }: Props) 
   const goalPct = dailyGoal > 0 ? Math.min(100, ((stats?.earningsLei ?? 0) / dailyGoal) * 100) : 0;
   const goalReached = (stats?.earningsLei ?? 0) >= dailyGoal;
 
-  const orbTranslateX = orbAnim.interpolate({
-    inputRange: [0, 0.33, 0.66, 1],
-    outputRange: [0, 30, -30, 0],
-  });
-  const orbTranslateY = orbAnim.interpolate({
-    inputRange: [0, 0.33, 0.66, 1],
-    outputRange: [0, -20, 15, 0],
-  });
-  const orbScale = orbAnim.interpolate({
-    inputRange: [0, 0.33, 0.66, 1],
-    outputRange: [1, 1.15, 1.1, 1],
-  });
 
   const ff = fontsLoaded;
 
@@ -168,10 +153,7 @@ export default function HomeScreen({ onOpenOverlayDemo, onOpenTracker }: Props) 
 
   return (
     <View style={[st.root, { backgroundColor: colors.bg }]}>
-      {/* Aurora blobs */}
-      <View style={[st.auroraBlob, st.aurora1, { backgroundColor: colors.aurora1 }]} />
-      <View style={[st.auroraBlob, st.aurora2, { backgroundColor: colors.aurora2 }]} />
-      <View style={[st.auroraBlob, st.aurora3, { backgroundColor: colors.aurora3 }]} />
+      <AuroraBg />
 
       <ScrollView
         style={st.scroll}
@@ -263,20 +245,6 @@ export default function HomeScreen({ onOpenOverlayDemo, onOpenTracker }: Props) 
         {/* Target hero card with animated orb */}
         {dailyGoal > 0 && (
           <View style={[st.targetCard, { backgroundColor: colors.bgCard, borderColor: colors.border }]}>
-            {/* Animated orb */}
-            <Animated.View
-              style={[st.targetOrb, {
-                transform: [{ translateX: orbTranslateX }, { translateY: orbTranslateY }, { scale: orbScale }],
-              }]}
-            >
-              <LinearGradient
-                colors={[colors.pink, colors.violet, 'transparent']}
-                style={st.targetOrbGrad}
-                start={{ x: 0.5, y: 0 }}
-                end={{ x: 0.5, y: 1 }}
-              />
-            </Animated.View>
-
             <View style={{ position: 'relative', zIndex: 2 }}>
               {/* Header */}
               <View style={st.targetHead}>
@@ -448,7 +416,6 @@ function StatCell({ label, value, unit, glowColor, colors, ff, gradientColors }:
 }) {
   return (
     <View style={[st.statCell, { backgroundColor: colors.bgCard, borderColor: colors.borderSoft }]}>
-      <View style={[st.statGlow, { backgroundColor: glowColor }]} />
       <Text style={[st.statLbl, { color: colors.textMuted, fontFamily: ff ? FONT.mono : FONT.systemMono }]}>
         {label}
       </Text>
@@ -479,15 +446,10 @@ const st = StyleSheet.create({
   scroll: { flex: 1 },
   content: { padding: 16, paddingBottom: 40 },
 
-  // Aurora blobs
-  auroraBlob: { position: 'absolute', borderRadius: 300, opacity: 0.7 },
-  aurora1: { width: 500, height: 500, top: -200, left: -150 },
-  aurora2: { width: 400, height: 400, bottom: -150, right: -120 },
-  aurora3: { width: 350, height: 350, top: '40%' as any, right: -100 },
 
   // Greeting header
   header: { flexDirection: 'row', alignItems: 'flex-end', marginBottom: 18, marginTop: 8 },
-  salut: { fontSize: SIZE.sm, letterSpacing: 8, textTransform: 'uppercase', marginBottom: 4 },
+  salut: { fontSize: SIZE.sm, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 4 },
   name: { fontSize: SIZE['3xl'], letterSpacing: -1, lineHeight: 40 },
   sparkle: { fontSize: 26, marginLeft: 4 },
   bellBtn: {
@@ -516,7 +478,7 @@ const st = StyleSheet.create({
     marginTop: -3,
   },
   startIcon: { fontSize: 14, color: '#fff', letterSpacing: -2 },
-  startTxt: { fontSize: 17, color: '#fff', letterSpacing: 3, textTransform: 'uppercase' },
+  startTxt: { fontSize: 17, color: '#fff', letterSpacing: 0.5, textTransform: 'uppercase' },
   startSub: { position: 'absolute', bottom: 6, right: 24, fontSize: 9, color: 'rgba(255,255,255,0.7)', letterSpacing: 2 },
 
   // Plan card
@@ -526,10 +488,10 @@ const st = StyleSheet.create({
     position: 'relative', overflow: 'hidden',
   },
   planStripe: { width: 3, height: '100%' as any, borderRadius: 2, position: 'absolute', left: 0, top: 0 },
-  planLabel: { fontSize: 9, letterSpacing: 6, textTransform: 'uppercase', marginBottom: 4 },
+  planLabel: { fontSize: 9, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 4 },
   planValue: { fontSize: 24, letterSpacing: 1, color: '#06b6d4' },
   planDays: { fontSize: SIZE.lg, letterSpacing: -0.3 },
-  planFrom: { fontSize: 9, letterSpacing: 3, marginTop: 2 },
+  planFrom: { fontSize: 9, letterSpacing: 0.5, marginTop: 2 },
   planProgressWrap: {
     position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, overflow: 'hidden',
   },
@@ -540,18 +502,13 @@ const st = StyleSheet.create({
     borderWidth: 1, borderRadius: RADIUS['2xl'], padding: 22,
     marginBottom: 14, position: 'relative', overflow: 'hidden',
   },
-  targetOrb: {
-    position: 'absolute', width: 280, height: 280,
-    top: '50%' as any, left: '50%' as any, marginTop: -140, marginLeft: -140,
-  },
-  targetOrbGrad: { width: 280, height: 280, borderRadius: 140, opacity: 0.5 },
   targetHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
   liveDot: { width: 6, height: 6, borderRadius: 3, shadowOpacity: 0.8, shadowRadius: 4, elevation: 2 },
-  targetLabel: { fontSize: SIZE.sm, letterSpacing: 8, textTransform: 'uppercase' },
+  targetLabel: { fontSize: SIZE.sm, letterSpacing: 1.5, textTransform: 'uppercase' },
   pctPill: { paddingVertical: 3, paddingHorizontal: 10, borderRadius: RADIUS.pill, borderWidth: 1 },
   pctPillTxt: { fontSize: SIZE.sm, letterSpacing: 2 },
   heroNum: { fontSize: SIZE['5xl'], lineHeight: 90, letterSpacing: -3 },
-  heroSub: { fontSize: 12, letterSpacing: 4, marginTop: 2 },
+  heroSub: { fontSize: 12, letterSpacing: 1, marginTop: 2 },
 
   // Progress bar
   progBar: { height: 6, borderRadius: RADIUS.pill, overflow: 'hidden', marginBottom: 10, borderWidth: 1 },
@@ -565,9 +522,9 @@ const st = StyleSheet.create({
   // Section label
   sectionRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 18, marginBottom: 10 },
   sectionRowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 20, marginBottom: 10 },
-  sectionLabel: { fontSize: SIZE.sm, letterSpacing: 10, textTransform: 'uppercase' },
+  sectionLabel: { fontSize: SIZE.sm, letterSpacing: 2, textTransform: 'uppercase' },
   sectionLine: { flex: 1, height: 1, opacity: 0.5 },
-  linkBtn: { fontSize: SIZE.sm, letterSpacing: 3 },
+  linkBtn: { fontSize: SIZE.sm, letterSpacing: 0.5 },
 
   // Stats grid
   statGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 16 },
@@ -575,11 +532,7 @@ const st = StyleSheet.create({
     flexBasis: '47%', flexGrow: 1, borderWidth: 1, borderRadius: RADIUS.lg,
     padding: 14, paddingHorizontal: 16, position: 'relative', overflow: 'hidden',
   },
-  statGlow: {
-    position: 'absolute', top: -10, left: -10,
-    width: 40, height: 40, borderRadius: 20, opacity: 0.5,
-  },
-  statLbl: { fontSize: 9, letterSpacing: 6, textTransform: 'uppercase', marginBottom: 8, position: 'relative' },
+  statLbl: { fontSize: 9, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 8, position: 'relative' },
   statVal: { fontSize: SIZE['2xl'], lineHeight: 32, position: 'relative' },
   statUnit: { fontSize: SIZE.sm },
 
@@ -589,7 +542,7 @@ const st = StyleSheet.create({
     borderRadius: RADIUS.md, borderWidth: 1, marginBottom: 8,
   },
   ctaIcon: { fontSize: 18, marginRight: 10 },
-  ctaTxt: { flex: 1, fontSize: 11, letterSpacing: 4, textTransform: 'uppercase' },
+  ctaTxt: { flex: 1, fontSize: 11, letterSpacing: 1, textTransform: 'uppercase' },
   ctaArrow: { fontSize: 20, fontWeight: '700' },
 
   // Empty state
@@ -598,7 +551,7 @@ const st = StyleSheet.create({
     alignItems: 'center',
   },
   emptyTitle: { fontSize: SIZE.base, marginBottom: 4 },
-  emptySub: { fontSize: SIZE.xs, letterSpacing: 3, textAlign: 'center' },
+  emptySub: { fontSize: SIZE.xs, letterSpacing: 0.5, textAlign: 'center' },
 
   // Ride cards
   rideCard: {
@@ -608,7 +561,7 @@ const st = StyleSheet.create({
   rideStripe: { width: 3 },
   rideContent: { flex: 1, padding: 14 },
   rideTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
-  rideTime: { fontSize: SIZE.sm, letterSpacing: 3 },
+  rideTime: { fontSize: SIZE.sm, letterSpacing: 0.5 },
   rideVerdict: { fontSize: 14 },
   rideMiddle: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 },
   ridePrice: { fontSize: 20 },

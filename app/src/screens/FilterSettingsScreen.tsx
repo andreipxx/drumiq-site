@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert,
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
+import AuroraBg from '../components/AuroraBg';
 import { FONT, SIZE, RADIUS, GAP } from '../constants/typography';
 import {
   loadThresholds,
@@ -128,11 +129,7 @@ export default function FilterSettingsScreen({ onBack }: Props) {
 
   return (
     <View style={[st.root, { backgroundColor: colors.bg }]}>
-      {/* Aurora blobs */}
-      <View style={[st.blob, st.blob1, { backgroundColor: colors.aurora1 }]} />
-      <View style={[st.blob, st.blob2, { backgroundColor: colors.aurora2 }]} />
-      <View style={[st.blob, st.blob3, { backgroundColor: colors.aurora3 }]} />
-
+      <AuroraBg />
       {/* Back button */}
       <TouchableOpacity onPress={onBack} style={[st.backBtn, { paddingTop: insets.top + 8 }]}>
         <Text style={[st.backTxt, {
@@ -189,10 +186,6 @@ export default function FilterSettingsScreen({ onBack }: Props) {
                 borderWidth: isActive ? 2 : 1,
               }]}
             >
-              {/* Active glow */}
-              {isActive && (
-                <View style={[st.cardGlow, { backgroundColor: colors.goGlow }]} />
-              )}
               <View style={st.cardHeader}>
                 <Text style={[st.cardTitle, {
                   color: isActive ? colors.go : colors.text,
@@ -375,12 +368,6 @@ export default function FilterSettingsScreen({ onBack }: Props) {
 const st = StyleSheet.create({
   root: { flex: 1 },
 
-  // Aurora blobs
-  blob:  { position: 'absolute', borderRadius: 300 },
-  blob1: { width: 260, height: 260, top: -60, left: -80 },
-  blob2: { width: 200, height: 200, top: 200, right: -60 },
-  blob3: { width: 160, height: 160, bottom: 120, left: 30 },
-
   // Back
   backBtn: { paddingHorizontal: 20, paddingBottom: 8, zIndex: 2 },
   backTxt: { fontSize: SIZE.lg },
@@ -390,11 +377,11 @@ const st = StyleSheet.create({
 
   // Title
   title: { fontSize: SIZE.xl, letterSpacing: -0.5, marginTop: 4 },
-  sub: { fontSize: SIZE.xs, letterSpacing: 6, textTransform: 'uppercase', marginTop: 4, marginBottom: GAP.lg },
+  sub: { fontSize: SIZE.xs, letterSpacing: 1.5, textTransform: 'uppercase', marginTop: 4, marginBottom: GAP.lg },
 
   // Section label
   sectionRow: { flexDirection: 'row', alignItems: 'center', marginTop: GAP.xl, marginBottom: GAP.sm, gap: 10 },
-  sectionText: { fontSize: SIZE.xs, letterSpacing: 6, textTransform: 'uppercase' },
+  sectionText: { fontSize: SIZE.xs, letterSpacing: 1.5, textTransform: 'uppercase' },
   sectionLine: { flex: 1, height: 1, borderRadius: 1, opacity: 0.4 },
 
   // Legend
@@ -403,16 +390,15 @@ const st = StyleSheet.create({
 
   // Card
   card: { padding: 16, borderRadius: RADIUS.lg, borderWidth: 1, marginBottom: GAP.sm, overflow: 'hidden', position: 'relative' },
-  cardGlow: { position: 'absolute', top: -20, right: -20, width: 60, height: 60, borderRadius: 30, opacity: 0.5 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
   cardTitle: { fontSize: SIZE.base },
-  hint: { fontSize: SIZE.xs, letterSpacing: 3, marginBottom: GAP.sm, lineHeight: 14 },
+  hint: { fontSize: SIZE.xs, letterSpacing: 0.5, marginBottom: GAP.sm, lineHeight: 14 },
 
   // Input row
   inputRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  prefix: { fontSize: SIZE.xs, letterSpacing: 3 },
+  prefix: { fontSize: SIZE.xs, letterSpacing: 0.5 },
   input: { width: 90, padding: 8, borderWidth: 1, borderRadius: RADIUS.sm, fontSize: 14, fontWeight: '700', textAlign: 'center' },
-  unit: { fontSize: SIZE.xs, letterSpacing: 3 },
+  unit: { fontSize: SIZE.xs, letterSpacing: 0.5 },
 
   // Preview
   preview: { marginTop: GAP.sm, padding: 8, borderWidth: 1, borderStyle: 'dashed', borderRadius: RADIUS.sm },
@@ -421,9 +407,9 @@ const st = StyleSheet.create({
   // Save
   saveBtnWrap: { marginTop: GAP.xl },
   saveBtn: { padding: 16, borderRadius: RADIUS.md, alignItems: 'center', marginTop: GAP.xl },
-  saveTxt: { fontSize: SIZE.sm, letterSpacing: 6 },
+  saveTxt: { fontSize: SIZE.sm, letterSpacing: 1.5 },
 
   // Reset
   resetBtn: { padding: 14, borderRadius: RADIUS.md, borderWidth: 1, borderStyle: 'dashed', alignItems: 'center', marginTop: GAP.sm },
-  resetTxt: { fontSize: SIZE.xs, letterSpacing: 6 },
+  resetTxt: { fontSize: SIZE.xs, letterSpacing: 1.5 },
 });
