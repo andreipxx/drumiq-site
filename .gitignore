@@ -12,3 +12,8 @@ analiza/
 Thumbs.db
 
 # App-specific ignores are in app/.gitignore
+
+# Date firma / documente sensibile — NU pe git
+assets/date firma/
+**/date firma/
+*.cui
