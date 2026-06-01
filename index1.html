@@ -72,7 +72,7 @@
   <div class="meta-item"><span class="k">RESPONSE</span><span class="v">&lt;2s</span></div>
   <div class="meta-item"><span class="k">FILTRE</span><span class="v">6</span></div>
   <div class="meta-item"><span class="k">PRIVACY</span><span class="v">LOCAL</span></div>
-  <div class="meta-item"><span class="k">COMBUSTIBILI</span><span class="v">6</span></div>
+  <div class="meta-item"><span class="k">COMBUSTIBILI</span><span class="v">7</span></div>
 </div>
 
 <section class="content">
@@ -93,7 +93,7 @@
       <div class="feature-num">02</div>
       <div>
         <div class="feature-title-text">Cost real per kilometru</div>
-        <div class="feature-desc">Benzină, diesel, GPL, hybrid HEV/PHEV sau electric</div>
+        <div class="feature-desc">Benzină, diesel, electric, benzină+GPL, hybrid HEV/PHEV sau hybrid+GPL</div>
       </div>
       <div class="feature-arrow">→</div>
     </div>
@@ -129,11 +129,125 @@
       </div>
       <div class="feature-arrow">→</div>
     </div>
+  </div>
+</section>
+
+<section class="content">
+  <div class="section-tag">Combustibili</div>
+  <h2>7 tipuri de<br><span class="ital">propulsie.</span></h2>
+  <p class="section-sub">Costul real per kilometru e calculat pentru fiecare tip de propulsie, cu valorile implicite de mai jos — toate editabile în aplicație (consum, preț, uzură).</p>
+
+  <div class="feature-list">
+    <div class="feature-row">
+      <div class="feature-num">01</div>
+      <div>
+        <div class="feature-title-text">Benzină</div>
+        <div class="feature-desc">Implicit: 7.5 L/100km · 7.50 RON/L · uzură 0.20 RON/km</div>
+      </div>
+      <div class="feature-arrow">→</div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-num">02</div>
+      <div>
+        <div class="feature-title-text">Diesel</div>
+        <div class="feature-desc">Implicit: 7.0 L/100km · 7.80 RON/L · uzură 0.22 RON/km</div>
+      </div>
+      <div class="feature-arrow">→</div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-num">03</div>
+      <div>
+        <div class="feature-title-text">Electric</div>
+        <div class="feature-desc">Implicit: 15.0 kWh/100km · 1.50 RON/kWh · uzură 0.12 RON/km</div>
+      </div>
+      <div class="feature-arrow">→</div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-num">04</div>
+      <div>
+        <div class="feature-title-text">Benzină+GPL</div>
+        <div class="feature-desc">Implicit: 6.5 L/100km benzină · GPL 8.0 L/100km la 3.50 RON/L · 70% pe GPL · uzură 0.22 RON/km</div>
+      </div>
+      <div class="feature-arrow">→</div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-num">05</div>
+      <div>
+        <div class="feature-title-text">Hybrid (HEV)</div>
+        <div class="feature-desc">Implicit: 4.7 L/100km · 7.50 RON/L · uzură 0.15 RON/km</div>
+      </div>
+      <div class="feature-arrow">→</div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-num">06</div>
+      <div>
+        <div class="feature-title-text">Plug-in Hybrid (PHEV)</div>
+        <div class="feature-desc">Implicit: 5.5 L/100km benzină · 18.0 kWh/100km la 1.20 RON/kWh · 60% pe electric · uzură 0.13 RON/km</div>
+      </div>
+      <div class="feature-arrow">→</div>
+    </div>
     <div class="feature-row">
       <div class="feature-num">07</div>
       <div>
-        <div class="feature-title-text">Verdicte cu personalitate <span class="ital">(opțional)</span></div>
-        <div class="feature-desc">Peste GO / THINK / STOP, primești replici pe limba șoferului — „Marca banu'", „Muncă de pomană", „Pickup degeaba". Le oprești oricând din setări și revii la etichete serioase. Verdictul, culoarea și calculul rămân identice — e doar stilul textului.</div>
+        <div class="feature-title-text">Hybrid + GPL</div>
+        <div class="feature-desc">Implicit: 4.7 L/100km benzină · GPL 6.5 L/100km la 3.50 RON/L · 75% pe GPL · uzură 0.16 RON/km</div>
+      </div>
+      <div class="feature-arrow">→</div>
+    </div>
+  </div>
+</section>
+
+<section class="content">
+  <div class="section-tag">Praguri profitabilitate</div>
+  <h2>Regulile tale,<br><span class="ital">verdictul tău.</span></h2>
+  <p class="section-sub">Șase praguri reglabile decid când o cursă primește GO, THINK sau STOP. Mai jos valorile implicite — le ajustezi după cum lucrezi tu.</p>
+
+  <div class="feature-list">
+    <div class="feature-row">
+      <div class="feature-num">01</div>
+      <div>
+        <div class="feature-title-text">Profit/km minim (net)</div>
+        <div class="feature-desc"><strong>Implicit: 0.80 RON/km.</strong> Profit NET per km total (pickup+cursă, minus costuri). Ex: 0.80 = minim 0.80 lei profit real pe fiecare km parcurs.</div>
+      </div>
+      <div class="feature-arrow">→</div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-num">02</div>
+      <div>
+        <div class="feature-title-text">Lei/min minim</div>
+        <div class="feature-desc"><strong>Implicit: 0.50 RON/min.</strong> Curse cu profit/min sub această valoare = REFUZ.</div>
+      </div>
+      <div class="feature-arrow">→</div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-num">03</div>
+      <div>
+        <div class="feature-title-text">Lei/oră minim</div>
+        <div class="feature-desc"><strong>Implicit: 50 RON/oră.</strong> Curse cu profit/oră sub această valoare = REFUZ.</div>
+      </div>
+      <div class="feature-arrow">→</div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-num">04</div>
+      <div>
+        <div class="feature-title-text">Zonă galbenă</div>
+        <div class="feature-desc"><strong>Implicit: 20%.</strong> Procentul deasupra minimului = verdict galben (marginal).</div>
+      </div>
+      <div class="feature-arrow">→</div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-num">05</div>
+      <div>
+        <div class="feature-title-text">Rază pickup max</div>
+        <div class="feature-desc"><strong>Implicit: 3.5 km.</strong> Pickup peste această distanță = AVERTISMENT „peste rază" (NU ascunde oferta — vezi tot verdictul și decizi tu; pickup-ul e oricum inclus în profit/km).</div>
+      </div>
+      <div class="feature-arrow">→</div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-num">06</div>
+      <div>
+        <div class="feature-title-text">Rating pasager min</div>
+        <div class="feature-desc"><strong>Implicit: 4.5 ★.</strong> Pasageri sub acest rating = REFUZ (siguranță).</div>
       </div>
       <div class="feature-arrow">→</div>
     </div>
@@ -147,7 +261,7 @@
     <div class="spec-item"><div class="spec-num">01 / VITEZĂ</div><div class="spec-big">&lt;2s</div><div class="spec-lbl">Verdict instant</div></div>
     <div class="spec-item"><div class="spec-num">02 / FILTRE</div><div class="spec-big">6</div><div class="spec-lbl">Filtre inteligente</div></div>
     <div class="spec-item"><div class="spec-num">03 / PRIVACY</div><div class="spec-big">Local</div><div class="spec-lbl">Datele curselor pe telefon</div></div>
-    <div class="spec-item"><div class="spec-num">04 / SUPORT</div><div class="spec-big">6</div><div class="spec-lbl">Tipuri combustibil</div></div>
+    <div class="spec-item"><div class="spec-num">04 / SUPORT</div><div class="spec-big">7</div><div class="spec-lbl">Tipuri combustibil</div></div>
   </div>
 </section>
 
